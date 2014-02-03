@@ -616,16 +616,16 @@ public class Noise
         return Mathf.Clamp(sum * (1f - (1f / alpha)) * 1.4f, 0, 1);
     }
 
-    public float fbm3(float x, float y, float z, int octaves, float alpha, float omega)
+    public float fbm3(float x, float y, float z, int octaves, float lacunarity, float gain)
     {
         float sum = 0f;
-        float a = 1;
-        float b = 1;
+        float frequency = 1;
+        float amplitude = 1;
         for (int i = 1; i <= octaves; i++)
         {
-            sum += (1f / a) * noise3(x * b, y * b,z*b);
-            a *= alpha;
-            b *= omega;
+            sum += (1f / frequency) * noise3(x * amplitude, y * amplitude,z*amplitude);
+            frequency *= lacunarity;
+            amplitude *= gain;
 
         }
         return Mathf.Clamp(.8f*(sum - .205f),0,1);
