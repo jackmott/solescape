@@ -3227,8 +3227,8 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 7d6655a19250c264fbabec39d50c37f5, type: 2}
-  - {fileID: 2100000, guid: 2a5fa1369fe0d2d45a315fa5a8fb48f9, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

@@ -187,6 +187,7 @@
      <Compile Include="Assets\src\Persistence.cs" />
      <Compile Include="Assets\src\Planet.cs" />
      <Compile Include="Assets\src\PlanetInfo.cs" />
+     <Compile Include="Assets\src\Radar.cs" />
      <Compile Include="Assets\src\Research.cs" />
      <Compile Include="Assets\src\SimplexNoise.cs" />
      <Compile Include="Assets\src\Sun.cs" />

@@ -224,7 +224,7 @@ public class GuiEventHandler : MonoBehaviour {
 
     void Awake()
     {
-        print("GUI AWAKE");
+        print("GUI AWAKE");        
         instance = this;
     }
     
@@ -238,28 +238,20 @@ public class GuiEventHandler : MonoBehaviour {
     {
 
 
-        RaycastHit[] hits = Physics.RaycastAll(Camera.main.transform.position, Camera.main.transform.forward);
-        RaycastHit planetHit = new RaycastHit();
-        foreach (RaycastHit hit in hits)
-        {
-            if (hit.transform.gameObject == state.planet.gameObject)
-            {
-                planetHit = hit;
-                break;
-            }
-                
-        }
+        GameObject radar = (GameObject)Instantiate(Resources.Load("prefabs/RadarPlane"),Vector3.zero, Quaternion.identity);
+        radar.transform.parent = Camera.main.transform;
+       
 
-        GameObject radar = (GameObject)Instantiate(Resources.Load("prefabs/Radar"), planetHit.point, Quaternion.identity);
+        //camera x 770 radar plane z = 15
 
-
+        
         Vector3[] windZones = state.planet.windZones;
         for (int i = 0; i < windZones.Length;i++)
         {
             GameObject tornado =  (GameObject)Instantiate(Resources.Load("prefabs/TornadoParticle"), windZones[i], Quaternion.identity);
             Ray planetRay = new Ray(tornado.transform.position, Vector3.zero - tornado.transform.position);
-            
-            hits = Physics.RaycastAll(planetRay);
+
+            RaycastHit[] hits = Physics.RaycastAll(planetRay);
             foreach (RaycastHit hit in hits)
             {
                 if (hit.transform.gameObject == state.planet.transform.gameObject)
@@ -430,6 +422,8 @@ public class GuiEventHandler : MonoBehaviour {
 
     void OnGUI()
     {
+     
+
         if (Time.timeScale == 1)
         {
 
