@@ -1,0 +1,397 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400000}
+  - 114: {fileID: 11400000}
+  m_Layer: 0
+  m_Name: Texture Atlas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400000
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f514313262e3d141ad017b60809752a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 7d6655a19250c264fbabec39d50c37f5, type: 2}
+  items:
+  - name: scifi_box
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .50390625
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: 8ae408d71c3d7b440ae26fe8e7befb39
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_button
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .5703125
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 10
+      m_Right: 10
+      m_Top: 10
+      m_Bottom: 10
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: fe8cbbc3e7f3a4048b4959531225cc1b
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_button_down
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .63671875
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 10
+      m_Right: 10
+      m_Top: 10
+      m_Bottom: 10
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: e2aba5fff3b74b74abb8c892476babc5
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_button_hover
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .703125
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 10
+      m_Right: 10
+      m_Top: 10
+      m_Bottom: 10
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: c234a83324dffd547884b093a0d76335
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_label
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .76953125
+      width: .125
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 64, y: 16}
+    textureGUID: 52c75aad6dd71564ab17e1fb6d0437fe
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_scroll_down
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .9375
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 4
+      m_Right: 4
+      m_Top: 4
+      m_Bottom: 4
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: afe288a610fc07b428d94e35ba058ac9
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_scroll_hover
+    region:
+      serializedVersion: 2
+      x: .03515625
+      y: .9375
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 33bea787304b9094e8536b5247c7b498
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_scroll_normal
+    region:
+      serializedVersion: 2
+      x: .0703125
+      y: .9375
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 4
+      m_Right: 4
+      m_Top: 4
+      m_Bottom: 4
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 94cfa776ff776424693671e8ee6228b0
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_slider_hor_hover
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .60546875
+      width: .015625
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 8, y: 16}
+    textureGUID: 634609050b101614f88aa0c3495674e2
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_slider_hor_normal
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .640625
+      width: .015625
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 8, y: 16}
+    textureGUID: fe4f5c57b64d6954caecd764aa13d096
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_slider_ver_hover
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .97265625
+      width: .03125
+      height: .015625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 16, y: 8}
+    textureGUID: 32dbbdb4be14f7841b11ec08284f492a
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_slider_ver_normal
+    region:
+      serializedVersion: 2
+      x: .03515625
+      y: .97265625
+      width: .03125
+      height: .015625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 16, y: 8}
+    textureGUID: acda3d8c05cb5a84bb7941b208ceb076
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_text
+    region:
+      serializedVersion: 2
+      x: .10546875
+      y: .9375
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 2
+      m_Right: 10
+      m_Top: 2
+      m_Bottom: 10
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 532d0ede036be0e4db16e4230bd620e9
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_text_hover
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .5703125
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 4403e00879f6c8948b5415ced1a6012b
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_toggle_off
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .8046875
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: 73945367e263df9458c6f4d94d339c74
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_toggle_off_hover
+    region:
+      serializedVersion: 2
+      x: 0
+      y: .87109375
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: 9d29737f9df212e4bb648533dbcb5781
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_toggle_on
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .8046875
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: efcb1e354202ff047b98c5edddc7461c
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_toggle_on_hover
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .87109375
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: 9f28e1a34b5718e4c9d30819517f6b43
+    deleted: 0
+    texture: {fileID: 0}
+  - name: scifi_window
+    region:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: .5
+      height: .5
+    border:
+      m_Left: 105
+      m_Right: 45
+      m_Top: 120
+      m_Bottom: 45
+    rotated: 0
+    sizeInPixels: {x: 256, y: 256}
+    textureGUID: aad81a9110993514bb734025224aa59b
+    deleted: 0
+    texture: {fileID: 0}
+  - name: soldblue
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .50390625
+      width: .0625
+      height: .0625
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 32, y: 32}
+    textureGUID: bc04eba9af9300d43b0b547972580568
+    deleted: 0
+    texture: {fileID: 0}
+  generator: 0
+  imageFileGUID: 
+  dataFileGUID: 
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 100000}
+  m_IsPrefabParent: 1
+  m_IsExploded: 1

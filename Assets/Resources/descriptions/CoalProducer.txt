@@ -1,0 +1,1 @@
+Coal Plants produce energy by burning coal from a global reserve. Each coal plant you place will pull from the same reserve increasing the rate of depletion. As the global reserve depletes power production will decline. Coal is a cheap and easy source of power, but pollutes a lot.
