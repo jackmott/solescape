@@ -93,11 +93,13 @@ public class Dialog : MonoBehaviour
             renderObject = (GameObject)Instantiate(prefab, guiCamera.transform.position + guiCamera.transform.forward * 45, Quaternion.identity);
             //renderObject.transform.Rotate(100, 0, 0);
             timestamp = System.DateTime.Now;
+            dialogImage.Parent.Show();
             dialogImage.Show();
 
         }
         else
         {
+            dialogImage.Parent.Hide();
             dialogImage.Hide();
         }
         dialogButton.Focus();

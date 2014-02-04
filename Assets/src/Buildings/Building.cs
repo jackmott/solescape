@@ -463,13 +463,11 @@ public abstract class Building : MonoBehaviour
 
     protected void SetRenderOpaque()
     {
-        Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+        MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
 
-        foreach (Renderer r in renderers)
+        foreach (MeshRenderer r in renderers)
         {
-            Color c = r.material.color;
-            c.a = 1f;
-            r.material.color = c;
+            r.enabled = true;
         }
 
 
@@ -478,13 +476,11 @@ public abstract class Building : MonoBehaviour
     }
     protected void SetRenderTransparent()
     {
-        Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+        MeshRenderer[] renderers = gameObject.GetComponentsInChildren<MeshRenderer>();
 
-        foreach (Renderer r in renderers)
+        foreach (MeshRenderer r in renderers)
         {
-            Color c = r.material.color;
-            c.a = .25f;
-            r.material.color = c;
+            r.enabled = false;
         }
 
     }

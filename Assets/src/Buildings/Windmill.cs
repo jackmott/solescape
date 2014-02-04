@@ -7,7 +7,7 @@ public class Windmill : Building
     bool randomizeEnergy = false;
 
     const float interfereDistance = 70f;
-    const float stormDistance = 25f;
+    const float stormDistance = 30f;
     const float stormMultiplier = 4f;
 
     protected override void Awake()

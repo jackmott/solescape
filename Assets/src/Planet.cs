@@ -139,53 +139,7 @@ public class Planet : MonoBehaviour
         renderer.material.mainTexture = planetTex;
     }
 
-    void Generate2DPerlinMap()
-    {
-        //originalMat = renderer.material;
-
-        // Create a new 2x2 texture ARGB32 (32 bit with alpha) and no mipmaps
-        //Texture2D originalTex = (Texture2D)originalMat.mainTexture;
-        Texture2D planetTex = new Texture2D(2048, 2048, TextureFormat.ARGB32, false);
-        Texture2D cloudsTex = new Texture2D(2048, 2048, TextureFormat.ARGB32, false);
-
-        Color[] cloudColors = cloudsTex.GetPixels();
-        // set the pixel values
-        Color[] colors = planetTex.GetPixels();
-
-        Noise noise = new Noise();
-
-
-
-
-        float offsetx = (float)Random.Range(-200, 200);
-        float offsety = (float)Random.Range(-200, 200);
-        int row;
-        for (int y = 0; y < planetTex.height; y++)
-        {
-            row = planetTex.width * y;
-            for (int x = 0; x < planetTex.width; x++)
-            {
-
-                float color = noise.pfbm2(x / 256f + offsetx, y / 256f + offsety, planetTex.width / 256, planetTex.height / 256, 3, 2, 2);
-
-                int index = (int)(color * (state.planetColorRamp.colors.Length - 1));
-                colors[row + x] = state.planetColorRamp.colors[index];
-
-                cloudColors[row + x] = new Color(1, 1, 1, color);
-
-
-                //colors [planetTex.width * y + x] = new Color (color, color, color);	  
-            }
-        }
-
-        cloudsTex.SetPixels(cloudColors);
-        cloudsTex.Apply();
-        GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
-        // Apply all SetPixel calls
-        planetTex.SetPixels(colors);
-        planetTex.Apply();
-        renderer.material.mainTexture = planetTex;
-    }
+   
 
 
 
@@ -276,7 +230,7 @@ public class Planet : MonoBehaviour
                 Quaternion q = Quaternion.LookRotation(normal);
                 placeObject.transform.localRotation = q;
                 placeObject.transform.Rotate(90, 0, 0);
-                //placeObject.transform.eulerAngles = new Vector3(placeObject.transform.localEulerAngles.x,placeObject.transform.localEulerAngles.y,buildingRotation);
+                placeObject.transform.Rotate(0, buildingRotation, 0);
 
                 float adjustUpwards = (placeObject.transform.lossyScale.z / 2.0f) * .9f;
                 placeObject.transform.position = planetHit.point;
@@ -299,8 +253,7 @@ public class Planet : MonoBehaviour
     {
         placeMode = false;
         placeObject.transform.position = position;
-        placeObject.transform.parent = transform;
-        placeObject.rigidbody.mass = 999999;
+        placeObject.transform.parent = transform;        
         placedBuildings.Add(b);
         placeObject = null;
 

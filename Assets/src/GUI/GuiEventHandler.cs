@@ -86,11 +86,10 @@ public class GuiEventHandler : MonoBehaviour {
     {
         get
         {
-            return true;
-            //TODO PUT THIS BACK
-            /*if (state == null) return false;
+          
+            if (state == null) return false;
             if (state.attainedResearch["Climate Science"] != null) return true;
-            else return false;*/
+            else return false;
         }
         private set { }
     }

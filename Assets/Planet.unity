@@ -3227,8 +3227,8 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 7d6655a19250c264fbabec39d50c37f5, type: 2}
+  - {fileID: 2100000, guid: 2a5fa1369fe0d2d45a315fa5a8fb48f9, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -3499,7 +3499,7 @@ BoxCollider:
   m_GameObject: {fileID: 947437604}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: .426666677, y: .426666677, z: .00100000005}
   m_Center: {x: .213333338, y: -.213333338, z: 0}
