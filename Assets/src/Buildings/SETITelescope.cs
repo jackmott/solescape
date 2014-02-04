@@ -6,27 +6,19 @@ public class SETITelescope : Building
 {
     private float chance = 1f / 100f;
 
-    protected override void Awake()
+    public override string StatsText()
     {
-        base.Awake();
-    }
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-
-    }
-
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
-
-    }
+        string costText = cost.ToString("0");
+        string energyText = (energy * -1).ToString("0");
+        string pollutionText = pollution.ToString("0");
+        string stats = "     Cost: " + costText + "\n";
+        stats += "     Energy Consumption: " + energyText + " units\n";
+        stats += "     Polllution: " + pollutionText + "\n";
+        return stats;
+    }   
 
     protected override void Place(Vector3 position)
-    {
-        print("SETI PLACE");
+    {     
         base.Place(position);
         state.setiChance += chance;
     }

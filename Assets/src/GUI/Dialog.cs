@@ -70,9 +70,6 @@ public class Dialog : MonoBehaviour
 
     public void SetDialog(string title, string text, string buttonText, bool pause, bool endGame, GameObject prefab = null)
     {
-        dialogTitle.Text = title;
-        dialogText.Text = text;
-        dialogButton.Text = buttonText;
         
 
         //Set the dimmer panel to dark the background
@@ -91,6 +88,11 @@ public class Dialog : MonoBehaviour
             guiCamera = (GameObject)Instantiate(guiCameraPrefab, Vector3.zero, Quaternion.identity);
             guiCameraLight = (GameObject)Instantiate(guiCameraLightPrefab, Vector3.zero, Quaternion.identity);
             renderObject = (GameObject)Instantiate(prefab, guiCamera.transform.position + guiCamera.transform.forward * 45, Quaternion.identity);
+            Building b = renderObject.GetComponent<Building>();
+            if (b != null)
+            {
+                text = text + "\n\n" + b.StatsText();
+            }
             //renderObject.transform.Rotate(100, 0, 0);
             timestamp = System.DateTime.Now;
             dialogImage.Parent.Show();
@@ -102,6 +104,12 @@ public class Dialog : MonoBehaviour
             dialogImage.Parent.Hide();
             dialogImage.Hide();
         }
+
+        dialogTitle.Text = title;
+        dialogText.Text = text;
+        dialogButton.Text = buttonText;
+        
+
         dialogButton.Focus();
         //show the dialog and pause time if desired
         dialogPanel.Show();            
@@ -115,7 +123,7 @@ public class Dialog : MonoBehaviour
     public void CloseDialog()
     {
 
-        print("CLOSE DIALOG");
+        
         if (guiCamera != null)
         {
             Destroy(guiCamera);

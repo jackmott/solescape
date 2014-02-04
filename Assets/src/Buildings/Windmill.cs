@@ -10,23 +10,18 @@ public class Windmill : Building
     const float stormDistance = 30f;
     const float stormMultiplier = 4f;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-        
-    }
 
-    // Update is called once per frame
-    protected override void Update()
+    public override string StatsText()
     {
-        base.Update();
-    }
 
+        string energyText = energy.ToString("0.00");
+        string costText = cost.ToString("0");
+        string stats = "     Base Energy Cost: " + costText + "\n";
+        stats +=       "     Base Energy Production: " + energyText + " units\n";
+        stats +=       "     Base production and cost may be modified by various factors";
+        return stats;
+    }
+   
     
 
     public override void AffectState()
@@ -52,7 +47,7 @@ public class Windmill : Building
                 if (b.placed)
                 {
                     float distance = Vector3.Distance(transform.position, b.transform.position);
-                    float energySteal = Mathf.Clamp(Mathf.Pow(.5f, distance / 15f), 0f, .5f);
+                    float energySteal = Mathf.Clamp(Mathf.Pow(.3f, distance / 15f), 0f, .5f);
                     energyProduction *= (1-energySteal);
 
 

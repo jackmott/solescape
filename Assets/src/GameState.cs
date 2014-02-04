@@ -229,8 +229,7 @@ public class GameState : MonoBehaviour
             {
                 RemoveAvailableResearch(setiResearch);
                 attainedResearch.Add(setiResearch.name, setiResearch);
-                UpdateAvailableResearch();
-                print("SETI added:" + setiResearch.name);
+                UpdateAvailableResearch();                
                 Dialog.Instance.SetDialog("SETI Success!", "Your SETI program has discovered transmissions from an alien race and attained the following resarch:" + setiResearch.name, "Ok", true, false);
             }
 
@@ -420,7 +419,7 @@ public class GameState : MonoBehaviour
                     GuiEventHandler.Instance.AddBuilding(bi);
                     if (bi.researchDependencies.Length > 0)
                         Notification.Instance.SetNotification(bi.buildingName + " Now Available");
-                    print("adding building:" + bi.buildingName);
+                    
                 }
             }
         }

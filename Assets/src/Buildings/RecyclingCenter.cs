@@ -4,23 +4,13 @@ using System.Collections;
 public class RecyclingCenter : Building
 {
 
-    protected override void Awake()
+    public override string StatsText()
     {
-        base.Awake();
-    }
-    // Use this for initialization
-    protected override void Start()
-    {
-
-        base.Start();
-
-    }
-
-    
-
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
+        string costText = cost.ToString("0");
+        string energyText = (energy * -1).ToString("0");
+        string stats = "     Cost: " + costText + "\n";
+        stats +=       "     Energy Consumption: " + energyText + "\n";
+        stats +=       "     Pollution Removal: Moderate";
+        return stats;
     }
 }

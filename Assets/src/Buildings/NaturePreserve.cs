@@ -9,10 +9,14 @@ public class NaturePreserve : Building
     float bufferAmount; 
     float clearAmount;
 
-    protected override void Awake()
+    public override string StatsText()
     {
-        base.Awake();
+        string costText = cost.ToString("0");              
+        string stats = "     Cost: " + costText + "\n";
+        stats += "     Pollution Removal: Significant until saturated";
+        return stats;
     }
+   
     // Use this for initialization
     protected override void Start()
     {
@@ -23,11 +27,7 @@ public class NaturePreserve : Building
 
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
-    }
+   
 
     public override void AffectState()
     {

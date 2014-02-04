@@ -5,21 +5,18 @@ public class CoalProducer : Building
 {
 
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
+  
 
-    }
-
-    // Update is called once per frame
-    protected override void Update()
+    public override string StatsText()
     {
-        base.Update();
+        
+        string energyText = (energy*100f).ToString("0.00");
+        string costText = cost.ToString("0");        
+        string stats = "     Initial Energy Cost: "+costText+"\n";
+        stats +=       "     Energy Production: " + energyText + "% of planetary coal reserves\n";
+        string pollutionText = (pollution*100f).ToString("0");
+        stats +=       "     Pollution: " + pollutionText + "% of energy production";
+        return stats;        
     }
 
 

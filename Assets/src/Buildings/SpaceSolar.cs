@@ -7,11 +7,15 @@ public class SpaceSolar : Building
 
     public Vector3 rotateAngle;
 
-
-    protected override void Awake()
+    public override string StatsText()
     {
-        base.Awake();
+        string costText = cost.ToString("0");
+        string energyText = energy.ToString("0");
+        string stats = "           Cost: " + costText + "\n";
+        stats +=       "           Energy Production: " + energyText + " units\n";
+        return stats;
     }
+
     // Use this for initialization
     protected override void Start()
     {

@@ -299,7 +299,7 @@ public class GuiEventHandler : MonoBehaviour {
 
     public void AddBuilding(BuildingInfo bi)
     {
-        print(bi.buildingName);
+        
         if (bi.type == 0)
         {
             dfButton button = (dfButton)Instantiate(prefabBuildingButton);

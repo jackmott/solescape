@@ -88,6 +88,11 @@ public abstract class Building : MonoBehaviour
 
     }
 
+    public virtual string StatsText()
+    {
+        return "baseclass";
+    }
+
 
     protected virtual void Update()
     {
@@ -115,7 +120,7 @@ public abstract class Building : MonoBehaviour
             }
             if (transform.position == Vector3.zero)
             {
-                print("don't place, im in the middle of a planet");
+                //nothing
             }
             else if (state.HasEnoughEnergyFor(cost+firstTurnEnergy) && IsAllValid())
             {
@@ -131,7 +136,7 @@ public abstract class Building : MonoBehaviour
             }
             else if (!state.HasEnoughEnergyFor(cost))
             {
-                print("COST:" + cost + " stateenergy:" + state.energy);
+                
                 Notification.Instance.SetNotification("Not Enough Energy");
             }
            
@@ -154,12 +159,14 @@ public abstract class Building : MonoBehaviour
 
     private void LoadInfo()
     {
+        
         string classname = this.GetType().Name;
         BuildingInfo bi = (BuildingInfo)state.buildings[classname];
         this.buildingName = bi.buildingName;
         this.cost = bi.cost;
         this.energy = bi.energy;
         this.pollution = bi.pollution;
+        
         this.iqFactor = bi.iqFactor;
         this.population = bi.population;
         this.researchDependencies = bi.researchDependencies;
@@ -301,7 +308,7 @@ public abstract class Building : MonoBehaviour
                     b.placed = true;
                     state.planet.placedBuildings.Add(b);
                     state.energy -= upgradeCost;
-                    print("pop:" + population + " bpop:" + b.population);
+                    
                     state.population += b.population;
                     state.iq += b.iqFactor;
 

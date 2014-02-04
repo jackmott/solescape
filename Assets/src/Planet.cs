@@ -101,9 +101,7 @@ public class Planet : MonoBehaviour
         float offsety = (float)Random.Range(-200f, 200f);
         
 
-        float min = 999;
-        float max = -999;
-
+     
         for (int y = 0; y < planetTex.height; y++)
         {
             int row = y * planetTex.width;
@@ -130,7 +128,7 @@ public class Planet : MonoBehaviour
             }
         }
 
-        print("min:" + min + " max:" + max);
+        
         cloudsTex.SetPixels(cloudColors);
         cloudsTex.Apply();
         GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
@@ -149,10 +147,10 @@ public class Planet : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            print("OIL MOUSE DOWN");
+            
             if (state.oilScan && state.HasEnoughEnergyFor(state.scanCost))
             {
-                print("SCANNING TRUE");
+            
                 state.UpdateOilMap();
                 state.scanning = true;
             }

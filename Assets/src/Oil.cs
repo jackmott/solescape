@@ -33,8 +33,6 @@ public class Oil : MonoBehaviour
         float pi = 3.14159265359f;
         float twopi = pi * 2f;
 
-        float min = 9999;
-        float max = -999;
 
         for (int y = 0; y < oilTex.height; y++)
         {
@@ -57,7 +55,7 @@ public class Oil : MonoBehaviour
             }
         }
 
-        print("oilmin:" + min + " oilmax:" + max);
+        
         oilTex.SetPixels(colors);
         oilTex.Apply();
         renderer.material.mainTexture = oilTex;

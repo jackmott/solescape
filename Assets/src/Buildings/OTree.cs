@@ -4,23 +4,13 @@ using System.Collections;
 public class OTree : Building
 {
 
-    protected override void Awake()
+
+    public override string StatsText()
     {
-        base.Awake();
-    }
-    // Use this for initialization
-    protected override void Start()
-    {
-
-        base.Start();
-
-    }
-
-   
-
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
+       
+        string costText = cost.ToString("0");
+        string stats = "     Initial Energy Cost: " + costText + "\n";               
+        stats +=       "     Pollution Cleanup: Minimal";        
+        return stats;
     }
 }

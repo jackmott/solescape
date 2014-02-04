@@ -13,11 +13,18 @@ public class OilProducer : Building
 
 
 
-    protected override void Awake()
+    public override string StatsText()
     {
-        base.Awake();
-        print("OIL PRODUCER!!!!");
+        string costText = cost.ToString("0");        
+        string energyText = (energy * 100f).ToString("0.00");
+        string stats = "     Base Energy Cost: " + costText + "\n";
+        stats +=       "     Energy Production: " + energyText + "% of oil reserves in range\n";
+        string pollutionText = (pollution * 100f).ToString("0");
+        stats +=       "     Pollution: " + pollutionText + "% of energy production";
+        return stats;
     }
+
+    
     // Use this for initialization
     protected override void Start()
     {

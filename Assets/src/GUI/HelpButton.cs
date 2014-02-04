@@ -19,6 +19,7 @@ public class HelpButton : MonoBehaviour {
         args.Use();
         TextAsset description = Resources.Load<TextAsset>("descriptions/" + bi.className);        
         GameObject prefab = (GameObject)Resources.Load("prefabs/Buildings/" + bi.className);
+               
         Dialog.Instance.SetDialog(bi.buildingName, description.text, "Continue", true, false,prefab);
     }
 }

@@ -6,10 +6,7 @@ public class SolarArray : Building
 
     private GameObject sun;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
+   
     // Use this for initialization
     protected override void Start()
     {
@@ -17,12 +14,15 @@ public class SolarArray : Building
         sun = GameObject.Find("Sun");
     }
 
-    // Update is called once per frame
-    protected override void Update()
+    public override string StatsText()
     {
-        base.Update();
+        string costText = cost.ToString("0");
+        string energyText = energy.ToString("0");
+        string stats = "     Cost: "+costText+"\n";
+        stats +=       "     Energy Production: " + energyText + " units on a clear day\n";                
+        return stats;
     }
-
+   
     public override void AffectState()
     {
         if (!placed || !isEnabled)
