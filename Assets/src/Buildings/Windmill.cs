@@ -6,6 +6,10 @@ public class Windmill : Building
 
     bool randomizeEnergy = false;
 
+    const float interfereDistance = 70f;
+    const float stormDistance = 25f;
+    const float stormMultiplier = 4f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -32,7 +36,7 @@ public class Windmill : Building
             return;
 
         //static Collider[] OverlapSphere(Vector3 position, float radius, int layerMask = AllLayers);
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 70f);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, interfereDistance);
 
         
 
@@ -53,7 +57,18 @@ public class Windmill : Building
 
 
                 }
+            }           
+        }
+
+        for (int i = 0; i < state.planet.windZones.Length; i++)
+        {
+            Vector3 point = state.planet.windZones[i].transform.position;
+            float distance = Vector3.Distance(transform.position,point);
+            if (distance <= stormDistance)
+            {
+                energyProduction *= stormMultiplier;
             }
+
         }
 
         

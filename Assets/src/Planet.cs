@@ -26,7 +26,7 @@ public class Planet : MonoBehaviour
     public float buildingRotation = 0;
 
     const int NUM_WIND_ZONES = 3;
-    public Vector3[] windZones;
+    public GameObject[] windZones;
 
 
     // Use this for initialization
@@ -48,7 +48,8 @@ public class Planet : MonoBehaviour
     void GenerateWindZones()
     {
         float radius = this.transform.localScale.x / 2.0f + 1;
-        windZones = new Vector3[NUM_WIND_ZONES];
+        windZones = new GameObject[NUM_WIND_ZONES];
+
         for (int i = 0; i < NUM_WIND_ZONES; i++)
         {
             float theta = Random.Range(0f, Mathf.PI * 2f);
@@ -58,9 +59,25 @@ public class Planet : MonoBehaviour
             float y3d = radius * Mathf.Sin(theta) * Mathf.Sin(phi);
             float z3d = radius * -Mathf.Cos(phi);
 
-            windZones[i] = new Vector3(x3d, y3d, z3d);
+            GameObject tornado = (GameObject)Instantiate(Resources.Load("prefabs/TornadoParticle"), new Vector3(x3d,y3d,z3d), Quaternion.identity);
+
+            Ray planetRay = new Ray(tornado.transform.position, Vector3.zero - tornado.transform.position);
+
+            RaycastHit[] hits = Physics.RaycastAll(planetRay);
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.transform.gameObject == state.planet.transform.gameObject)
+                {
+                    Quaternion q = Quaternion.LookRotation(hit.normal);
+                    tornado.transform.localRotation = q;
+                }
+            }
+
+            windZones[i] = tornado;
 
         }
+
+        
     }
 
     void Generate3DPerlinMap()

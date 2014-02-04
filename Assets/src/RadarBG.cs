@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Radar : MonoBehaviour {
-
-
-    float spinRotation = 0;
+public class RadarBG : MonoBehaviour {
 
     float startTime;
     float lifeTime = 4; //how long to exist
@@ -12,7 +9,6 @@ public class Radar : MonoBehaviour {
     void Start()
     {
         startTime = Time.time;
-        
 
     }
 
@@ -23,17 +19,13 @@ public class Radar : MonoBehaviour {
         Camera.main.transform.rotation * Vector3.up);
         transform.Rotate(90, 0, 0);
 
-        spinRotation += Time.deltaTime * 200 % 360;
 
-        transform.Rotate(0, spinRotation, 0);
-        
         float duration = Time.time - startTime;
 
         if (duration > lifeTime)
         {
             Destroy(this.gameObject);
         }
-
 
     }
 }

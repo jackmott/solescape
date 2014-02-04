@@ -188,10 +188,12 @@
      <Compile Include="Assets\src\Planet.cs" />
      <Compile Include="Assets\src\PlanetInfo.cs" />
      <Compile Include="Assets\src\Radar.cs" />
+     <Compile Include="Assets\src\RadarBG.cs" />
      <Compile Include="Assets\src\Research.cs" />
      <Compile Include="Assets\src\SimplexNoise.cs" />
      <Compile Include="Assets\src\Sun.cs" />
      <Compile Include="Assets\src\TickManager.cs" />
+     <Compile Include="Assets\src\Tornado.cs" />
      <Compile Include="Assets\src\Water.cs" />
      <None Include="Assets\Resources\descriptions\Windmill.txt" />
      <None Include="Assets\Resources\descriptions\SpaceSolar.txt" />
