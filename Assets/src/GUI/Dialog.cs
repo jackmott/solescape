@@ -154,9 +154,114 @@ public class Dialog : MonoBehaviour
 
         if (endGame)
         {
-            Application.LoadLevel(0);
+            ShowStatsDialog();
         }
        
+    }
+
+    public void ShowStatsDialog()
+    {
+        
+        //Set the dimmer panel to dark the background
+        dimmerPanel.BackgroundColor = new Color(0, 0, 0, .7f);
+
+        //Set interactive to prevent button clicks
+        dimmerPanel.IsInteractive = true;
+        dimmerPanel.Hide();
+
+        //bring the dimmer panel to the front, then the dialog on top of it
+        dimmerPanel.BringToFront();
+        dialogPanel.BringToFront();
+
+        
+        dialogImage.Parent.Hide();
+        dialogImage.Hide();
+        
+
+        dialogTitle.Text = "Planet Stats";
+        dialogText.Text = "";
+        dialogButton.Text = "Try Again";
+
+
+        dialogButton.Hide();
+        restartButton.Show();
+        exitButton.Show();
+
+        GameStats[] stats = GameState.Instance.gameStats;
+        float[] energy = new float[stats.Length];
+        float[] pollution = new float[stats.Length];
+        float[] population = new float[stats.Length];
+        float[] iq = new float[stats.Length];
+        float[] buildings = new float[stats.Length];
+        for (int i = 0; i < stats.Length; i++)
+        {
+            energy[i] = stats[i].energy;
+            pollution[i] = stats[i].pollution;
+            iq[i] = stats[i].iq;
+            population[i] = stats[i].population;
+            buildings[i] = 0;
+            foreach (System.Collections.Generic.KeyValuePair<string,int> pair in stats[i].buildings)
+            {
+                print(pair.Key + " - " + pair.Value);
+                buildings[i] += pair.Value;
+            }
+
+            
+        }
+
+        float x = Screen.width * .2f;
+        float y = Screen.height * .2f;
+        float width = Screen.width * .6f;
+        float height = Screen.height * .6f;
+        Rect r = new Rect(x, y, width, height);
+
+        Graph.graph(energy, Color.red, r);
+        Graph.graph(pollution, Color.yellow,r);
+        Graph.graph(population, Color.blue, r);
+        Graph.graph(iq, Color.green, r);
+        Graph.graph(buildings, Color.white, r);
+
+        
+        Time.timeScale = 0;
+        
+        
+        
+    }
+
+    public void OnGUI()
+    {
+        if (dialogTitle.Text == "Planet Stats")
+        {
+            int startX = 100;
+            int startY = Screen.height/2+100;
+            int yPos = 0;
+            int yInc = 16;
+
+            GuiEventHandler.Instance.countDownLabel.Text = "Game Statistics";
+
+            GUIStyle style = new GUIStyle();
+            style.fontSize = 16;
+            style.fontStyle = FontStyle.Bold;
+            style.normal.textColor = Color.red;
+            GUI.Label(new Rect(startX, startY+yPos, 200, 15), "Energy", style);
+            
+            style.normal.textColor = Color.yellow;
+            yPos += yInc;
+            GUI.Label(new Rect(startX, startY + yPos, 200, 15), "Pollution", style);
+
+            style.normal.textColor = Color.blue;
+            yPos += yInc;
+            GUI.Label(new Rect(startX, startY + yPos, 200, 15), "Population", style);
+
+            style.normal.textColor = Color.green;
+            yPos += yInc;
+            GUI.Label(new Rect(startX, startY + yPos, 200, 15), "IQ", style);
+
+            style.normal.textColor = Color.white;
+            yPos += yInc;
+            GUI.Label(new Rect(startX, startY + yPos, 200, 15), "Buildings", style);
+
+        }
     }
 
     public void Restart()
@@ -184,6 +289,9 @@ public class Dialog : MonoBehaviour
 
        
     }
+    
+
+    
 
 
     //When the "ok" button is pressed

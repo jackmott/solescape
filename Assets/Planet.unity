@@ -2801,6 +2801,7 @@ MonoBehaviour:
   muteButton: {fileID: 983733532}
   muted: 0
   energyBalanceLabel: {fileID: 969021383}
+  countDownLabel: {fileID: 1736642492}
   state: {fileID: 0}
   researchProgressBar: {fileID: 432399422}
 --- !u!1 &755148876
@@ -8778,7 +8779,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1780591248}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.58123779, y: -.729232788, z: 0}
+  m_LocalPosition: {x: -1.58457112, y: -.729232788, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
@@ -8882,9 +8883,9 @@ MonoBehaviour:
   layout:
     anchorStyle: 6
     margins:
-      left: 6
+      left: 5
       top: 519
-      right: 804
+      right: 805
       bottom: 45
     owner: {fileID: 1780591254}
   renderOrder: 1
@@ -10873,7 +10874,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2143935543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: .00166666671, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}

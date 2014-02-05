@@ -169,7 +169,8 @@ public class GameState : MonoBehaviour
             else
             {
                 int count = stats.buildings[b.buildingName];
-                stats.buildings[b.buildingName] = count++;
+                count++;
+                stats.buildings[b.buildingName] = count;                
             }
         }
 

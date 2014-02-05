@@ -46,6 +46,9 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\003 Drawing Lines\src\LinesGL.cs" />
+     <Compile Include="Assets\003 Drawing Lines\src\LinesGR.cs" />
+     <Compile Include="Assets\003 Drawing Lines\src\LinesLR.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfButton.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfCheckbox.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfControl.cs" />
@@ -174,6 +177,7 @@
      <Compile Include="Assets\src\ColorRamp.cs" />
      <Compile Include="Assets\src\GUI\BuildingInfoContainer.cs" />
      <Compile Include="Assets\src\GUI\Dialog.cs" />
+     <Compile Include="Assets\src\GUI\Graph.cs" />
      <Compile Include="Assets\src\GUI\GuiEventHandler.cs" />
      <Compile Include="Assets\src\GUI\HelpButton.cs" />
      <Compile Include="Assets\src\GUI\Notification.cs" />
@@ -198,6 +202,7 @@
      <None Include="Assets\Resources\descriptions\Windmill.txt" />
      <None Include="Assets\Resources\descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\descriptions\SETITelescope.txt" />
+     <None Include="Assets\003 Drawing Lines\src\BlackLine.shader" />
      <None Include="Assets\Shaders\MaskShader.shader" />
      <None Include="Assets\Blue Button\SciFi Buttons\Font\Font Readme.txt" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />

@@ -27,6 +27,7 @@ public class GuiEventHandler : MonoBehaviour {
     public bool muted = false;
 
     public dfLabel energyBalanceLabel;
+    public dfLabel countDownLabel;
 
     
 

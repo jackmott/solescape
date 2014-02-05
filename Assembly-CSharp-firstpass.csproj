@@ -50,6 +50,7 @@
      <None Include="Assets\Resources\descriptions\Windmill.txt" />
      <None Include="Assets\Resources\descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\descriptions\SETITelescope.txt" />
+     <None Include="Assets\003 Drawing Lines\src\BlackLine.shader" />
      <None Include="Assets\Shaders\MaskShader.shader" />
      <None Include="Assets\Blue Button\SciFi Buttons\Font\Font Readme.txt" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />
