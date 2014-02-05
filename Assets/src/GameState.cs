@@ -159,9 +159,11 @@ public class GameState : MonoBehaviour
         stats.iq = iq;
         stats.population = population;
 
-        foreach (Building b in planet.placedBuildings)
+        
+        for (int i = planet.placedBuildings.Count-1;i >=0;i--)
         {
-
+            Building b = planet.placedBuildings[i];
+            if (b.gameObject == null)
             if (!stats.buildings.ContainsKey(b.buildingName))
             {
                 stats.buildings[b.buildingName] = 1;
@@ -334,13 +336,12 @@ public class GameState : MonoBehaviour
     }
 
 
-
-
     private void ProcessBuildings()
     {
 
-        foreach (Building b in planet.placedBuildings)
+        for (int i = planet.placedBuildings.Count-1;i >=0;i--)        
         {
+            Building b = planet.placedBuildings[i];
             b.AffectState();
         }
 

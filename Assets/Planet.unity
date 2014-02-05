@@ -2795,6 +2795,8 @@ MonoBehaviour:
   prefabHelpButton: {fileID: 11400000, guid: 7d51a358e4043d94887045ff5aa5f8f4, type: 2}
   buildButton: {fileID: 1007324160}
   researchButton: {fileID: 949712591}
+  buildingBackButton: {fileID: 1347934695}
+  researchBackButton: {fileID: 904865018}
   pauseResearchButton: {fileID: 1947920064}
   cancelResearchButton: {fileID: 1403343848}
   scanButton: {fileID: 1075893538}
@@ -3147,6 +3149,7 @@ MonoBehaviour:
   delayBeforeStarting: 0
   startValue: {x: 200, y: 165}
   endValue: {x: 200, y: 300}
+  direction: 0
 --- !u!1 &852801659
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,7 +3404,7 @@ MonoBehaviour:
   pressedSprite: scifi_button_down
   state: 0
   group: {fileID: 0}
-  text: Back
+  text: <Back
   textAlign: 1
   vertAlign: 1
   normalColor:
@@ -4408,6 +4411,7 @@ MonoBehaviour:
   delayBeforeStarting: 0
   startValue: {x: 200, y: 165}
   endValue: {x: 250, y: 445}
+  direction: 0
 --- !u!114 &990011016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7549,6 +7553,7 @@ MonoBehaviour:
   endValue:
     serializedVersion: 2
     rgba: 4294967295
+  direction: 0
 --- !u!65 &1510664599
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -9219,6 +9224,7 @@ MonoBehaviour:
   delayBeforeStarting: 0
   startValue: {x: 250, y: 445}
   endValue: {x: 200, y: 165}
+  direction: 0
 --- !u!114 &1853368582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9293,6 +9299,7 @@ MonoBehaviour:
   delayBeforeStarting: 0
   startValue: {x: 200, y: 300}
   endValue: {x: 200, y: 165}
+  direction: 0
 --- !u!1 &1919498804
 GameObject:
   m_ObjectHideFlags: 0

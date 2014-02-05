@@ -20,7 +20,7 @@ public class SpaceBuilding : Building {
         if (supplyFacility == null)
         {
             print("Supply facilitiy destroyed!");
-            Destroy(this.gameObject);
+            state.planet.RemoveBuilding(this);
         }
         if (isEnabled && !supplyFacility.isEnabled)
         {
