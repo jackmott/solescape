@@ -45,8 +45,18 @@ public class dfObservableProperty : IObservableValue
 
 	internal dfObservableProperty( object target, string memberName )
 	{
-			
+
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
+#if UNITY_EDITOR || !UNITY_WP8
 		var member = target.GetType().GetMember( memberName, BindingFlags.Public | BindingFlags.Instance ).FirstOrDefault();
+#else
+		var member = target.GetType().GetMember( memberName ).FirstOrDefault();
+#endif
 		if( member == null )
 			throw new ArgumentException( "Invalid property or field name: " + memberName, "memberName" );
 

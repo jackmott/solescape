@@ -48,6 +48,7 @@ public class dfDragHandle : dfControl
 	{
 
 		GetRootContainer().BringToFront();
+		Parent.BringToFront();
 
 		args.Use();
 

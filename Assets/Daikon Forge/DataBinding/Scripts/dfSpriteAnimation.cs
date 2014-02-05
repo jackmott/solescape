@@ -15,19 +15,6 @@ using UnityEngine;
 public class dfSpriteAnimation : dfTweenPlayableBase
 {
 
-	#region Public enumerations
-
-	/// <summary>
-	/// Indicates the direction that the animation should play in 
-	/// </summary>
-	public enum PlayDirection : int
-	{
-		Forward = 0,
-		Reverse = 1
-	}
-
-	#endregion
-
 	#region Events
 
 #pragma warning disable 0067
@@ -90,7 +77,7 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 	private bool skipToEndOnStop = false;
 
 	[SerializeField]
-	private PlayDirection playDirection = PlayDirection.Forward;
+	private dfPlayDirection playDirection = dfPlayDirection.Forward;
 
 	#endregion
 
@@ -141,7 +128,7 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 		set { this.loopType = value; }
 	}
 
-	public PlayDirection Direction
+	public dfPlayDirection Direction
 	{
 		get { return this.playDirection; }
 		set { this.playDirection = value; if( this.IsPlaying ) this.Play(); }
@@ -190,7 +177,7 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 	/// </summary>
 	public void PlayForward()
 	{
-		this.playDirection = PlayDirection.Forward;
+		this.playDirection = dfPlayDirection.Forward;
 		this.Play();
 	}
 
@@ -200,7 +187,7 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 	/// </summary>
 	public void PlayReverse()
 	{
-		this.playDirection = PlayDirection.Reverse;
+		this.playDirection = dfPlayDirection.Reverse;
 		this.Play();
 	}
 
@@ -359,7 +346,17 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 		if( target == null )
 			throw new NullReferenceException( "Target is null" );
 
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
+#if UNITY_EDITOR || !UNITY_WP8
 		var members = target.GetType().GetMember( property, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+#else
+		var members = target.GetType().GetMember( property );
+#endif
 		if( members == null || members.Length == 0 )
 			throw new IndexOutOfRangeException( "Property not found: " + property );
 
@@ -393,7 +390,7 @@ public class dfSpriteAnimation : dfTweenPlayableBase
 		onStarted();
 
 		var startTime = Time.realtimeSinceStartup;
-		var direction = ( this.playDirection == PlayDirection.Forward ) ? 1 : -1;
+		var direction = ( this.playDirection == dfPlayDirection.Forward ) ? 1 : -1;
 		var lastFrameIndex = ( direction == 1 ) ? 0 : clip.Sprites.Count - 1;
 
 		setFrame( lastFrameIndex );

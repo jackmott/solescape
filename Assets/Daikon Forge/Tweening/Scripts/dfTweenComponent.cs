@@ -63,6 +63,9 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 	[SerializeField]
 	protected T endValue;
 
+	[SerializeField]
+	protected dfPlayDirection direction = dfPlayDirection.Forward;
+
 	#endregion
 
 	#region Public properties
@@ -130,10 +133,7 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 		if( !target.IsValid )
 			throw new InvalidOperationException( "Invalid property binding configuration on " + getPath( gameObject.transform ) + " - " + target );
 
-		if( boundProperty == null )
-			boundProperty = target.GetProperty();
-
-		StartCoroutine( Execute( boundProperty ) );
+		StartCoroutine( Execute( boundProperty = target.GetProperty() ) );
 
 	}
 

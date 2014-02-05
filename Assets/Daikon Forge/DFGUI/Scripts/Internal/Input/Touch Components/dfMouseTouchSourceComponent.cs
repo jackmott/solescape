@@ -5,7 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
-[AddComponentMenu( "Daikon Forge/Input/Simulate Touch with Mouse" )]
+[AddComponentMenu( "Daikon Forge/Input/Debugging/Simulate Touch with Mouse" )]
 public class dfMouseTouchSourceComponent : dfTouchInputSourceComponent
 {
 

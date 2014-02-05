@@ -994,7 +994,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 		{
 			Destroy( popup.gameObject );
 			popup = null;
-			return;
+			return;	
 		}
 
 		bool overridden = false;
@@ -1005,7 +1005,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 		if( !overridden )
 		{
-			overridden = Signal( "OnDropdownClose", this, popup );
+			Signal( "OnDropdownClose", this, popup );
 		}
 
 		if( !overridden )
@@ -1085,7 +1085,6 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 		// By the time this event fires the SelectedIndex value has already been 
 		// synchronized, so just close the popup
-		ClosePopup();
 		this.Focus();
 	}
 

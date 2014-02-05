@@ -113,7 +113,7 @@ public class dfSpriteAnimationInspector : Editor
 				animation.Length = length;
 			}
 
-			var direction = (dfSpriteAnimation.PlayDirection)EditorGUILayout.EnumPopup( "Direction", animation.Direction );
+			var direction = (dfPlayDirection)EditorGUILayout.EnumPopup( "Direction", animation.Direction );
 			if( direction != animation.Direction )
 			{
 				dfEditorUtil.MarkUndo( target, "Change play direction" );

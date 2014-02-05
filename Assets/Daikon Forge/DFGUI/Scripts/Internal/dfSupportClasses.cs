@@ -526,13 +526,7 @@ public static class ReflectionExtensions
 
 			#region First try to find a MethodInfo with the exact signature
 
-			var handlerWithParams = component.GetType().GetMethod(
-				messageName,
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-				null,
-				paramTypes,
-				null
-			);
+			var handlerWithParams = getMethod( component.GetType(), messageName, paramTypes );
 
 			IEnumerator coroutine = null;
 
@@ -561,13 +555,7 @@ public static class ReflectionExtensions
 
 			#region Look for a parameterless method with the given name
 
-			var handlerWithoutParams = component.GetType().GetMethod(
-				messageName,
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-				null,
-				ReflectionExtensions.EmptyTypes,
-				null
-			);
+			var handlerWithoutParams = getMethod( component.GetType(), messageName, ReflectionExtensions.EmptyTypes );
 
 			if( handlerWithoutParams != null )
 			{
@@ -593,6 +581,65 @@ public static class ReflectionExtensions
 
 	}
 
+	private static MethodInfo getMethod( System.Type type, string name, System.Type[] paramTypes )
+	{
+
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
+#if UNITY_EDITOR || !UNITY_WP8
+
+		var method = type.GetMethod(
+			name,
+			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+			null,
+			paramTypes,
+			null
+		);
+
+		return method;
+
+#else
+
+			var methods = type.GetMethods();
+			for( int i = 0; i < methods.Length; i++ )
+			{
+
+				var info = methods[ i ];
+				if( info.IsStatic || info.Name != name )
+					continue;
+
+				if( matchesParameterTypes( info, paramTypes ) )
+					return info;
+
+			}
+
+			return null;
+
+#endif
+
+	}
+
+	private static bool matchesParameterTypes( MethodInfo method, Type[] types )
+	{
+
+		var parameters = method.GetParameters();
+		if( parameters.Length != types.Length )
+			return false;
+
+		for( int i = 0; i < types.Length; i++ )
+		{
+			if( !parameters[ i ].ParameterType.IsAssignableFrom( types[ i ] ) )
+				return false;
+		}
+
+		return true;
+
+	}
+
 	/// <summary>
 	/// Returns all instance fields on an object, including inherited fields
 	/// </summary>
@@ -603,6 +650,8 @@ public static class ReflectionExtensions
 
 		if( type == null )
 			return new FieldInfo[ 0 ];
+
+#if UNITY_EDITOR || !UNITY_WP8
 
 		BindingFlags flags = 
 			BindingFlags.Public | 
@@ -615,6 +664,22 @@ public static class ReflectionExtensions
 			.Concat( GetAllFields( type.GetBaseType() ) )
 			.Where( f => !f.IsDefined( typeof( HideInInspector ), true ) )
 			.ToArray();
+
+#else
+
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions of Unity on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
+		return
+			type.GetFields()
+			.Concat( GetAllFields( type.GetBaseType() ) )
+			.Where( f => !f.IsDefined( typeof( HideInInspector ), true ) )
+			.ToArray();
+
+#endif
 
 	}
 

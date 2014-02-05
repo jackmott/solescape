@@ -122,11 +122,21 @@ public class dfDataObjectProxy : MonoBehaviour, IDataBindingComponent
 	public Type GetPropertyType( string PropertyName )
 	{
 
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
 		var type = this.DataType;
 		if( type == null )
 			return null;
 
+#if UNITY_EDITOR || !UNITY_WP8
 		var member = type.GetMember( PropertyName, BindingFlags.Public | BindingFlags.Instance ).FirstOrDefault();
+#else
+		var member = type.GetMember( PropertyName ).FirstOrDefault();
+#endif
 		if( member is FieldInfo )
 		{
 			return ( (FieldInfo)member ).FieldType;

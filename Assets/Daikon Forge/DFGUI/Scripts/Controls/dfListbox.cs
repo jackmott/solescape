@@ -877,7 +877,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		// Return the difference between design resolution and current resolution
 		if( textScaleMode == dfTextScaleMode.ScreenResolution )
 		{
-			return (float)Screen.height / (float)manager.FixedHeight;
+			return (float)Screen.height / (float)cachedManager.FixedHeight;
 		}
 
 		// Return scale based on control size

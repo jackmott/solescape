@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpaceStation : Building
+public class SpaceStation : SpaceBuilding
 {
 
 
-
-    public Vector3 rotateAngle;
 
 
     public override string StatsText()
@@ -18,14 +16,7 @@ public class SpaceStation : Building
         return stats;
     }
   
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-        placed = true;
-
-    }
-
+   
     protected override void FixedUpdate()
     {
         float distance = (transform.position - state.planet.transform.position).magnitude;
@@ -85,15 +76,14 @@ public class SpaceStation : Building
         }
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
-    }
+ 
 
     public override void AffectState()
     {
-        if (!placed)
+        base.AffectState();
+
+       
+        if (!placed || !isEnabled)
             return;
 
         

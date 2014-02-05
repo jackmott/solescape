@@ -14,6 +14,15 @@ using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
+/// Indicates the direction that the animation should play in 
+/// </summary>
+public enum dfPlayDirection : int
+{
+	Forward = 0,
+	Reverse = 1
+}
+
+/// <summary>
 /// Specifies how auto-scaling of text will be determined
 /// </summary>
 public enum dfTextScaleMode

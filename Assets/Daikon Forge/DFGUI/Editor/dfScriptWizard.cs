@@ -633,14 +633,16 @@ public class @ClassName : MonoBehaviour
 		private string getTypeName( Type type )
 		{
 
+			var prefix = type.IsByRef ? "ref " : string.Empty;
+
 			if( !type.FullName.StartsWith( "System." ) )
-				return type.Name;
+				return prefix + type.Name;
 
 			var shortName = "";
-			if( typeMap.TryGetValue( type.FullName, out shortName ) )
-				return shortName;
+			if( typeMap.TryGetValue( type.FullName.Replace( "&", "" ), out shortName ) )
+				return prefix + shortName;
 
-			return type.Name;
+			return prefix + type.Name;
 
 		}
 

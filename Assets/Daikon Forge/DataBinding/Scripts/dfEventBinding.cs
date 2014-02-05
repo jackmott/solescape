@@ -39,6 +39,7 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	private Component sourceComponent;
 	private Component targetComponent;
 
+	private EventInfo eventInfo;
 	private FieldInfo eventField;
 	private Delegate eventDelegate;
 	private MethodInfo handlerProxy;
@@ -98,50 +99,17 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 			return;
 		}
 
-		eventField = getField( sourceComponent, DataSource.MemberName );
-		if( eventField == null )
+		if( bindToEventProperty( eventHandler ) )
 		{
-			Debug.LogError( "Event definition not found: " + sourceComponent.GetType().Name + "." + DataSource.MemberName );
+			isBound = true;
 			return;
 		}
 
-		try
+		if( bindToEventField( eventHandler ) )
 		{
-
-			var eventMethod = eventField.FieldType.GetMethod( "Invoke" );
-			var eventParams = eventMethod.GetParameters();
-			var handlerParams = eventHandler.GetParameters();
-
-			var needProxyDelegate =
-				( eventParams.Length != handlerParams.Length ) ||
-				( eventMethod.ReturnType != eventHandler.ReturnType );
-
-			if( !needProxyDelegate )
-			{
-#if !UNITY_EDITOR && UNITY_METRO
-				eventDelegate = eventHandler.CreateDelegate( eventField.FieldType, targetComponent );
-#else
-				eventDelegate = Delegate.CreateDelegate( eventField.FieldType, targetComponent, eventHandler, true );
-#endif
-			}
-			else 
-			{
-				eventDelegate = createEventProxyDelegate( targetComponent, eventField.FieldType, eventParams, eventHandler );
-			}
-
-		}
-		catch( Exception err )
-		{
-			this.enabled = false;
-			var errMessage = string.Format( "Event binding failed - Failed to create event handler for {0} ({1}) - {2}", DataSource, eventHandler, err.ToString() );
-			Debug.LogError( errMessage, this );
+			isBound = true;
 			return;
 		}
-
-		var combinedDelegate = Delegate.Combine( eventDelegate, (Delegate)eventField.GetValue( sourceComponent ) );
-		eventField.SetValue( sourceComponent, combinedDelegate );
-
-		isBound = true;
 
 	}
 
@@ -156,11 +124,20 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 
 		isBound = false;
 
-		var currentDelegate = (Delegate)eventField.GetValue( sourceComponent );
-		var newDelegate = Delegate.Remove( currentDelegate, eventDelegate );
-		eventField.SetValue( sourceComponent, newDelegate );
+		if( eventField != null )
+		{
+			var currentDelegate = (Delegate)eventField.GetValue( sourceComponent );
+			var newDelegate = Delegate.Remove( currentDelegate, eventDelegate );
+			eventField.SetValue( sourceComponent, newDelegate );
+		}
+		else if( eventInfo != null )
+		{
+			var removeMethod = eventInfo.GetRemoveMethod();
+			removeMethod.Invoke( sourceComponent, new object[] { eventDelegate } );
+		}
 
-		eventField = null;
+		eventInfo = null;
+		eventField = null; 
 		eventDelegate = null;
 		handlerProxy = null;
 
@@ -193,8 +170,16 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 
 	#region Proxy event handlers
 
+	[HideInInspector]
 	[dfEventProxy]
-	private void GenericCallbackProxy( object sender )
+	public void NotificationEventProxy()
+	{
+		callProxyEventHandler();
+	}
+
+	[HideInInspector]
+	[dfEventProxy]
+	public void GenericCallbackProxy( object sender )
 	{
 		callProxyEventHandler( sender );
 	}
@@ -203,8 +188,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	///  definition for tween events
 	/// </summary>
 	/// <param name="tween">The <see cref="dfTweenPlayableBase"/> instance which is raising the event</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void AnimationEventProxy( dfTweenPlayableBase tween )
+	public void AnimationEventProxy( dfTweenPlayableBase tween )
 	{
 		callProxyEventHandler( tween );
 	}
@@ -214,8 +200,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	/// <param name="control">The <see cref="dfControl"/> instance which is currently notified of the event</param>
 	/// <param name="mouseEvent">Contains information about the user mouse operation that triggered the event</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void MouseEventProxy( dfControl control, dfMouseEventArgs mouseEvent )
+	public void MouseEventProxy( dfControl control, dfMouseEventArgs mouseEvent )
 	{
 		callProxyEventHandler( control, mouseEvent );
 	}
@@ -225,8 +212,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="keyEvent">Contains information about the user keyboard operation that triggered the event</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void KeyEventProxy( dfControl control, dfKeyEventArgs keyEvent )
+	public void KeyEventProxy( dfControl control, dfKeyEventArgs keyEvent )
 	{
 		callProxyEventHandler( control, keyEvent );
 	}
@@ -236,8 +224,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="keyEvent">Contains information about the drag and drop operation that triggered the event</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void DragEventProxy( dfControl control, dfDragEventArgs dragEvent )
+	public void DragEventProxy( dfControl control, dfDragEventArgs dragEvent )
 	{
 		callProxyEventHandler( control, dragEvent );
 	}
@@ -247,8 +236,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	/// <param name="container">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="child">A reference to the child control that was added to or removed from the container</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void ChildControlEventProxy( dfControl container, dfControl child )
+	public void ChildControlEventProxy( dfControl container, dfControl child )
 	{
 		callProxyEventHandler( container, child );
 	}
@@ -259,8 +249,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="args">Contains information about the focus change event, including a reference to which control
 	/// (if any) lost focus and which control (if any) obtained input focus</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void FocusEventProxy( dfControl control, dfFocusEventArgs args )
+	public void FocusEventProxy( dfControl control, dfFocusEventArgs args )
 	{
 		callProxyEventHandler( control, args );
 	}
@@ -271,8 +262,22 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, int value )
+	public void PropertyChangedProxy( dfControl control, int value )
+	{
+		callProxyEventHandler( control, value );
+	}
+
+	/// <summary>
+		/// Delegate definition for control property change events
+	/// </summary>
+	/// <typeparam name="T">The data type of the property that has changed</typeparam>
+	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
+	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
+	[dfEventProxy]
+	public void PropertyChangedProxy( dfControl control, float value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -283,8 +288,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, float value )
+	public void PropertyChangedProxy( dfControl control, bool value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -295,8 +301,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, bool value )
+	public void PropertyChangedProxy( dfControl control, string value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -307,8 +314,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, string value )
+	public void PropertyChangedProxy( dfControl control, Vector2 value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -319,8 +327,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Vector2 value )
+	public void PropertyChangedProxy( dfControl control, Vector3 value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -331,8 +340,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Vector3 value )
+	public void PropertyChangedProxy( dfControl control, Vector4 value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -343,8 +353,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Vector4 value )
+	public void PropertyChangedProxy( dfControl control, Quaternion value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -355,8 +366,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Quaternion value )
+	public void PropertyChangedProxy( dfControl control, dfButton.ButtonState value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -367,8 +379,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, dfButton.ButtonState value )
+	public void PropertyChangedProxy( dfControl control, dfPivotPoint value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -379,8 +392,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, dfPivotPoint value )
+	public void PropertyChangedProxy( dfControl control, Texture value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -391,8 +405,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Texture value )
+	public void PropertyChangedProxy( dfControl control, Texture2D value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -403,20 +418,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// <typeparam name="T">The data type of the property that has changed</typeparam>
 	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
 	/// <param name="value">The new value of the associated property</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Texture2D value )
-	{
-		callProxyEventHandler( control, value );
-	}
-
-	/// <summary>
-	/// Delegate definition for control property change events
-	/// </summary>
-	/// <typeparam name="T">The data type of the property that has changed</typeparam>
-	/// <param name="control">The <see cref="dfControl"/> instance for which the event was generated</param>
-	/// <param name="value">The new value of the associated property</param>
-	[dfEventProxy]
-	private void PropertyChangedProxy( dfControl control, Material value )
+	public void PropertyChangedProxy( dfControl control, Material value )
 	{
 		callProxyEventHandler( control, value );
 	}
@@ -426,8 +430,9 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	/// <param name="sender">Should contain a reference to the object which raised the event</param>
 	/// <param name="args">The EventArgs (or descendent type) that contains information about the specific event</param>
+	[HideInInspector]
 	[dfEventProxy]
-	private void SystemEventHandlerProxy( object sender, EventArgs args )
+	public void SystemEventHandlerProxy( object sender, EventArgs args )
 	{
 		callProxyEventHandler( sender, args );
 	}
@@ -435,6 +440,105 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	#endregion
 
 	#region Private utility methods
+
+	private bool bindToEventField( MethodInfo eventHandler )
+	{
+
+		eventField = getField( sourceComponent, DataSource.MemberName );
+		if( eventField == null )
+		{
+			return false;
+		}
+
+		try
+		{
+
+			var eventMethod = eventField.FieldType.GetMethod( "Invoke" );
+			var eventParams = eventMethod.GetParameters();
+			var handlerParams = eventHandler.GetParameters();
+
+			var needProxyDelegate =
+				( eventParams.Length != handlerParams.Length ) ||
+				( eventMethod.ReturnType != eventHandler.ReturnType );
+
+			if( !needProxyDelegate )
+			{
+#if !UNITY_EDITOR && UNITY_METRO
+				eventDelegate = eventHandler.CreateDelegate( eventField.FieldType, targetComponent );
+#else
+				eventDelegate = Delegate.CreateDelegate( eventField.FieldType, targetComponent, eventHandler, true );
+#endif
+			}
+			else
+			{
+				eventDelegate = createEventProxyDelegate( targetComponent, eventField.FieldType, eventParams, eventHandler );
+			}
+
+			var combinedDelegate = Delegate.Combine( eventDelegate, (Delegate)eventField.GetValue( sourceComponent ) );
+			eventField.SetValue( sourceComponent, combinedDelegate );
+
+		}
+		catch( Exception err )
+		{
+			this.enabled = false;
+			var errMessage = string.Format( "Event binding failed - Failed to create event handler for {0} ({1}) - {2}", DataSource, eventHandler, err.ToString() );
+			Debug.LogError( errMessage, this );
+			return false;
+		}
+
+		return true;
+
+	}
+
+	private bool bindToEventProperty( MethodInfo eventHandler )
+	{
+
+		eventInfo = sourceComponent.GetType().GetEvent( DataSource.MemberName );
+		if( eventInfo == null )
+			return false;
+
+		try
+		{
+
+			var eventDelegateType = eventInfo.EventHandlerType;
+			var addMethod = eventInfo.GetAddMethod();
+
+			var eventMethod = eventDelegateType.GetMethod( "Invoke" );
+			var eventParams = eventMethod.GetParameters();
+			var handlerParams = eventHandler.GetParameters();
+
+			var needProxyDelegate =
+				( eventParams.Length != handlerParams.Length ) ||
+				( eventMethod.ReturnType != eventHandler.ReturnType );
+
+			if( !needProxyDelegate )
+			{
+#if !UNITY_EDITOR && UNITY_METRO
+				eventDelegate = eventHandler.CreateDelegate( eventDelegateType, targetComponent );
+#else
+				eventDelegate = Delegate.CreateDelegate( eventDelegateType, targetComponent, eventHandler, true );
+#endif
+
+			}
+			else
+			{
+				eventDelegate = createEventProxyDelegate( targetComponent, eventDelegateType, eventParams, eventHandler );
+			}
+
+			addMethod.Invoke( DataSource.Component, new object[] { eventDelegate } );
+
+		}
+		catch( Exception err )
+		{
+			this.enabled = false;
+			var errMessage = string.Format( "Event binding failed - Failed to create event handler for {0} ({1}) - {2}", DataSource, eventHandler, err.ToString() );
+			Debug.LogError( errMessage, this );
+			return false;
+		}
+
+		return true;
+
+	}
 
 	private void callProxyEventHandler( params object[] arguments )
 	{
@@ -477,7 +581,11 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	{
 
 		var proxyMethod = typeof( dfEventBinding )
-			.GetMethods( BindingFlags.NonPublic | BindingFlags.Instance )
+#if UNITY_EDITOR || !UNITY_WP8
+			.GetMethods( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance )
+#else
+			.GetMethods()
+#endif
 			.Where( m =>
 				m.IsDefined( typeof( dfEventProxyAttribute ), true ) &&
 				signatureIsCompatible( eventParams, m.GetParameters() )

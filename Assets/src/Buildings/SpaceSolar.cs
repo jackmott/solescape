@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpaceSolar : Building
+public class SpaceSolar : SpaceBuilding
 {
 
 
-    public Vector3 rotateAngle;
+  
 
     public override string StatsText()
     {
@@ -16,19 +16,15 @@ public class SpaceSolar : Building
         return stats;
     }
 
-    // Use this for initialization
-    protected override void Start()
-    {
-        base.Start();
-        placed = true;
-
-    }
+    
 
     public override void AffectState()
     {
+        base.AffectState();
+
         if (!placed || !isEnabled)
             return;
-
+        
         //check if we are in sunlight        
         float energyProduction = state.sunFactor * energy;
         lastEnergy = energyProduction;
@@ -65,11 +61,6 @@ public class SpaceSolar : Building
 
     }
 
-    // Update is called once per frame
-    protected override void Update()
-    {
-        base.Update();
-    }
-
+   
    
 }

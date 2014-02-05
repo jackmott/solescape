@@ -686,12 +686,13 @@ public class dfLabel : dfControl, IDFMultiRender
 
 	}
 
+	[HideInInspector]
 	public override void Invalidate()
 	{
 		
 		base.Invalidate();
 
-		if( this.Font == null || !this.Font.IsValid )
+		if( this.Font == null || !this.Font.IsValid || GetManager() == null )
 			return;
 
 		// We want to calculate the dfLabel's size *before* rendering or 
@@ -801,7 +802,7 @@ public class dfLabel : dfControl, IDFMultiRender
 		// Return the difference between design resolution and current resolution
 		if( textScaleMode == dfTextScaleMode.ScreenResolution )
 		{
-			return (float)Screen.height / (float)manager.FixedHeight;
+			return (float)Screen.height / (float)GetManager().FixedHeight;
 		}
 
 		// Cannot scale by control size if AutoSize is enabled
@@ -917,28 +918,22 @@ public class dfLabel : dfControl, IDFMultiRender
 			// pre-rendered data
 			if( !isControlInvalidated )
 			{
+
+				//@Profiler.BeginSample( "Re-using existing render buffers" );
+
 				for( int i = 0; i < buffers.Count; i++ )
 				{
 					buffers[ i ].Transform = transform.localToWorldMatrix;
 				}
+
+				//@Profiler.EndSample();
+
 				return buffers;
+
 			}
 
-			#region Prepare render buffers
-
-			buffers.Clear();
-
-			renderData.Clear();
-			renderData.Material = Atlas.Material;
-			renderData.Transform = this.transform.localToWorldMatrix;
-			buffers.Add( renderData );
-
-			textRenderData.Clear();
-			textRenderData.Material = Atlas.Material;
-			textRenderData.Transform = this.transform.localToWorldMatrix;
-			buffers.Add( textRenderData );
-
-			#endregion
+			// Clear the render buffers
+			resetRenderBuffers();
 
 			// Render the background sprite, if there is one
 			renderBackground();
@@ -981,6 +976,35 @@ public class dfLabel : dfControl, IDFMultiRender
 		{
 			this.isControlInvalidated = false;
 			//@Profiler.EndSample();
+		}
+
+	}
+
+	private void resetRenderBuffers()
+	{
+
+		buffers.Clear();
+
+		if( renderData != null )
+		{
+			
+			renderData.Clear();
+			renderData.Material = Atlas.Material;
+			renderData.Transform = this.transform.localToWorldMatrix;
+			
+			buffers.Add( renderData );
+
+		}
+
+		if( textRenderData != null )
+		{
+			
+			textRenderData.Clear();
+			textRenderData.Material = Atlas.Material;
+			textRenderData.Transform = this.transform.localToWorldMatrix;
+		
+			buffers.Add( textRenderData );
+
 		}
 
 	}

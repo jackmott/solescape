@@ -300,7 +300,7 @@ public class EventBindingEditor : Editor
 	{
 
 		var proxyMethod = typeof( dfEventBinding )
-			.GetMethods( BindingFlags.NonPublic | BindingFlags.Instance )
+			.GetMethods( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance )
 			.Where( m =>
 				m.IsDefined( typeof( dfEventProxyAttribute ), true ) &&
 				signatureIsCompatible( lhs, m.GetParameters(), false )

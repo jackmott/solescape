@@ -97,9 +97,19 @@ public class dfComponentMemberInfo
 	public MethodInfo GetMethod()
 	{
 
+		// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+		// method overloads that take a BindingFlags parameter to throw a runtime exception.
+		// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+		// versions of Unity on the Windows Phone platform, and that some functionality 
+		// will unfortunately be lost.
+
 		var member = Component
 			.GetType()
+#if UNITY_EDITOR || !UNITY_WP8
 			.GetMember( MemberName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance )
+#else
+			.GetMember( MemberName )
+#endif
 			.FirstOrDefault() as MethodInfo;
 
 		return member;

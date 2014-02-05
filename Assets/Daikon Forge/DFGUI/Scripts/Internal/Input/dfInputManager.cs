@@ -59,7 +59,7 @@ public class dfInputManager : MonoBehaviour
 	protected bool retainFocus = false;
 
 	[SerializeField]
-	protected int touchClickRadius = 20;
+	protected int touchClickRadius = 25;
 
 	#endregion
 
@@ -113,6 +113,7 @@ public class dfInputManager : MonoBehaviour
 	/// Gets or sets the radius within which a touch and subsequent release
 	/// on the same control will be treated as a click. Releasing the 
 	/// touch outside of this radius will not result in a Click event.
+	/// Setting this value to 0 will disable enforcement of the click radius.
 	/// </summary>
 	public int TouchClickRadius
 	{
@@ -1034,8 +1035,16 @@ public class dfInputManager : MonoBehaviour
 						// then raise the OnMouseDown event
 						if( info.Phase == TouchPhase.Began )
 						{
+
 							capture.Add( info.FingerID );
+							controlStartPosition = control.transform.position;
+
 							control.OnMouseDown( info );
+
+							// Prevent "click-through"
+							if( Event.current != null )
+								Event.current.Use();
+
 						}
 
 						return true;

@@ -36,10 +36,11 @@ public class LaunchFacility : Building
                         if (state.HasEnoughEnergyFor(bi.cost))
                         {
                             state.AddEnergy(-bi.cost);
-                            Vector3 launchVector = transform.position;
+                            Vector3 launchVector = transform.position;                            
                             GameObject launchObject = (GameObject)Instantiate(Resources.Load("prefabs/buildings/" + bi.className), launchVector, transform.rotation);
                             launchObject.transform.parent = state.planet.transform;
-                            Building b = launchObject.GetComponent<Building>();
+                            SpaceBuilding b = launchObject.GetComponent<SpaceBuilding>();
+                            b.supplyFacility = this;
                             state.planet.placedBuildings.Add(b);
                             showGui = false;
                         }

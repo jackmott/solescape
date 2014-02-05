@@ -166,6 +166,7 @@
      <Compile Include="Assets\src\Buildings\RecyclingCenter.cs" />
      <Compile Include="Assets\src\Buildings\SETITelescope.cs" />
      <Compile Include="Assets\src\Buildings\SolarArray.cs" />
+     <Compile Include="Assets\src\Buildings\SpaceBuilding.cs" />
      <Compile Include="Assets\src\Buildings\SpaceSolar.cs" />
      <Compile Include="Assets\src\Buildings\SpaceStation.cs" />
      <Compile Include="Assets\src\Buildings\University.cs" />

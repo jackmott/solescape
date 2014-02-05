@@ -412,6 +412,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		this.Text = getLocalizedValue( this.text );
 	}
 
+	[HideInInspector]
 	public override void Invalidate()
 	{
 		base.Invalidate();
@@ -722,7 +723,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 				buffers[ i ].Transform = transform.localToWorldMatrix;
 			}
 
-			//@Profiler.EndSample();
+			Profiler.EndSample();
 
 			return this.buffers;
 
@@ -749,7 +750,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			//@Profiler.BeginSample( "Gather markup render buffers" );
 			buffers.Clear();
 			gatherRenderBuffers( viewportBox, this.buffers );
-			//@Profiler.EndSample();
+			Profiler.EndSample();
 
 			return this.buffers;
 
@@ -757,7 +758,8 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		finally
 		{
 			this.isControlInvalidated = false;
-			//@Profiler.EndSample();
+			Profiler.EndSample();
+			updateCollider();
 		}
 
 	}
@@ -828,7 +830,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 				child.PerformLayout( viewportBox, style );
 			}
 		}
-		//@Profiler.EndSample();
+		Profiler.EndSample();
 
 	}
 
@@ -841,7 +843,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		// Return the difference between design resolution and current resolution
 		if( textScaleMode == dfTextScaleMode.ScreenResolution )
 		{
-			return (float)Screen.height / (float)manager.FixedHeight;
+			return (float)Screen.height / (float)cachedManager.FixedHeight;
 		}
 
 		return Size.y / startSize.y;
@@ -1023,7 +1025,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		renderData.Material = material;
 		renderData.Transform = matrix;
 
-		//@Profiler.EndSample();
+		Profiler.EndSample();
 
 	}
 

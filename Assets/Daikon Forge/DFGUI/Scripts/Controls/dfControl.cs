@@ -59,7 +59,7 @@ using UnityColor32 = UnityEngine.Color32;
 /// </pre>
 /// </para>
 /// <h4>Reflection-based events</h4>
-/// <para>A script component which is attached to the same cachedGameObject as a control component
+/// <para>A script component which is attached to the same this.gameObject as a control component
 /// can also subscribe to events using a reflection-based model which involves creating an
 /// appropriately-named method for the desired event which follows a specific pattern.</para>
 /// <para>Such methods must be named On{XXX}, where {XXX} represents the name of the desired
@@ -341,7 +341,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 	[HideInInspector]
 	[SerializeField]
-	protected int zindex = -1;
+	public int zindex = -1;
 
 	[SerializeField]
 	protected Color32 color = new Color32( 255, 255, 255, 255 );
@@ -425,7 +425,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	/// The <see cref="dfGUIManager"/> instance which is responsible for rendering this control
 	/// </summary>
 	// @private
-	protected dfGUIManager manager = null;
+	protected dfGUIManager cachedManager = null;
 
 	/// <summary>
 	/// The <see cref="dfLanguageManager"/> instance which is responsible for returning
@@ -476,7 +476,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	/// to invalidate control relationships and layouts. While the
 	/// updateControlHierarchy() method takes care of most of this, it
 	/// cannot detect when a control is reparented to a non-control 
-	/// cachedGameObject (such as the GUI Manager or a pool manager). This is 
+	/// GameObject (such as the GUI Manager or a pool manager). This is 
 	/// generally only useful for dynamically-instantiated objects and 
 	/// prefabs, which might retain invalid layout information between 
 	/// instantiations.
@@ -560,8 +560,6 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	// @private
 	private uint version = 0x00;
 
-	protected GameObject cachedGameObject;
-
 	/// <summary>
 	/// Indicates whether the initializeControl() method has been called.
 	/// </summary>
@@ -589,7 +587,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		get 
 		{
 			if( !enabled ) return false;
-			if( cachedGameObject != null && !cachedGameObject.activeSelf ) return false;
+			if( this.gameObject != null && !this.gameObject.activeSelf ) return false;
 			return parent != null ? isEnabled && parent.IsEnabled : isEnabled; 
 		}
 		set
@@ -1938,7 +1936,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	}
 
 	/// <summary>
-	/// Performs a SendMessage()-like event notification by searching the cachedGameObject
+	/// Performs a SendMessage()-like event notification by searching the this.gameObject
 	/// for components which have a method with the same name as the <paramref name="eventName"/>
 	/// parameter and which have a signature that matches the types in the 
 	/// <paramref name="args"/> array. 
@@ -1948,11 +1946,11 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	/// <returns>Returns TRUE if a matching event handler was found and invoked</returns>
 	protected internal bool Signal( string eventName, params object[] args )
 	{
-		return Signal( this.cachedGameObject, eventName, args );
+		return Signal( this.gameObject, eventName, args );
 	}
 
 	/// <summary>
-	/// Performs a SendMessage()-like event notification by searching the cachedGameObject
+	/// Performs a SendMessage()-like event notification by searching the this.gameObject
 	/// for components which have a method with the same name as the <paramref name="eventName"/>
 	/// parameter and which have a signature that matches the types in the 
 	/// <paramref name="args"/> array. This function will walk up the object hierarchy until
@@ -1978,12 +1976,12 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	}
 
 	/// <summary>
-	/// Performs a SendMessage()-like event notification by searching the cachedGameObject
+	/// Performs a SendMessage()-like event notification by searching the this.gameObject
 	/// for components which have a method with the same name as the <paramref name="eventName"/>
 	/// parameter and which have a signature that matches the types in the 
 	/// <paramref name="args"/> array. 
 	/// </summary>
-	/// <param name="target">The cachedGameObject on which to raise the event</param>
+	/// <param name="target">The this.gameObject on which to raise the event</param>
 	/// <param name="eventName">The name of the method to invoke</param>
 	/// <param name="args">The parameters that will be passed to the method</param>
 	/// <returns>Returns TRUE if a matching event handler was found and invoked</returns>
@@ -2004,7 +2002,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 			// Exit early if there are no attached behaviors or this dfControl is 
 			// the only attached behavior
-			if( components == null || ( target == this.cachedGameObject && components.Length == 1 ) )
+			if( components == null || ( target == this.gameObject && components.Length == 1 ) )
 				return false;
 
 			// Need to ensure that the 'this' pointer is always sent with the 
@@ -2422,7 +2420,8 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		}
 		else
 		{
-			parent.SetControlIndex( this, parent.controls.Count - 1 );
+			this.ZOrder = int.MaxValue;
+			parent.RebuildControlOrder();
 		}
 		Invalidate();
 	}
@@ -2439,7 +2438,8 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		}
 		else
 		{
-			parent.SetControlIndex( this, 0 );
+			this.ZOrder = int.MinValue;
+			parent.RebuildControlOrder();
 		}
 		Invalidate();
 	}
@@ -2473,7 +2473,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 			// dfControl with the isVisible field set to FALSE that controls the
 			// entire heirarchy below it.
 			var controlIsVisible = this.isVisible;
-			var controlIsEnabled = this.enabled && cachedGameObject.activeSelf;
+			var controlIsEnabled = this.enabled && this.gameObject.activeSelf;
 			if( !controlIsVisible || !controlIsEnabled )
 				return null;
 
@@ -2521,6 +2521,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	/// <summary>
 	/// Called when the control needs to rebuild its render information
 	/// </summary>
+	[HideInInspector]
 	public virtual void Invalidate()
 	{
 
@@ -2755,6 +2756,9 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		var bottomLeft = upperLeft + new Vector3( 0, -size.y );
 		var bottomRight = upperRight + new Vector3( 0, -size.y );
 
+		if( cachedCorners == null )
+			cachedCorners = new Vector3[ 4 ];
+
 		cachedCorners[ 0 ] = matrix.MultiplyPoint( upperLeft * p2u );
 		cachedCorners[ 1 ] = matrix.MultiplyPoint( upperRight * p2u );
 		cachedCorners[ 2 ] = matrix.MultiplyPoint( bottomLeft * p2u );
@@ -2818,42 +2822,30 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	public dfGUIManager GetManager()
 	{
 
-		if( cachedGameObject == null )
-			cachedGameObject = this.gameObject;
-
 		// If the view is already cached or there is no way of obtaining
 		// a reference to the view, return the cached value
-		if( manager != null || !cachedGameObject.activeInHierarchy )
-			return manager;
+		if( cachedManager != null || !this.gameObject.activeInHierarchy )
+			return cachedManager;
 
 		// If this dfControl's parent has already done the work of looking
 		// for the Manager, then use that information instead
-		if( parent != null && parent.manager != null )
-			return manager = parent.manager;
+		if( parent != null && parent.cachedManager != null )
+			return cachedManager = parent.cachedManager;
 
 		// Walk up the scene hierarchy looking for the root Manager
-		var loop = this.cachedGameObject;
+		var loop = this.gameObject;
 		while( loop != null )
 		{
 
 			var test = loop.GetComponent<dfGUIManager>();
 			if( test != null )
-				return manager = test;
+				return cachedManager = test;
 
 			if( loop.transform.parent == null )
 				break;
 
 			loop = loop.transform.parent.gameObject;
 
-		}
-
-		// When a prefab is instantiated, it will not have a parent when the
-		// OnEnable() method is called. It is assumed that there is only one
-		// dfGUIManager in the scene.
-		var findView = FindObjectsOfType( typeof( dfGUIManager ) ).FirstOrDefault() as dfGUIManager;
-		if( findView != null )
-		{
-			return manager = findView;
 		}
 
 		return null;
@@ -2972,23 +2964,40 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		var myCollider = collider as BoxCollider;
 		if( myCollider == null )
 		{
-			myCollider = cachedGameObject.AddComponent<BoxCollider>();
+			myCollider = this.gameObject.AddComponent<BoxCollider>();
 		}
 
 		if( Application.isPlaying && !this.isInteractive )
 		{
-			myCollider.enabled = false;
+			
+			if( myCollider.enabled )
+			{
+				myCollider.enabled = false;
+			}
+			
 			return;
+
 		}
 
 		var p2u = PixelsToUnits();
 		var sizeInUnits = size * p2u;
 		var center = pivot.TransformToCenter( sizeInUnits );
+		var colliderSize = new Vector3( sizeInUnits.x * hotZoneScale.x, sizeInUnits.y * hotZoneScale.y, 0.001f );
+		var colliderEnabled = this.enabled && this.IsVisible;
 
-		myCollider.enabled = this.enabled && this.IsVisible;
-		myCollider.isTrigger = false;
-		myCollider.size = new Vector3( sizeInUnits.x * hotZoneScale.x, sizeInUnits.y * hotZoneScale.y, 0.001f );
-		myCollider.center = center;
+		var needsUpdate =
+			myCollider.isTrigger ||
+			myCollider.enabled != colliderEnabled ||
+			!Vector3.Equals( myCollider.size, colliderSize ) ||
+			!Vector3.Equals( myCollider.center, center );
+
+		if( needsUpdate )
+		{
+			myCollider.isTrigger = false;
+			myCollider.enabled = colliderEnabled;
+			myCollider.size = colliderSize;
+			myCollider.center = center;
+		}
 
 	}
 
@@ -3046,9 +3055,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	protected internal virtual void OnPositionChanged()
 	{
 
-		transform.hasChanged = false;
-
-		if( renderData != null )
+		if( renderData != null && !isControlInvalidated )
 		{
 
 			// The dfControl's cached RenderData is still usable, 
@@ -3220,6 +3227,8 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	protected internal virtual void OnIsVisibleChanged()
 	{
 
+		updateCollider();
+
 		// Calculate visibility once to avoid duplication of 
 		// processing (IsVisible walks up the control hierarch).
 		var visible = IsVisible;
@@ -3241,9 +3250,11 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		}
 
 		// IsVisible affects the entire hierarchy below this control
-		for( int i = 0; i < controls.Count; i++ )
+		var children = controls.Items;
+		var childCount = controls.Count;
+		for( int i = 0; i < childCount; i++ )
 		{
-			controls[ i ].OnIsVisibleChanged();
+			children[ i ].OnIsVisibleChanged();
 		}
 
 		#region Support for event-bindable Shown and Hidden events 
@@ -3279,6 +3290,8 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	[HideInInspector]
 	protected internal virtual void OnIsEnabledChanged()
 	{
+
+		updateCollider();
 
 		if( dfGUIManager.ContainsFocus( this ) && !IsEnabled )
 		{
@@ -3453,7 +3466,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 		Gizmos.matrix = Matrix4x4.TRS( transform.position, transform.rotation, transform.localScale );
 
-		if( !UnityEditor.Selection.gameObjects.Contains( cachedGameObject ) )
+		if( !UnityEditor.Selection.gameObjects.Contains( this.gameObject ) )
 		{
 			Gizmos.color = new UnityColor( 0, 0, 0, 0.175f );
 			Gizmos.DrawWireCube( center, size );
@@ -3483,7 +3496,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	public virtual void OnDrawGizmosSelected()
 	{
 
-		if( !UnityEditor.Selection.gameObjects.Contains( cachedGameObject ) )
+		if( !UnityEditor.Selection.gameObjects.Contains( this.gameObject ) )
 		{
 			return;
 		}
@@ -3551,7 +3564,6 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		}
 #endif
 
-		cachedGameObject = this.gameObject;
 		cachedParentTransform = this.transform.parent;
 
 		// HACK: Since anchorStyle is now being serialized on its own, this 
@@ -3581,7 +3593,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	[HideInInspector]
 	public virtual void Start()
 	{
-		cachedGameObject = this.gameObject;
+		// Intended to be overridden
 	}
 
 	/// <summary>
@@ -3591,6 +3603,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	public virtual void OnEnable()
 	{
 
+		// Perform control initialization
 		initializeControl();
 
 		// Localize controls at startup
@@ -3599,6 +3612,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 			Localize();
 		}
 
+		// Notify observers that the control is now enabled
 		OnIsEnabledChanged();
 
 	}
@@ -3706,9 +3720,9 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 		// Let the GUIManager instance responsible for rendering this control
 		// know that it needs to refresh
-		if( manager != null )
+		if( cachedManager != null )
 		{
-			manager.Invalidate();
+			cachedManager.Invalidate();
 		}
 
 		// Make sure the control does not hold on to cached render data
@@ -3719,7 +3733,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 		// Clear references
 		layout = null;
-		manager = null;
+		cachedManager = null;
 		parent = null;
 		cachedClippingPlanes = null;
 		cachedCorners = null;
@@ -3752,6 +3766,10 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	[HideInInspector]
 	public virtual void Update()
 	{
+
+		// Make sure that the control is properly initialized
+		if( !isControlInitialized )
+			initializeControl();
 
 		// Cache the .transform property to avoid repeated calls to the
 		// property get method
@@ -3859,13 +3877,14 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 		var go = new GameObject( ControlType.Name );
 		go.transform.parent = this.transform;
-		go.layer = this.cachedGameObject.layer;
+		go.layer = this.gameObject.layer;
 
 		var position = Size * PixelsToUnits() * 0.5f;
 		go.transform.localPosition = new Vector3( position.x, position.y, 0 );
 
 		var child = go.AddComponent( ControlType ) as dfControl;
 		child.parent = this;
+		child.cachedManager = this.cachedManager;
 		child.zindex = -1;
 
 		AddControl( child );
@@ -3887,6 +3906,13 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 			throw new NullReferenceException( "The child control does not have a Transform" );
 		}
 
+		// Edge case - Some object pooling solutions can create a situation where the parent
+		// pointer is not cleaned up properly.
+		if( child.parent != null && child.parent != this )
+		{
+			child.parent.RemoveControl( child );
+		}
+
 		// Nothing to do if the control is already in the collection
 		if( !controls.Contains( child ) )
 		{
@@ -3894,6 +3920,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 			controls.Add( child );
 			child.parent = this;
 			child.transform.parent = this.transform;
+			child.cachedManager = this.cachedManager;
 			child.cachedParentTransform = this.transform;
 		}
 			
@@ -3917,7 +3944,6 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		// Controls need to update their version number (and therefore clipping
 		// data) and redraw themselves after changing relationships
 		child.Invalidate();
-		this.Invalidate();
 
 	}
 
@@ -4001,25 +4027,15 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	public void RebuildControlOrder()
 	{
 
-		var rebuild = false;
-
 		controls.Sort();
 		for( int i = 0; i < controls.Count; i++ )
 		{
-			if( controls[ i ].ZOrder != i )
+			if( controls[ i ].zindex != i )
 			{
-				rebuild = true;
-				break;
+				var child = controls[ i ];
+				child.zindex = i;
+				child.OnZOrderChanged();
 			}
-		}
-
-		if( !rebuild )
-			return;
-
-		controls.Sort();
-		for( int i = 0; i < controls.Count; i++ )
-		{
-			controls[ i ].zindex = i;
 		}
 
 	}
@@ -4028,10 +4044,29 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 	#region Private utility methods
 
+	/// <summary>
+	/// For internal use only.
+	/// </summary>
+	[HideInInspector]
+	internal void OverrideZOrder( int value )
+	{
+		if( value != zindex )
+		{
+
+			this.zindex = Mathf.Max( -1, value );
+			OnZOrderChanged();
+			
+			if( parent != null )
+				parent.controls.Sort();
+
+		}
+	}
+
 	private void initializeControl()
 	{
 
-		cachedGameObject = this.gameObject;
+		if( GetManager() == null )
+			return;
 
 		if( transform.parent != null || cachedParentTransform != transform.parent )
 		{
@@ -4068,7 +4103,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 // Too many active RigidBody components gives Windows Metro the falling fits
 #if UNITY_EDITOR || !UNITY_METRO
 
-			var rigidBody = cachedGameObject.AddComponent<Rigidbody>();
+			var rigidBody = this.gameObject.AddComponent<Rigidbody>();
 			
 			rigidBody.hideFlags = HideFlags.HideAndDontSave | HideFlags.HideInInspector;
 			rigidBody.isKinematic = true;
@@ -4102,7 +4137,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	/// <summary>
 	/// Compensates for Unity3D's lack of a consistent order of startup events
 	/// and lack of hierarchy change notifications by manually tracking changes 
-	/// to the cachedGameObject's hierarchy and updating the Controls collection to match.
+	/// to the this.gameObject's hierarchy and updating the Controls collection to match.
 	/// </summary>
 	internal void updateControlHierarchy( bool force = false )
 	{
@@ -4320,7 +4355,6 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 	private void setRelativePosition( Vector3 value )
 	{
 
-
 		if( transform.parent == null )
 		{
 			Debug.LogError( "Cannot set relative position without a parent Transform." );
@@ -4525,9 +4559,9 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 			for( int i = 0; i < cache.Count; i++ )
 			{
-				
+
 				var item = cache[ i ];
-				
+
 				if( item.ComponentType == componentType && item.EventName == eventName )
 					return item;
 
@@ -4537,7 +4571,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 		}
 
-		#region Nested classes 
+		#region Nested classes
 
 		private class SignalCacheItem
 		{
@@ -4556,14 +4590,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 				#region First try to find a MethodInfo with the exact signature
 
-				var handlerWithParams = componentType.GetMethod(
-					eventName,
-					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-					null,
-					paramTypes,
-					null
-				);
-
+				var handlerWithParams = getMethod( componentType, eventName, paramTypes );
 				if( handlerWithParams != null )
 				{
 					method = handlerWithParams;
@@ -4575,13 +4602,7 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 
 				#region Look for a parameterless method with the given name
 
-				this.method = componentType.GetMethod(
-					eventName,
-					BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-					null,
-					ReflectionExtensions.EmptyTypes,
-					null
-				);
+				this.method = getMethod( componentType, eventName, ReflectionExtensions.EmptyTypes );
 
 				usesParameters = false;
 
@@ -4606,6 +4627,69 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 				return true;
 
 			}
+
+		}
+
+		#endregion
+
+		#region Private methods
+
+		private static MethodInfo getMethod( System.Type type, string name, System.Type[] paramTypes )
+		{
+
+			// NOTE: There is a bug in Unity 4.3.3+ on Windows Phone that causes all reflection 
+			// method overloads that take a BindingFlags parameter to throw a runtime exception.
+			// This means that we cannot have 100% compatibility between Unity 4.3.3 and prior
+			// versions on the Windows Phone platform, and that some functionality 
+			// will unfortunately be lost.
+
+#if UNITY_EDITOR || !UNITY_WP8
+			
+			var method = type.GetMethod(
+				name,
+				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
+				null,
+				paramTypes,
+				null
+			);
+
+			return method;
+
+#else
+
+			var methods = type.GetMethods();
+			for( int i = 0; i < methods.Length; i++ )
+			{
+
+				var info = methods[ i ];
+				if( info.IsStatic || info.Name != name )
+					continue;
+
+				if( matchesParameterTypes( info, paramTypes ) )
+					return info;
+
+			}
+
+			return null;
+
+#endif
+
+		}
+
+		private static bool matchesParameterTypes( MethodInfo method, Type[] types )
+		{
+
+			var parameters = method.GetParameters();
+			if( parameters.Length != types.Length )
+				return false;
+
+			for( int i = 0; i < types.Length; i++ )
+			{
+				if( !parameters[ i ].ParameterType.IsAssignableFrom( types[ i ] ) )
+					return false;
+			}
+
+			return true;
 
 		}
 
@@ -4823,12 +4907,20 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 		protected void performLayoutInternal()
 		{
 
+			var hierarchyUpdateNeeded =
+				owner == null ||
+				owner.transform.parent == null;
+
+			if( hierarchyUpdateNeeded )
+			{
+				pendingLayoutRequest = true;
+				return;
+			}
+
 			var cannotPerformLayout =
 				margins == null ||
 				IsPerformingLayout ||
 				IsLayoutSuspended ||
-				owner == null ||
-				owner.transform.parent == null ||
 				!owner.gameObject.activeSelf;
 
 			if( cannotPerformLayout )
@@ -4934,7 +5026,8 @@ public abstract class dfControl : MonoBehaviour, IDFControlHost, IComparable<dfC
 			// Proportional resizing has a very high likelihood of resulting
 			// in positions and dimensions that are fractional pixel sizes,
 			// which looks atrocious in pixel perfect mode. 
-			if( owner.GetManager().PixelPerfectMode )
+			var manager = owner.GetManager();
+			if( manager != null && manager.PixelPerfectMode )
 			{
 				owner.MakePixelPerfect( false );
 			}

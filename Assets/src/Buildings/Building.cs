@@ -46,7 +46,7 @@ public abstract class Building : MonoBehaviour
 
     public bool placed = false;
 
-    protected bool isEnabled = true;
+    public bool isEnabled = true;
 
 
     protected int yOffset;
@@ -116,8 +116,11 @@ public abstract class Building : MonoBehaviour
             float firstTurnEnergy = 0;
             if (energy < 0)
             {
-                firstTurnEnergy = -energy;
+                firstTurnEnergy = (-energy)*2f;
             }
+
+            
+
             if (transform.position == Vector3.zero)
             {
                 //nothing

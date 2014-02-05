@@ -15,8 +15,6 @@ using System.Collections.Generic;
 /// </summary>
 [Serializable]
 [ExecuteInEditMode]
-[RequireComponent( typeof( MeshRenderer ) )]
-[RequireComponent( typeof( MeshFilter ) )]
 [RequireComponent( typeof( BoxCollider ) )]
 [RequireComponent( typeof( dfInputManager ) )]
 [AddComponentMenu( "Daikon Forge/User Interface/GUI Manager" )]
@@ -421,6 +419,11 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		// occluder is rendered and the current event is 
 		// consumed.
 
+		// NOTE: This does not account for controls that are only partially "clipped", as the
+		// clipped portion will still block mouse clicks due to the fact that DFGUI does not
+		// currently clip the control exclusion rectangles, and doing so is likely to have a
+		// nontrivial impact on per-frame performance for low-powered mobile devices.
+
 		var mousePosition = Input.mousePosition;
 		mousePosition.y = Screen.height - mousePosition.y;
 
@@ -430,13 +433,12 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 			// mouse/touch input for the entire screen.
 			GUI.Box( new Rect( 0, 0, Screen.width, Screen.height ), GUIContent.none, GUIStyle.none );
 		}
-
-		for( int i = 0; i < occluders.Count; i++ )
+		else
 		{
-			if( occluders[ i ].Contains( mousePosition ) )
+			// Block mouse/touch input for each screen area where a control was rendered
+			for( int i = 0; i < occluders.Count; i++ )
 			{
 				GUI.Box( occluders[ i ], GUIContent.none, GUIStyle.none );
-				break;
 			}
 		}
 
@@ -466,6 +468,7 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 #if UNITY_EDITOR
 
+	[HideInInspector]
 	public void OnDrawGizmos()
 	{
 
@@ -542,6 +545,7 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 	}
 
+	[HideInInspector]
 	public void OnDrawGizmosSelected()
 	{
 
@@ -786,23 +790,6 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 #endif
 
-	public void OnDestroy()
-	{
-
-		if( meshRenderer != null )
-		{
-
-			renderFilter.sharedMesh = null;
-
-			DestroyImmediate( renderMesh[ 0 ] );
-			DestroyImmediate( renderMesh[ 1 ] );
-
-			renderMesh = null;
-
-		}
-
-	}
-
 	/// <summary>
 	/// Awake is called by the Unity engine when the script instance is being loaded.
 	/// </summary>
@@ -862,6 +849,23 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		if( meshRenderer != null )
 		{
 			meshRenderer.enabled = false;
+		}
+
+	}
+
+	public void OnDestroy()
+	{
+
+		if( meshRenderer != null )
+		{
+
+			renderFilter.sharedMesh = null;
+
+			DestroyImmediate( renderMesh[ 0 ] );
+			DestroyImmediate( renderMesh[ 1 ] );
+
+			renderMesh = null;
+
 		}
 
 	}
@@ -936,6 +940,21 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 			onResolutionChanged( cachedScreenSize, currentScreenSize );
 			cachedScreenSize = currentScreenSize;
 		}
+
+#if UNITY_EDITOR
+		// HACK: The following code makes sure that the UI is aways updated while
+		// in design mode, and is a workaround for a Unity quirk where the scene's
+		// materials are reset in some specific situations, which causes the unchanged
+		// UI to render with elements out of order. This quirk is harmless in the 
+		// sense that your UI will still render correctly when the application is 
+		// playing, but makes the design-time experience somewhat distracting.
+		if( !Application.isPlaying )
+		{
+			// Setting isDirty to TRUE signals the GUIManager to redraw
+			// the user interface on the next LateUpdate pass
+			isDirty = true;
+		}
+#endif
 
 	}
 
@@ -1163,11 +1182,11 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		if( !typeof( dfControl ).IsAssignableFrom( type ) )
 			throw new InvalidCastException();
 
-		var go = new GameObject( type.Name, type );
+		var go = new GameObject( type.Name );
 		go.transform.parent = this.transform;
 		go.layer = this.gameObject.layer;
 
-		var child = go.GetComponent( type ) as dfControl;
+		var child = go.AddComponent( type ) as dfControl;
 		child.ZOrder = getMaxZOrder() + 1;
 
 		return child;
@@ -1204,6 +1223,7 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 		var child = go.GetComponent<dfControl>();
 		child.transform.parent = this.transform;
+		child.PerformLayout();
 
 		BringToFront( child );
 
@@ -1533,6 +1553,9 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 	public void Render()
 	{
 
+		if( meshRenderer == null )
+			return;
+
 		FramesRendered += 1;
 
 		if( BeforeRender != null )
@@ -1543,10 +1566,8 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		try
 		{
 
-			// Make sure all render settings are correctly configured
-			//@Profiler.BeginSample( "Update render settings" );
-			updateRenderSettings();
-			//@Profiler.EndSample();
+			// TODO: Make sure that having updateRenderSettings() in Invalidate is sufficient
+			//updateRenderSettings();
 
 			// We'll be keeping track of how many controls were actually rendered,
 			// as opposed to just how many exist in the scene.
@@ -1596,10 +1617,14 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 			#region Render all current controls
 
+			//@Profiler.BeginSample( "Render all controls" );
+
 			using( var controls = getTopLevelControls() )
 			{
 
+				//@Profiler.BeginSample( "Update Render Order" );
 				updateRenderOrder( controls );
+				//@Profiler.EndSample();
 
 				for( int i = 0; i < controls.Count; i++ )
 				{
@@ -1608,6 +1633,8 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 				}
 
 			}
+
+			//@Profiler.EndSample();
 
 			#endregion
 
@@ -1636,6 +1663,8 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 			var masterBuffer = compileMasterBuffer();
 			this.TotalTriangles = masterBuffer.Triangles.Count / 3;
 
+			//@Profiler.BeginSample( "Buiding render mesh" );
+
 			// Build the master mesh
 			var mesh = renderFilter.sharedMesh = getRenderMesh();
 			mesh.Clear();
@@ -1656,7 +1685,11 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 				}
 			}
 
+			//@Profiler.EndSample();
+
 			#region Set sub-meshes
+
+			//@Profiler.BeginSample( "Building draw call submeshes" );
 
 			mesh.subMeshCount = submeshes.Count;
 			for( int i = 0; i < submeshes.Count; i++ )
@@ -1672,7 +1705,7 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 				// Allocating the array locally appears to reduce (not eliminate)
 				// per-frame allocations tenfold compared to .ToArray(), at least
-				// when measured with the profiler in the Editor.
+				// when measured with the profiler in the Editor. Total mystery why.
 				var submeshTriangles = new int[ length ];
 				masterBuffer.Triangles.CopyTo( startIndex, submeshTriangles, 0, length );
 
@@ -1680,6 +1713,8 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 				mesh.SetTriangles( submeshTriangles, i );
 
 			}
+
+			//@Profiler.EndSample();
 
 			#endregion
 
@@ -1730,34 +1765,45 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 	private bool isEmptyBuffer( dfRenderData buffer )
 	{
-		return buffer == null || buffer.Vertices == null || buffer.Vertices.Count == 0;
+		return buffer.Vertices.Count == 0;
 	}
 
 	private dfList<dfControl> getTopLevelControls()
 	{
 
-		var childCount = transform.childCount;
-
-		var controls = dfList<dfControl>.Obtain( childCount );
-
-		for( int i = 0; i < childCount; i++ )
+		try
 		{
 
-			var childObject = transform.GetChild( i );
-			if( childObject.gameObject == null || !childObject.gameObject.activeSelf )
-				continue;
+			//@Profiler.BeginSample( "Gather top-level controls" );
 
-			var control = childObject.GetComponent<dfControl>();
-			if( control != null && control.enabled )
+			var childCount = transform.childCount;
+
+			var controls = dfList<dfControl>.Obtain( childCount );
+
+			for( int i = 0; i < childCount; i++ )
 			{
-				controls.Add( control );
+
+				var childObject = transform.GetChild( i );
+				if( childObject.gameObject == null || !childObject.gameObject.activeSelf )
+					continue;
+
+				var control = childObject.GetComponent<dfControl>();
+				if( control != null && control.enabled )
+				{
+					controls.Add( control );
+				}
+
 			}
 
+			controls.Sort();
+
+			return controls;
+
 		}
-
-		controls.Sort();
-
-		return controls;
+		finally
+		{
+			//@Profiler.EndSample();
+		}
 
 	}
 
@@ -1926,31 +1972,53 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 	private dfRenderData compileMasterBuffer()
 	{
 
-		submeshes.Clear();
-		masterBuffer.Clear();
-
-		for( int i = 0; i < drawCallCount; i++ )
+		try
 		{
 
-			submeshes.Add( masterBuffer.Triangles.Count );
+			//@Profiler.BeginSample( "Compiling master buffer" );
 
-			var buffer = drawCallBuffers[ i ];
+			submeshes.Clear();
+			masterBuffer.Clear();
 
-			if( generateNormals && buffer.Normals.Count == 0 )
+			var buffers = drawCallBuffers.Items;
+
+			var masterBufferSize = 0;
+
+			for( int i = 0; i < drawCallCount; i++ )
 			{
-				generateNormalsAndTangents( buffer );
+				masterBufferSize += buffers[ i ].Vertices.Count;
 			}
 
-			masterBuffer.Merge( buffer, false );
+			masterBuffer.EnsureCapacity( masterBufferSize );
+
+			for( int i = 0; i < drawCallCount; i++ )
+			{
+
+				submeshes.Add( masterBuffer.Triangles.Count );
+
+				var buffer = buffers[ i ];
+
+				if( generateNormals && buffer.Normals.Count == 0 )
+				{
+					generateNormalsAndTangents( buffer );
+				}
+
+				masterBuffer.Merge( buffer, false );
+
+			}
+
+			// Translate the "world" coordinates in the buffer back into local 
+			// coordinates relative to this GUIManager. This allows the GUIManager to be 
+			// positioned anywhere in the scene without being distracting
+			masterBuffer.ApplyTransform( transform.worldToLocalMatrix );
+
+			return masterBuffer;
 
 		}
-
-		// Translate the "world" coordinates in the buffer back into local 
-		// coordinates relative to this GUIManager. This allows the GUIManager to be 
-		// positioned anywhere in the scene without being distracting
-		masterBuffer.ApplyTransform( transform.worldToLocalMatrix );
-
-		return masterBuffer;
+		finally
+		{
+			//@Profiler.EndSample();
+		}
 
 	}
 
@@ -2003,37 +2071,48 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 	private Material[] gatherMaterials()
 	{
 
-		// Count the number of non-null materials 
-		var materialCount = drawCallBuffers.Matching( hasMaterialAssigned );
-		var index = 0;
-
-		var materialRenderQueue = renderQueueBase;
-
-		var renderMaterials = new Material[ materialCount ];
-		for( int i = 0; i < drawCallBuffers.Count; i++ )
+		try
 		{
 
-			// Skip null Material instances (typically happens only during
-			// initial control creation in the Unity Editor)
-			if( drawCallBuffers[ i ].Material == null )
-				continue;
+			//@Profiler.BeginSample( "Gather render materials" );
 
-			// Obtain a reference to the material that will be used to render
-			// the buffer. In most cases this will be the same instance that 
-			// was passed in, but if a new draw call is required then it may
-			// return a copy of the original in order to be able to set the
-			// copy's [renderQueue] property so that render order is preserved.
-			var drawCallMaterial = MaterialCache.Lookup( drawCallBuffers[ i ].Material );
-			drawCallMaterial.mainTexture = drawCallBuffers[ i ].Material.mainTexture;
-			drawCallMaterial.shader = drawCallBuffers[ i ].Shader ?? drawCallMaterial.shader;
-			drawCallMaterial.renderQueue = materialRenderQueue++;
+			// Count the number of non-null materials 
+			var materialCount = drawCallBuffers.Matching( hasMaterialAssigned );
+			var index = 0;
 
-			// Copy the material to the final buffer
-			renderMaterials[ index++ ] = drawCallMaterial;	// Copy the material to the final buffer
+			var materialRenderQueue = renderQueueBase;
+
+			var renderMaterials = new Material[ materialCount ];
+			for( int i = 0; i < drawCallBuffers.Count; i++ )
+			{
+
+				// Skip null Material instances (typically happens only during
+				// initial control creation in the Unity Editor)
+				if( drawCallBuffers[ i ].Material == null )
+					continue;
+
+				// Obtain a reference to the material that will be used to render
+				// the buffer. In most cases this will be the same instance that 
+				// was passed in, but if a new draw call is required then it may
+				// return a copy of the original in order to be able to set the
+				// copy's [renderQueue] property so that render order is preserved.
+				var drawCallMaterial = MaterialCache.Lookup( drawCallBuffers[ i ].Material );
+				drawCallMaterial.mainTexture = drawCallBuffers[ i ].Material.mainTexture;
+				drawCallMaterial.shader = drawCallBuffers[ i ].Shader ?? drawCallMaterial.shader;
+				drawCallMaterial.renderQueue = materialRenderQueue++;
+
+				// Copy the material to the final buffer
+				renderMaterials[ index++ ] = drawCallMaterial;	// Copy the material to the final buffer
+
+			}
+
+			return renderMaterials;
 
 		}
-
-		return renderMaterials;
+		finally
+		{
+			//@Profiler.EndSample();
+		}
 
 	}
 
@@ -2124,45 +2203,59 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		var bounds = control.GetBounds();
 		var controlRendered = false;
 
-		if( !( control is IDFMultiRender ) )
+		try
 		{
 
-			// Ask the control to render itself and return a buffer of the 
-			// information needed to render it as a Mesh
-			var controlData = control.Render();
-			if( controlData == null )
-				return;
+			//@Profiler.BeginSample( "Render control - " + control.GetType().Name );
 
-			if( processRenderData( ref buffer, controlData, bounds, checksum, clipInfo ) )
+			if( !( control is IDFMultiRender ) )
 			{
-				controlRendered = true;
+
+				// Ask the control to render itself and return a buffer of the 
+				// information needed to render it as a Mesh
+				var controlData = control.Render();
+				if( controlData == null )
+					return;
+
+				if( processRenderData( ref buffer, controlData, bounds, checksum, clipInfo ) )
+				{
+					controlRendered = true;
+				}
+
 			}
-
-		}
-		else
-		{
-
-			// Ask the control to render itself and return as many dfRenderData buffers
-			// as needed to render all elements of the control as a Mesh
-			var childBuffers = ( (IDFMultiRender)control ).RenderMultiple();
-
-			if( childBuffers != null )
+			else
 			{
 
-				for( int i = 0; i < childBuffers.Count; i++ )
+				// Ask the control to render itself and return as many dfRenderData buffers
+				// as needed to render all elements of the control as a Mesh
+				var childBuffers = ( (IDFMultiRender)control ).RenderMultiple();
+
+				if( childBuffers != null )
 				{
 
-					var childBuffer = childBuffers[ i ];
+					var buffers = childBuffers.Items;
+					var bufferCount = childBuffers.Count;
 
-					if( processRenderData( ref buffer, childBuffer, bounds, checksum, clipInfo ) )
+					for( int i = 0; i < bufferCount; i++ )
 					{
-						controlRendered = true;
+
+						var childBuffer = buffers[ i ];
+
+						if( processRenderData( ref buffer, childBuffer, bounds, checksum, clipInfo ) )
+						{
+							controlRendered = true;
+						}
+
 					}
 
 				}
 
 			}
 
+		}
+		finally
+		{
+			//@Profiler.EndSample();
 		}
 
 		// Keep track of the number of controls rendered and where they 
@@ -2171,11 +2264,7 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		{
 
 			NumControlsRendered += 1;
-
-			//if( consumeMouseEvents )
-			{
-				occluders.Add( getControlOccluder( control ) );
-			}
+			occluders.Add( getControlOccluder( control ) );
 
 			controlsRendered.Add( control );
 
@@ -2210,6 +2299,10 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 
 	private Rect getControlOccluder( dfControl control )
 	{
+
+		// Do not prevent "click through" on non-interactive controls
+		if( !control.IsInteractive )
+			return new Rect();
 
 		var screenRect = control.GetScreenRect();
 
@@ -2307,9 +2400,11 @@ public class dfGUIManager : MonoBehaviour, IDFControlHost
 		}
 
 		meshRenderer = GetComponent<MeshRenderer>();
+		if( meshRenderer == null ) meshRenderer = gameObject.AddComponent<MeshRenderer>();
 		meshRenderer.hideFlags = HideFlags.HideInInspector;
 
 		renderFilter = GetComponent<MeshFilter>();
+		if( renderFilter == null ) renderFilter = gameObject.AddComponent<MeshFilter>();
 		renderFilter.hideFlags = HideFlags.HideInInspector;
 
 		renderMesh = new Mesh[ 2 ]

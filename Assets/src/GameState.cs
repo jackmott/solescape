@@ -61,7 +61,7 @@ public class GameState : MonoBehaviour
     public bool timeLose = false;
 
     public bool showSeti = false;
-    public Research setiResearch = null;
+    
 
     public bool scanning = false;
     public bool oilScan = false;
@@ -208,12 +208,15 @@ public class GameState : MonoBehaviour
 
     private void CheckSeti()
     {
+        Research setiResearch = null;
 
         float r = Random.Range(0f, 1f);
 
         if (r < setiChance)
         {
             int rcount = availableResearch.Count;
+            if (pendingResearch != null) rcount++;
+
             int rnum = Random.Range(0, rcount);
             int count = 0;
             foreach (DictionaryEntry e in availableResearch)
@@ -225,13 +228,19 @@ public class GameState : MonoBehaviour
                 }
                 count++;
             }
-
+            if (setiResearch == null && pendingResearch != null) setiResearch = pendingResearch;
             if (setiResearch != null)
             {
-                RemoveAvailableResearch(setiResearch);
+                if (setiResearch == pendingResearch)
+                {
+                    CancelResearch();
+                }
+               
+                RemoveAvailableResearch(setiResearch);               
                 attainedResearch.Add(setiResearch.name, setiResearch);
                 UpdateAvailableResearch();                
                 Dialog.Instance.SetDialog("SETI Success!", "Your SETI program has discovered transmissions from an alien race and attained the following resarch:" + setiResearch.name, "Ok", true, false);
+                setiChance = setiChance / 2;
             }
 
         }
@@ -339,27 +348,41 @@ public class GameState : MonoBehaviour
 
     public void RemoveAvailableResearch(Research r)
     {
-        print("remove available");
+        print("remove available research:"+r.name);
         availableResearch.Remove(r.name);
         GuiEventHandler.Instance.RemoveResearch(r);
     }
 
     public void AddAvailableResearch(Research r)
     {
+        print("add available research:" + r.name);
         availableResearch.Add(r.name, r);
         GuiEventHandler.Instance.AddResearch(r);
     }
 
+    public void AddAttainedResearch(Research r)
+    {
+        print("add attained research:" + r.name);
+        attainedResearch.Add(r.name, r);
+    }
+
+    public void RemoveAttainedResearch(Research r)
+    {
+        print("remove attained research:" + r.name);
+        attainedResearch.Remove(r.name);
+    }
+
     public void BeginResearch(Research r)
     {
+        print("Begin Research:" + r.name);
         RemoveAvailableResearch(r);
-
         pendingResearch = r;
 
     }
 
     public void CancelResearch()
     {
+        print("Cancel Research:" + pendingResearch.name);
         pendingResearch.completion = 0;
         AddAvailableResearch(pendingResearch);
         pendingResearch = null;
@@ -444,9 +467,12 @@ public class GameState : MonoBehaviour
             }
             if (valid)
             {
-                if (!availableResearch.Contains(r.name) && !attainedResearch.Contains(r.name))
+                if (!availableResearch.Contains(r.name) && !attainedResearch.Contains(r.name) )
                 {
-                    AddAvailableResearch(r);
+                    if (pendingResearch == null || pendingResearch.name != r.name)
+                    {
+                       AddAvailableResearch(r);
+                    }
 
                 }
             }

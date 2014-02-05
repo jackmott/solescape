@@ -16,6 +16,8 @@ public class GuiEventHandler : MonoBehaviour {
 
     public dfButton buildButton;
     public dfButton researchButton;
+    public dfButton buildingBackButton;
+    public dfButton researchBackButton;
 
     public dfButton pauseResearchButton;
     public dfButton cancelResearchButton;
@@ -310,9 +312,13 @@ public class GuiEventHandler : MonoBehaviour {
 
             BuildingInfoContainer container = button.GetComponent<BuildingInfoContainer>();
             container.bi = bi;
-                        
-            buildButtonPanel.AddControl(button);            
+
+            buildingBackButton.ZOrder = 0;
+            button.ZOrder = -1;
+            buildButtonPanel.AddControl(button);                             
             button.AddControl(helpButton);
+            
+            
 
             HelpButton helpScript = helpButton.GetComponent<HelpButton>();
             helpScript.bi = bi;
@@ -328,14 +334,13 @@ public class GuiEventHandler : MonoBehaviour {
 
         if (state == null) state = GameState.Instance;
         dfButton button = (dfButton)Instantiate(prefabResearchButton);
-        //button.Text = r.ButtonText(state.population,state.iq);
+    
         ResearchContainer container = button.GetComponent<ResearchContainer>();
         container.r = r;
         container.state = state;
         button.Text = r.ButtonText(state.population,state.iq);
-
-      
-
+        button.ZOrder = -1;
+        researchBackButton.ZOrder = 0;
         researchButtonPanel.AddControl(button);
         
     }

@@ -445,6 +445,7 @@ public class dfControlInspector : Editor
 		}
 
 		var topControls = new List<dfControl>();
+	
 
 
         if (control.GetManager() != null)

@@ -567,6 +567,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		this.Text = getLocalizedValue( this.text );
 	}
 
+	[HideInInspector]
 	public override void Invalidate()
 	{
 
@@ -922,7 +923,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		// Return the difference between design resolution and current resolution
 		if( textScaleMode == dfTextScaleMode.ScreenResolution )
 		{
-			return (float)Screen.height / (float)manager.FixedHeight;
+			return (float)Screen.height / (float)cachedManager.FixedHeight;
 		}
 
 		// Cannot scale by control size if AutoSize is enabled
