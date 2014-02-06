@@ -209,19 +209,22 @@ public abstract class Building : MonoBehaviour
 
     }
 
+    //IS this... WATER??
     public virtual void CheckColor(Color c)
     {
-        if (c.g < c.b)
+
+        if (c.a < .99)
         {
+
             validSurface = false;
-            SetRenderTransparent();
+            SetRenderTransparent();            
         }
         else
         {
             validSurface = true;
             SetRenderOpaque();
         }
-
+        
     }
 
     protected virtual void OnMouseEnter()

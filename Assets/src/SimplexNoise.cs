@@ -620,14 +620,70 @@ public class Noise
     {
         float sum = 0f;
         float frequency = 1;
-        float amplitude = 1;
+        float amplitude = 1;        
+
+        
+        float scaleSum = 0;
         for (int i = 1; i <= octaves; i++)
         {
             sum += (1f / frequency) * noise3(x * amplitude, y * amplitude,z*amplitude);
-            frequency *= lacunarity;
-            amplitude *= gain;
+            scaleSum += (1f / frequency) * 1f;
 
+            frequency *= lacunarity;
+            amplitude *= gain;                        
         }
-        return Mathf.Clamp(.8f*(sum - .205f),0,1);
+
+        return sum;
     }
+
+    public Color[] rescaleAndColorArray(float[] a, float min, float max, Color[] colors)
+    {
+        
+        float offset = 0 - min;
+        float scale = 1f/(max + offset);
+        Color[] result = new Color[a.Length];
+
+        for (int i = 0; i < a.Length;i++)
+        {
+            float x = (a[i]+offset)*scale;
+            int index = (int)(x * (colors.Length - 1));
+            result[i] = colors[index];
+        }
+        return result;
+    }
+
+    public Color[] rescaleAndColorArrayMenu(float[] a, float min, float max, Color[] colors)
+    {
+
+        float offset = 0 - min;
+        float scale = 1f / (max + offset);
+        Color[] result = new Color[a.Length];
+
+        for (int i = 0; i < a.Length; i++)
+        {
+            float x = (a[i] + offset) * scale;
+            int index = (int)(x * (colors.Length - 1));
+            result[i] = colors[index];
+            if (result[i].a == 0)
+            {
+                result[i] = new Color(colors[0].r, colors[0].g, colors[0].b, 1);
+            }
+        }
+        return result;
+    }
+
+    public Color[] rescaleArray(float[] a, float min, float max)
+    {
+
+        float offset = 0 - min;
+        float scale = 1f / (max + offset);
+        Color[] result = new Color[a.Length];
+        for (int i = 0; i < a.Length; i++)
+        {
+            float x = (a[i] + offset) * scale;
+            result[i] = new Color(x, x, x,0f);
+        }
+        return result;
+    }
+
 }

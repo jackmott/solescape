@@ -12,11 +12,15 @@ public struct PlanetInfo  {
     public int gameLength;
     public int planetSize;
     public int population;    
-    public int iq;
+    public float iq;
     public int startEnergy;
     public int startPollution;
     public float pollutionClearance;
     public int maxPollution;
+    public int windZones;
+    public int octaves;
+    public float gain;
+    public float lacunarity;
 
     public ColorRamp colorRamp;
 

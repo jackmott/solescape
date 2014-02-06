@@ -91,15 +91,19 @@ public class GameState : MonoBehaviour
         GetData();
 
         GameObject perObj = (GameObject)GameObject.Find("Persistence");
+        PlanetInfo pi;
         if (perObj == null)
         {
-            LoadPlanet(LoadPlanets()[0]);
+            pi = LoadPlanets()[0];            
         }
         else
         {
             Persistence per = perObj.GetComponent<Persistence>();
-            LoadPlanet(per.pi);
+            pi = per.pi;
+            
         }
+        planet.transform.localScale = new Vector3(pi.planetSize,pi.planetSize,pi.planetSize);
+        LoadPlanet(pi);
 
         gameStats = new GameStats[gameLength + 1];
 
@@ -124,6 +128,11 @@ public class GameState : MonoBehaviour
         pollution = i.startPollution;
         pollutionDeathAmount = i.maxPollution;
         planetColorRamp = i.colorRamp;
+        planet.windZoneCount = i.windZones;
+        planet.gain = i.gain;
+        planet.lacunarity = i.lacunarity;
+        planet.octaves = i.octaves;
+
         print("Planet info Loaded");
         Time.timeScale = 1;
 
@@ -508,7 +517,7 @@ public class GameState : MonoBehaviour
 
         List<PlanetInfo> planets = new List<PlanetInfo>();
 
-        int numCol = 14; //number of columns before dependency list
+        int numCol = 18; //number of columns before dependency list
 
 
         string line = reader.ReadLine();
@@ -522,7 +531,7 @@ public class GameState : MonoBehaviour
                 print("invalid line in planets file");
             }
 
-            PlanetInfo planetInfo;
+            PlanetInfo planetInfo = new PlanetInfo();
 
             planetInfo.planetName = splitLine[0].Trim();
             planetInfo.coalReserves = int.Parse(splitLine[1]);
@@ -533,11 +542,15 @@ public class GameState : MonoBehaviour
             planetInfo.gameLength = int.Parse(splitLine[6]);
             planetInfo.planetSize = int.Parse(splitLine[7]);
             planetInfo.population = int.Parse(splitLine[8]);
-            planetInfo.iq = int.Parse(splitLine[9]);
+            planetInfo.iq = float.Parse(splitLine[9]);
             planetInfo.startEnergy = int.Parse(splitLine[10]);
             planetInfo.startPollution = int.Parse(splitLine[11]);
             planetInfo.pollutionClearance = int.Parse(splitLine[12]);
             planetInfo.maxPollution = int.Parse(splitLine[13]);
+            planetInfo.windZones = int.Parse(splitLine[14]);
+            planetInfo.octaves = int.Parse(splitLine[15]);
+            planetInfo.gain = float.Parse(splitLine[16]);
+            planetInfo.lacunarity = float.Parse(splitLine[17]);
 
             List<Color> colors = new List<Color>();
             List<float> ranges = new List<float>();

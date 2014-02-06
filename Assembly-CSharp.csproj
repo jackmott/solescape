@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_WEBPLAYER;WEBPLUG;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_GENERICS;ENABLE_SUBSTANCE;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_3_3;UNITY_4_3;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_ANDROID;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_GENERICS;ENABLE_SUBSTANCE;INCLUDE_WP8SUPPORT;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;UNITY_ANDROID_API;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;UNITY_4_3_3;UNITY_4_3;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -46,9 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\003 Drawing Lines\src\LinesGL.cs" />
-     <Compile Include="Assets\003 Drawing Lines\src\LinesGR.cs" />
-     <Compile Include="Assets\003 Drawing Lines\src\LinesLR.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfButton.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfCheckbox.cs" />
      <Compile Include="Assets\Daikon Forge\DFGUI\Scripts\Controls\dfControl.cs" />
@@ -203,7 +200,6 @@
      <None Include="Assets\Resources\descriptions\Windmill.txt" />
      <None Include="Assets\Resources\descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\descriptions\SETITelescope.txt" />
-     <None Include="Assets\003 Drawing Lines\src\BlackLine.shader" />
      <None Include="Assets\Shaders\MaskShader.shader" />
      <None Include="Assets\Blue Button\SciFi Buttons\Font\Font Readme.txt" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />
@@ -216,11 +212,11 @@
      <None Include="Assets\Resources\descriptions\CyberneticFactory.txt" />
      <None Include="Assets\Resources\descriptions\GMOFarm.txt" />
      <None Include="Assets\Resources\descriptions\FusionPlant.txt" />
-     <None Include="Assets\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
      <None Include="Assets\Resources\descriptions\SpaceStation.txt" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Dynamic Font Shader.shader" />
      <None Include="Assets\Resources\descriptions\NaturePreserve.txt" />
      <None Include="Assets\Resources\descriptions\OilProducer.txt" />
+     <None Include="Assets\Standard Assets\Water (Pro Only)\Sources\Shaders\FX-Water.shader" />
      <None Include="Assets\Daikon Forge\Resources\Change Log.txt" />
      <None Include="Assets\Resources\descriptions\CoalProducer.txt" />
      <None Include="Assets\Resources\descriptions\RecyclingCenter.txt" />

@@ -25,7 +25,10 @@ public class Planet : MonoBehaviour
 
     public float buildingRotation = 0;
 
-    const int NUM_WIND_ZONES = 3;
+    public int windZoneCount = 3;
+    public int octaves = 3;
+    public float gain = 2;
+    public float lacunarity = 2;
     public GameObject[] windZones;
 
 
@@ -48,9 +51,9 @@ public class Planet : MonoBehaviour
     void GenerateWindZones()
     {
         float radius = this.transform.localScale.x / 2.0f + 1;
-        windZones = new GameObject[NUM_WIND_ZONES];
+        windZones = new GameObject[windZoneCount];
 
-        for (int i = 0; i < NUM_WIND_ZONES; i++)
+        for (int i = 0; i < windZones.Length; i++)
         {
             float theta = Random.Range(0f, Mathf.PI * 2f);
             float phi = Random.Range(0f, Mathf.PI);
@@ -87,21 +90,24 @@ public class Planet : MonoBehaviour
         Texture2D planetTex = new Texture2D(2048, 1024, TextureFormat.ARGB32, false);
         Texture2D cloudsTex = new Texture2D(2048, 1024, TextureFormat.ARGB32, false);
         
-        Color[] cloudColors = cloudsTex.GetPixels();
+      
         // set the pixel values
-        Color[] colors = planetTex.GetPixels();
+        float[] colors = new float[planetTex.width * planetTex.height];
+
+     
 
         Noise noise = new Noise();
-
+        
         
         float pi = 3.14159265359f;
         float twopi = pi * 2.0f;
 
         float offsetx = (float)Random.Range(-200f, 200f);
         float offsety = (float)Random.Range(-200f, 200f);
-        
+        float sum = 0;
 
-     
+        float min = 999;
+        float max = -999;
         for (int y = 0; y < planetTex.height; y++)
         {
             int row = y * planetTex.width;
@@ -117,27 +123,32 @@ public class Planet : MonoBehaviour
 
 
 
-                float color = noise.fbm3(x3d*2+offsetx, y3d*2+offsety, z3d*2,3,2,2);
-               
-                int index = (int)(color * (state.planetColorRamp.colors.Length - 1));
+                float color = noise.fbm3(x3d*2+offsetx, y3d*2+offsety, z3d*2,octaves,gain,lacunarity);
+                sum += color;
+                if (color < min) min = color;
+                if (color > max) max = color;
 
-                colors[row + x] = state.planetColorRamp.colors[index];
-                cloudColors[row + x] = new Color(1, 1, 1, color);
-                                               
-
+                colors[row + x] = color;
+                
+                                                               
             }
         }
 
+        float avg = sum / (planetTex.width * planetTex.height);
+        print("min:" + min + " max:" + max+ " avg:"+avg);
+
         
-        cloudsTex.SetPixels(cloudColors);
+        cloudsTex.SetPixels(noise.rescaleArray(colors,min,max));
         cloudsTex.Apply();
         GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
-        planetTex.SetPixels(colors);
+        GameObject.Find("Water").renderer.material.color = state.planetColorRamp.colors[0];
+        planetTex.SetPixels(noise.rescaleAndColorArray(colors,min,max,state.planetColorRamp.colors));
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;
     }
 
-   
+    
+
 
 
 

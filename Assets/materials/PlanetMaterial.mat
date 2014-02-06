@@ -45,7 +45,7 @@ Material:
       data:
         first:
           name: _Cutoff
-        second: .821428597
+        second: 1
       data:
         first:
           name: PixelSnap
@@ -53,7 +53,7 @@ Material:
       data:
         first:
           name: _Shininess
-        second: .078125
+        second: .00999999978
       data:
         first:
           name: _Parallax

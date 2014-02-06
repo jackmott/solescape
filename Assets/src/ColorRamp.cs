@@ -7,6 +7,7 @@ public class ColorRamp
 
     public static int RAMP_SIZE = 256;
     public Color[] colors = new Color[RAMP_SIZE];
+    
 
 
     public static ColorRamp frozen()
@@ -77,11 +78,22 @@ public class ColorRamp
 
             for (int j = 0; j < indexSpan; j++)
             {
-                float r = Mathf.Lerp(start.r, end.r, (float)j / (float)indexSpan);
-                float g = Mathf.Lerp(start.g, end.g, (float)j / (float)indexSpan);
-                float b = Mathf.Lerp(start.b, end.b, (float)j / (float)indexSpan);
-                float a = Mathf.Lerp(start.a, end.a, (float)j / (float)indexSpan);
-                colors[colorIndex] = new Color(r, g, b, a);
+                if (i == 0)
+                {
+                    float r = start.r;
+                    float g = start.g;
+                    float b = start.b;
+                    float a = start.a;
+                    colors[colorIndex] = new Color(r, g, b, a);
+                }
+                else
+                {
+                    float r = Mathf.Lerp(start.r, end.r, (float)j / (float)indexSpan);
+                    float g = Mathf.Lerp(start.g, end.g, (float)j / (float)indexSpan);
+                    float b = Mathf.Lerp(start.b, end.b, (float)j / (float)indexSpan);
+                    float a = Mathf.Lerp(start.a, end.a, (float)j / (float)indexSpan);
+                    colors[colorIndex] = new Color(r, g, b, a);
+                }
 
                 colorIndex++;
             }

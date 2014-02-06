@@ -982,6 +982,10 @@ MonoBehaviour:
   placedBuildings: []
   rotateVector: {x: .100000001, y: 1, z: 0}
   buildingRotation: 0
+  windZoneCount: 3
+  octaves: 3
+  gain: 2
+  lacunarity: 2
   windZones: []
 --- !u!198 &242430880
 ParticleSystem:
@@ -5743,15 +5747,24 @@ Transform:
 --- !u!114 &1355969062
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400000, guid: fc5fcdbe29a82c548b0757713e77ed59,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1355969060}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d2f50a8e0bb841a5aaa90ae55db8849, type: 3}
+  m_Script: {fileID: 11500000, guid: a3d3ef1a5bbfb4e0a910fbbe5830b1f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_WaterMode: 2
+  m_DisablePixelLights: 1
+  m_TextureSize: 2048
+  m_ClipPlaneOffset: .0700000003
+  m_ReflectLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RefractLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!23 &1355969063
 Renderer:
   m_ObjectHideFlags: 0
@@ -5765,7 +5778,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 52b7d70b1de7c4ce09662b77c14d9fda, type: 2}
+  - {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -7720,7 +7733,7 @@ Camera:
     height: 1
   near clip plane: .300000012
   far clip plane: 50
-  field of view: 47
+  field of view: 35.4000015
   orthographic: 0
   orthographic size: 5
   m_Depth: 0

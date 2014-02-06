@@ -1,4 +1,4 @@
-Name,Coal,Oil,Wind,Sun,Rotation Speed,Time,Size,start population,start iq,start energy,start pollution,New Column,maxpollution,Colors,Column 15,Column 16,Column 17,Column 18,Column 19,Column 20,Column 21,Column 22,Column 23,Column 24
-Earthlike,10000,1,1,1,1,1000,500,100000,1,20,0,20,5000,0|0|.1|0,.3,0|0|.9|0,.05,.8|.8|.5,.1,0|.3|0,.45,0|.8|0,.1,.8|.8|.8
-Hell,10000,1,.5,2,1,1000,500,100,1,20,0,20,5000,.2|0|0,.45,.8|0|0,.05,.8|.4|0,.05,.1|.1|.1,.45,.4|.4|.4,,
-Frozen,10000,1,2,.5,1,1000,500,100,1,20,0,20,5000,.0|.6|.6,.45,.0|.9|.9,.05,.5|.5|.5,.5,.8|.8|.8,,,,
+Name,Coal,Oil,Wind,Sun,Rotation Speed,Time,Size,start population,start iq,start energy,start pollution,New Column,maxpollution,Wind Zones,Octaves,Gain,Lacunarity,Colors,Column 15,Column 16,Column 17,Column 18,Column 19,Column 20,Column 21,Column 22,Column 23,Column 24
+Earthlike,10000,1,1,1,1,1000,500,100,1,20,0,20,5000,3,3,2,2,0|.8|1|0,.35,.8|.8|.5,.1,0|.3|0,.45,0|.8|0,.1,.8|.8|.8,,
+Hell,10000,1,.5,2,1,1000,500,100,1,20,0,20,5000,3,3,2,2,1|0|0|0,.45,.8|0|0,.05,.8|.4|0,.05,.1|.1|.1,.45,.4|.4|.4,,
+Frozen,10000,1,2,.5,1,1000,500,100,1,20,0,20,5000,3,3,2,2,.0|.6|.6 | 0,.45,.0|.9|.9,.05,.5|.5|.5,.5,.8|.8|.8,,,,
