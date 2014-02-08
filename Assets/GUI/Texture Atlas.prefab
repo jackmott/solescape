@@ -180,7 +180,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .60546875
+      y: .57421875
       width: .015625
       height: .03125
     border:
@@ -197,7 +197,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .640625
+      y: .609375
       width: .015625
       height: .03125
     border:
@@ -265,14 +265,14 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .5703125
+      y: .50390625
       width: .03125
       height: .03125
     border:
-      m_Left: 0
-      m_Right: 0
-      m_Top: 0
-      m_Bottom: 0
+      m_Left: 2
+      m_Right: 9
+      m_Top: 3
+      m_Bottom: 9
     rotated: 0
     sizeInPixels: {x: 16, y: 16}
     textureGUID: 4403e00879f6c8948b5415ced1a6012b
@@ -378,6 +378,23 @@ MonoBehaviour:
     rotated: 0
     sizeInPixels: {x: 32, y: 32}
     textureGUID: bc04eba9af9300d43b0b547972580568
+    deleted: 0
+    texture: {fileID: 0}
+  - name: white
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .5390625
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 280dc5c91dbaba84d922ff12f9df55c0
     deleted: 0
     texture: {fileID: 0}
   generator: 0

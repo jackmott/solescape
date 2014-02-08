@@ -70,11 +70,11 @@ Material:
       data:
         first:
           name: _ReflDistort
-        second: .616071403
+        second: .401785702
       data:
         first:
           name: _RefrDistort
-        second: .535714269
+        second: 0
     m_Colors:
       data:
         first:

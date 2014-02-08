@@ -70,10 +70,10 @@ public class dfControlInspector : Editor
 			EditorGUILayout.HelpBox( "The control component is disabled", MessageType.Warning );
 		}
 
-        var isValidControl = true;
-			//control.gameObject.activeInHierarchy &&
-			//control.transform.parent != null &&
-			//control.GetManager() != null;
+		var isValidControl =
+			control.gameObject.activeInHierarchy &&
+			control.transform.parent != null &&
+			control.GetManager() != null;
 
 		if( !isValidControl )
 		{
@@ -445,23 +445,16 @@ public class dfControlInspector : Editor
 		}
 
 		var topControls = new List<dfControl>();
-	
+		var top = control.GetManager().transform;
 
-
-        if (control.GetManager() != null)
-        {
-            var top = control.GetManager().transform;
-
-
-            for (int i = 0; i < top.childCount; i++)
-            {
-                var childControl = top.GetChild(i).GetComponent<dfControl>();
-                if (childControl != null)
-                {
-                    topControls.Add(childControl);
-                }
-            }
-        }
+		for( int i = 0; i < top.childCount; i++ )
+		{
+			var childControl = top.GetChild( i ).GetComponent<dfControl>();
+			if( childControl != null )
+			{
+				topControls.Add( childControl );
+			}
+		}
 
 		return topControls;
 

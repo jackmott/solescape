@@ -296,7 +296,8 @@ public class GuiEventHandler : MonoBehaviour {
 
     public void BuildingBackClick()
     {
-        state.planet.CancelPlace();
+        if (!state.oilScan)
+            state.planet.CancelPlace();
     }
 
 

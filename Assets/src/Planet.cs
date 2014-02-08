@@ -141,7 +141,8 @@ public class Planet : MonoBehaviour
         cloudsTex.SetPixels(noise.rescaleArray(colors,min,max));
         cloudsTex.Apply();
         GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
-        GameObject.Find("Water").renderer.material.color = state.planetColorRamp.colors[0];
+        Color c = state.planetColorRamp.colors[0];
+        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);
         planetTex.SetPixels(noise.rescaleAndColorArray(colors,min,max,state.planetColorRamp.colors));
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;
@@ -224,11 +225,14 @@ public class Planet : MonoBehaviour
             }
 
 
-            if (hitPlanet && !state.scanning)
+            if (hitPlanet )
             {
-                if (Input.GetMouseButton(1))
+                if (!state.scanning)
                 {
-                    buildingRotation = (buildingRotation + 100 * Time.deltaTime) % 360;
+                    if (Input.GetMouseButton(1))
+                    {
+                        buildingRotation = (buildingRotation + 100 * Time.deltaTime) % 360;
+                    }
                 }
                 Texture2D surfaceTexture = (Texture2D)planetHit.transform.renderer.material.mainTexture;
                 Color c = surfaceTexture.GetPixel((int)(planetHit.textureCoord.x * surfaceTexture.width), (int)(planetHit.textureCoord.y * surfaceTexture.height));
@@ -260,6 +264,7 @@ public class Planet : MonoBehaviour
 
     public void PlaceBuilding(Building b, Vector3 position)
     {
+        print("placebuilding");
         placeMode = false;
         placeObject.transform.position = position;
         placeObject.transform.parent = transform;        
@@ -281,17 +286,28 @@ public class Planet : MonoBehaviour
         //Material[] mats = new Material[2];
         //mats[0] = originalMat; mats[1] = gridMat;
         //renderer.materials = mats;				
+        print("PLACE MODE!:" + buildingType);
         if (placeMode)
+        {
             Destroy(placeObject);
+            print("DESTRYOEDDDDD");
+        }
         placeMode = true;
         placeObject = (GameObject)Instantiate(Resources.Load("prefabs/buildings/" + buildingType), Vector3.zero, Quaternion.identity);
-        if (placeObject == null) print(buildingType);
+
+        if (placeObject == null)
+        {
+            print("PLACE OBJECT WAS NULLLLLLLLLLL");
+            print(buildingType);
+        }
+        print("END PLACE MODE!!!");
     }
 
 
 
     public void CancelPlace()
     {
+        print("cancelplace");
         Destroy(placeObject);
         placeObject = null;
         placeMode = false;

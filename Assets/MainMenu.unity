@@ -321,6 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menuPlanetPrefab: {fileID: 100000, guid: b2844355f9ec0b5489d7172afae6ae22, type: 2}
+  roguePlanetObj: {fileID: 0}
 --- !u!1 &860576767
 GameObject:
   m_ObjectHideFlags: 0

@@ -5739,9 +5739,9 @@ Transform:
   m_PrefabParentObject: {fileID: 400000, guid: fc5fcdbe29a82c548b0757713e77ed59, type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1355969060}
-  m_LocalRotation: {x: .504344285, y: -.495617658, z: .495617658, w: -.504344285}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalRotation: {x: -.495177269, y: .504776716, z: .49517712, w: -.504776835}
+  m_LocalPosition: {x: 0, y: 0, z: -100}
+  m_LocalScale: {x: 3, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 73226498}
 --- !u!114 &1355969062
@@ -5757,7 +5757,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_WaterMode: 2
   m_DisablePixelLights: 1
-  m_TextureSize: 2048
+  m_TextureSize: 1024
   m_ClipPlaneOffset: .0700000003
   m_ReflectLayers:
     serializedVersion: 2
@@ -5778,7 +5778,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: e633a20421c47426aa04444234225b69, type: 2}
+  - {fileID: 2100000, guid: ae162c0523ab4468bb03ef160eb672e2, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -7710,8 +7710,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1512516282}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -56.2389336}
+  m_LocalRotation: {x: 1, y: 0, z: 0, w: -4.37113883e-08}
+  m_LocalPosition: {x: .168698087, y: -.22072807, z: -56.2413864}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 73226498}
@@ -7724,7 +7724,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: .192156866, g: .301960796, b: .474509805, a: .0196078438}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: .0196078438}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -7733,7 +7733,7 @@ Camera:
     height: 1
   near clip plane: .300000012
   far clip plane: 50
-  field of view: 35.4000015
+  field of view: 27.3999996
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
