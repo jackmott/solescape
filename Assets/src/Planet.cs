@@ -1,57 +1,74 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Threading;
 public class Planet : MonoBehaviour
 {
 
-    public int oil;
-    public int coal;
-    public int pollution;
-
-
-    public GameState state;
-
-
-    private Material originalMat;
-    //private Material gridMat;
-
+   
+    public GameState state;        
     public bool placeMode = false;
     private GameObject placeObject;
-
     public List<Building> placedBuildings;
-
     public Vector3 rotateVector = new Vector3(.1f, 1f, 0f);
-
-    public float buildingRotation = 0;
-
-    public int windZoneCount = 3;
-    public int octaves = 3;
-    public float gain = 2;
-    public float lacunarity = 2;
+    public float buildingRotation = 0;    
     public GameObject[] windZones;
+    public PlanetInfo planetInfo;
 
+    Thread thread;
+    PlanetGenerator pg;
+    PlanetGenerator randomPG;
 
+        
     // Use this for initialization
-    void Start()
+    protected void Start()
     {
+        print("PLANET START");
         state = GameState.Instance;
-
-
-
-        placedBuildings = new List<Building>();
-        InvokeRepeating("UpdateState", 1f, 1.0f);
-
-
-        Generate3DPerlinMap();
-        GenerateWindZones();
-
+        print("STATE ENERGY:" + state.energy);
     }
+
+    public void BeginGame()
+    {
+        
+        state.energy = planetInfo.startEnergy;
+        state.pollution = planetInfo.startPollution;
+        state.gameLength = planetInfo.gameLength;
+        state.yearsLeft = planetInfo.gameLength;
+        state.iq = planetInfo.iq;
+        state.population = planetInfo.population;
+        state.pollutionDeathAmount = planetInfo.maxPollution;
+        state.pollutionClearance = planetInfo.pollutionClearance;
+        state.oilFactor = planetInfo.oilFactor;
+        state.windFactor = planetInfo.windFactor;
+        state.sunFactor = planetInfo.sunFactor;
+        state.coalReserves = planetInfo.coalReserves;
+    
+        placedBuildings = new List<Building>();
+        GenerateWindZones();
+    }
+    
+
+    public void GeneratePlanetNoise(int width, int height, PlanetInfo planetInfo)
+    {
+        this.planetInfo = planetInfo;
+        GeneratePlanet(width,height);        
+    }
+
+    public void SetPlanet(int width, int height, Color[] colors, PlanetInfo planetInfo)
+    {
+        Texture2D planetTex = new Texture2D(width, height, TextureFormat.ARGB32, false);
+        this.planetInfo = planetInfo;
+        planetTex.SetPixels(colors);
+        planetTex.Apply();
+        renderer.material.mainTexture = planetTex;
+    }
+    
 
     void GenerateWindZones()
     {
         float radius = this.transform.localScale.x / 2.0f + 1;
-        windZones = new GameObject[windZoneCount];
+        windZones = new GameObject[planetInfo.windZones];
 
         for (int i = 0; i < windZones.Length; i++)
         {
@@ -69,7 +86,7 @@ public class Planet : MonoBehaviour
             RaycastHit[] hits = Physics.RaycastAll(planetRay);
             foreach (RaycastHit hit in hits)
             {
-                if (hit.transform.gameObject == state.planet.transform.gameObject)
+                if (hit.transform.gameObject == transform.gameObject)
                 {
                     Quaternion q = Quaternion.LookRotation(hit.normal);
                     tornado.transform.localRotation = q;
@@ -79,73 +96,31 @@ public class Planet : MonoBehaviour
             windZones[i] = tornado;
 
         }
-
         
     }
 
-    void Generate3DPerlinMap()
+   
+
+    private void GeneratePlanet(int width, int height)
     {
         
+        Texture2D planetTex = new Texture2D(width, height, TextureFormat.ARGB32, false);
+        Texture2D cloudsTex = new Texture2D(width, height, TextureFormat.ARGB32, false);
 
-        Texture2D planetTex = new Texture2D(2048, 1024, TextureFormat.ARGB32, false);
-        Texture2D cloudsTex = new Texture2D(2048, 1024, TextureFormat.ARGB32, false);
-        
-      
-        // set the pixel values
-        float[] colors = new float[planetTex.width * planetTex.height];
-
-     
-
-        Noise noise = new Noise();
-        
-        
-        float pi = 3.14159265359f;
-        float twopi = pi * 2.0f;
-
-        float offsetx = (float)Random.Range(-200f, 200f);
-        float offsety = (float)Random.Range(-200f, 200f);
-        float sum = 0;
-
-        float min = 999;
-        float max = -999;
-        for (int y = 0; y < planetTex.height; y++)
+        if (pg == null)
         {
-            int row = y * planetTex.width;
-            for (int x = 0; x < planetTex.width; x++)
-            {
-
-                float theta = twopi * (x/(float)planetTex.width);
-                float phi = pi * (y/(float)planetTex.height);
-
-                float x3d = Mathf.Cos(theta) * Mathf.Sin(phi);
-                float y3d = Mathf.Sin(theta) * Mathf.Sin(phi);
-                float z3d = -Mathf.Cos(phi);
-
-
-
-                float color = noise.fbm3(x3d*2+offsetx, y3d*2+offsety, z3d*2,octaves,gain,lacunarity);
-                sum += color;
-                if (color < min) min = color;
-                if (color > max) max = color;
-
-                colors[row + x] = color;
-                
-                                                               
-            }
+            pg = new PlanetGenerator(width, height, true);
         }
-
-        float avg = sum / (planetTex.width * planetTex.height);
-        print("min:" + min + " max:" + max+ " avg:"+avg);
-
-        
-        cloudsTex.SetPixels(noise.rescaleArray(colors,min,max));
+        pg.generatePlanet(planetInfo);        
+        cloudsTex.SetPixels(pg.GetCloudColors());
         cloudsTex.Apply();
         GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
-        Color c = state.planetColorRamp.colors[0];
+        Color c = planetInfo.colorRamp.gradient[0];
         GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);
-        planetTex.SetPixels(noise.rescaleAndColorArray(colors,min,max,state.planetColorRamp.colors));
+        planetTex.SetPixels(pg.GetPlanetColors());
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;
+        pg.Finished();
     }
 
     
@@ -184,11 +159,7 @@ public class Planet : MonoBehaviour
 
     }
 
-    private void UpdateState()
-    {
-
-        state.UpdateState();
-    }
+  
 
     void OnMouseDown()
     {

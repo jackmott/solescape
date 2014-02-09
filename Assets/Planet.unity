@@ -974,18 +974,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7627b943b977fb4d855ed80600bc081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  oil: 0
-  coal: 0
-  pollution: 0
   state: {fileID: 0}
   placeMode: 0
   placedBuildings: []
   rotateVector: {x: .100000001, y: 1, z: 0}
   buildingRotation: 0
-  windZoneCount: 3
-  octaves: 3
-  gain: 2
-  lacunarity: 2
   windZones: []
 --- !u!198 &242430880
 ParticleSystem:
@@ -2434,7 +2427,7 @@ MonoBehaviour:
   hotZoneScale: {x: 1, y: 1}
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_label
-  progressSprite: soldblue
+  progressSprite: solidblue
   progressColor:
     serializedVersion: 2
     rgba: 1526333439
@@ -7904,8 +7897,6 @@ MonoBehaviour:
   oilFactor: 0
   sunFactor: 0
   windFactor: 0
-  rotationSpeed: 0
-  planetSize: 0
   populationKilled: 0
   colonyShipsLaunched: 0
   pollutionClearance: 20

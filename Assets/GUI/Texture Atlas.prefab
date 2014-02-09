@@ -180,7 +180,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .57421875
+      y: .609375
       width: .015625
       height: .03125
     border:
@@ -197,7 +197,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .609375
+      y: .64453125
       width: .015625
       height: .03125
     border:
@@ -363,21 +363,21 @@ MonoBehaviour:
     textureGUID: aad81a9110993514bb734025224aa59b
     deleted: 0
     texture: {fileID: 0}
-  - name: soldblue
+  - name: solidblue
     region:
       serializedVersion: 2
       x: .06640625
-      y: .50390625
-      width: .0625
-      height: .0625
+      y: .57421875
+      width: .03125
+      height: .03125
     border:
       m_Left: 0
       m_Right: 0
       m_Top: 0
       m_Bottom: 0
     rotated: 0
-    sizeInPixels: {x: 32, y: 32}
-    textureGUID: bc04eba9af9300d43b0b547972580568
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 0c8386194f6dc3849b7e72c34901a77d
     deleted: 0
     texture: {fileID: 0}
   - name: white

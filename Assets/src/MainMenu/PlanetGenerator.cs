@@ -6,39 +6,59 @@ using System.Threading;
 public class PlanetGenerator  {
 
 
-    PlanetInfo planetInfo;
-    Texture2D planetTex;
+    public PlanetInfo planetInfo;
+   
     int width;
     int height;
-    float[] colors;
-    Color[] Colors;
+    float[] floatColors;
+    bool generateClouds=false;
     System.Random rand;
+    Color[] colors;
+    Color[] cloudColors;
 
-    public bool ready = false;
+    private bool ready = false;
     Noise noise;
 
-    public PlanetGenerator(int width, int height, Texture2D planetTex)
+    public PlanetGenerator(int width, int height)
     {
-        rand = new System.Random();
-        this.planetTex = planetTex;
-        colors = new float[width * height];
-        Colors = new Color[width * height];
+       SharedConstructor(width,height);
+    }
+
+    public PlanetGenerator(int width, int height,bool generateClouds)
+    {
+        this.generateClouds = generateClouds;
+        SharedConstructor(width, height);
+    }
+
+    private void SharedConstructor(int width, int height)
+    {
+        planetInfo = new PlanetInfo();
+        rand = new System.Random();        
+        floatColors = new float[width * height];        
         noise = new Noise();
         this.width = width;
         this.height = height;
     }
 
+    //generate random planets, forever
     public void start()
     {
         while (true)
         {
             if (!ready)
             {                
-                generatePlanet();
+                generateRandomPlanet();
                 Thread.Sleep(3000);
             }
         }
 
+    }
+
+    
+    //generate 1 planet, with the current planetinfo
+    public void startPlanetInfo()
+    {        
+        generatePlanet(planetInfo);
     }
 
     public void generatePlanet(PlanetInfo pi)
@@ -48,19 +68,37 @@ public class PlanetGenerator  {
         Generate3DPerlinMap();
     }
 
-    public void generatePlanet()
+    public void generateRandomPlanet()
     {
         RandomInfo();
         generatePlanet(planetInfo);
     }
 
-    public void LoadPlanet(MenuPlanet planet)
+    public Color[] GetPlanetColors()
     {
-        if (!ready) return;
-        planet.LoadInfo(planetInfo);
-        planetTex.SetPixels(Colors);
-        planetTex.Apply();
-        planet.renderer.material.mainTexture = planetTex;
+        if (!ready) return null;                
+        return colors;
+    }
+
+    public Color[] GetCloudColors()
+    {
+        if (!ready) return null;
+        return cloudColors;
+    }
+
+    public PlanetInfo GetPlanetInfo()
+    {
+        if (!ready) return null;
+        return planetInfo;
+    }
+
+    public bool IsReady()
+    {
+        return ready;
+    }
+
+    public void Finished()
+    {
         ready = false;
     }
 
@@ -100,6 +138,7 @@ public class PlanetGenerator  {
         planetInfo.octaves = Range(1, 6);
         planetInfo.gain = Range(2f, 7.0f);
         planetInfo.lacunarity = Range(2f, 7.0f);
+        planetInfo.planetName = "QuiGon";
 
         int numColors = Range(3, 15);
         Color[] colors = new Color[numColors];
@@ -164,33 +203,43 @@ public class PlanetGenerator  {
         float min = 999;
         float max = -999;
 
+        int octaves = planetInfo.octaves;
+        float gain = planetInfo.gain;
+        float lacunarity = planetInfo.lacunarity;
+        float stretch = planetInfo.stretch;
+
+        float x3d, y3d, z3d, theta, phi, color;
+        int row;
+
+        float sinPhi;
+
         for (int y = 0; y < height; y++)
         {
-            int row = y * width;
+            //such fast! MUCH SPEED!
+            row = y * width;
+            phi = pi * (y / (float)height);
+            z3d = -Mathf.Cos(phi);
+            sinPhi = Mathf.Sin(phi);
             for (int x = 0; x < width; x++)
             {
-
-                float theta = twopi * (x / (float)width);
-                float phi = pi * (y / (float)height);
-
-                float x3d = Mathf.Cos(theta) * Mathf.Sin(phi);
-                float y3d = Mathf.Sin(theta) * Mathf.Sin(phi);
-                float z3d = -Mathf.Cos(phi);
-
-
-
-                float color = noise.fbm3(x3d * 2 + offsetx, y3d * 2 + offsety, z3d * 2, planetInfo.octaves, planetInfo.gain, planetInfo.lacunarity);
+                theta = twopi * (x / (float)width);
+                
+                x3d = Mathf.Cos(theta) * sinPhi;
+                y3d = Mathf.Sin(theta) * sinPhi;
+                
+                color = noise.fbm3(x3d * 2 + offsetx, y3d * 2 + offsety, z3d * stretch , octaves, gain, lacunarity);
 
                 if (color < min) min = color;
                 if (color > max) max = color;
-                colors[row + x] = color;
-
+                floatColors[row + x] = color;
 
             }
         }
 
         //GameObject.Find("Water").renderer.material.color = planetInfo.colorRamp.colors[0];
-        Colors = noise.rescaleAndColorArrayMenu(colors, min, max, planetInfo.colorRamp.colors);
+        colors = noise.rescaleAndColorArray(floatColors, min, max, planetInfo.colorRamp.gradient);
+        if (generateClouds)
+            cloudColors = noise.rescaleArray(floatColors,min,max);
         ready = true;
     }
 

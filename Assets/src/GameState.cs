@@ -32,12 +32,7 @@ public class GameState : MonoBehaviour
     public float oilFactor;
     public float sunFactor;
     public float windFactor;
-
-    public ColorRamp planetColorRamp;
-
-    public float rotationSpeed;
-    public float planetSize;
-
+        
 
     public int populationKilled = 0;
     public int colonyShipsLaunched = 0;
@@ -90,54 +85,33 @@ public class GameState : MonoBehaviour
 
         GetData();
 
+      
+
+
+    }
+
+    void Start()
+    {
         GameObject perObj = (GameObject)GameObject.Find("Persistence");
         PlanetInfo pi;
         if (perObj == null)
         {
-            pi = LoadPlanets()[0];            
+            pi = LoadPlanets()[0];
         }
         else
         {
             Persistence per = perObj.GetComponent<Persistence>();
             pi = per.pi;
-            
+
         }
-        planet.transform.localScale = new Vector3(pi.planetSize,pi.planetSize,pi.planetSize);
-        LoadPlanet(pi);
 
+        planet.transform.localScale = new Vector3(pi.planetSize, pi.planetSize, pi.planetSize);
+        planet.GeneratePlanetNoise(2048, 1024, pi);
+        planet.BeginGame();
         gameStats = new GameStats[gameLength + 1];
-
-
-
+        InvokeRepeating("UpdateState", 1f, 1.0f);
     }
-
-    private void LoadPlanet(PlanetInfo i)
-    {
-        print("Loading planet info");
-        gameLength = i.gameLength;
-        yearsLeft = gameLength;
-        coalReserves = i.coalReserves;
-        oilFactor = i.oilFactor;
-        windFactor = i.windFactor;
-        sunFactor = i.sunFactor;
-        rotationSpeed = i.rotationSpeed;
-        planetSize = i.planetSize;
-        population = i.population;
-        iq = i.iq;
-        energy = i.startEnergy;
-        pollution = i.startPollution;
-        pollutionDeathAmount = i.maxPollution;
-        planetColorRamp = i.colorRamp;
-        planet.windZoneCount = i.windZones;
-        planet.gain = i.gain;
-        planet.lacunarity = i.lacunarity;
-        planet.octaves = i.octaves;
-
-        print("Planet info Loaded");
-        Time.timeScale = 1;
-
-
-    }
+   
 
     public static GameState Instance
     {
@@ -517,7 +491,7 @@ public class GameState : MonoBehaviour
 
         List<PlanetInfo> planets = new List<PlanetInfo>();
 
-        int numCol = 18; //number of columns before dependency list
+        int numCol = 19; //number of columns before dependency list
 
 
         string line = reader.ReadLine();
@@ -551,6 +525,7 @@ public class GameState : MonoBehaviour
             planetInfo.octaves = int.Parse(splitLine[15]);
             planetInfo.gain = float.Parse(splitLine[16]);
             planetInfo.lacunarity = float.Parse(splitLine[17]);
+            planetInfo.stretch = float.Parse(splitLine[18]);
 
             List<Color> colors = new List<Color>();
             List<float> ranges = new List<float>();

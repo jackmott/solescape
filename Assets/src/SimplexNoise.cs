@@ -621,15 +621,11 @@ public class Noise
         float sum = 0f;
         float frequency = 1;
         float amplitude = 1;        
-
-        
-        float scaleSum = 0;
+                
         for (int i = 1; i <= octaves; i++)
         {
-            sum += (1f / frequency) * noise3(x * amplitude, y * amplitude,z*amplitude);
-            scaleSum += (1f / frequency) * 1f;
-
-            frequency *= lacunarity;
+            sum += frequency * noise3(x * amplitude, y * amplitude,z*amplitude);            
+            frequency /= lacunarity;
             amplitude *= gain;                        
         }
 
@@ -645,9 +641,8 @@ public class Noise
 
         for (int i = 0; i < a.Length;i++)
         {
-            float x = (a[i]+offset)*scale;
-            int index = (int)(x * (colors.Length - 1));
-            result[i] = colors[index];
+            float x = (a[i]+offset)*scale;            
+            result[i] = colors[(int)(x * (colors.Length - 1))];
         }
         return result;
     }
@@ -661,9 +656,8 @@ public class Noise
 
         for (int i = 0; i < a.Length; i++)
         {
-            float x = (a[i] + offset) * scale;
-            int index = (int)(x * (colors.Length - 1));
-            result[i] = colors[index];
+            float x = (a[i] + offset) * scale;            
+            result[i] = colors[(int)(x * (colors.Length - 1))];
             if (result[i].a == 0)
             {
                 result[i] = new Color(colors[0].r, colors[0].g, colors[0].b, 1);

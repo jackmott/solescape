@@ -1,0 +1,32 @@
+﻿<columns>
+  <column name="Name" type="Text" allowwrap="true" />
+  <column name="Coal" type="Text" allowwrap="true" />
+  <column name="Oil" type="Text" allowwrap="true" />
+  <column name="Wind" type="Text" allowwrap="true" />
+  <column name="Sun" type="Text" allowwrap="true" />
+  <column name="Rotation Speed" type="Text" allowwrap="true" />
+  <column name="Time" type="Text" allowwrap="true" />
+  <column name="Size" type="Text" allowwrap="true" />
+  <column name="start population" type="Text" allowwrap="true" />
+  <column name="start iq" type="Text" allowwrap="true" />
+  <column name="start energy" type="Text" allowwrap="true" />
+  <column name="start pollution" type="Text" allowwrap="true" />
+  <column name="New Column" type="Text" allowwrap="true" />
+  <column name="maxpollution" type="Text" allowwrap="true" />
+  <column name="Wind Zones" type="Text" allowwrap="true" />
+  <column name="Octaves" type="Text" allowwrap="true" />
+  <column name="Gain" type="Text" allowwrap="true" />
+  <column name="Lacunarity" type="Text" allowwrap="true" />
+  <column name="New Column 2" type="Text" />
+  <column name="Colors" type="Text" allowwrap="true" />
+  <column name="Column 15" type="Text" allowwrap="true" />
+  <column name="Column 16" type="Text" allowwrap="true" />
+  <column name="Column 17" type="Text" allowwrap="true" />
+  <column name="Column 18" type="Text" allowwrap="true" />
+  <column name="Column 19" type="Text" allowwrap="true" />
+  <column name="Column 20" type="Text" allowwrap="true" />
+  <column name="Column 21" type="Text" allowwrap="true" />
+  <column name="Column 22" type="Text" allowwrap="true" />
+  <column name="Column 23" type="Text" allowwrap="true" />
+  <column name="Column 24" type="Text" allowwrap="true" />
+</columns>

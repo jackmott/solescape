@@ -1,32 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MenuPlanet : MonoBehaviour {
+public class MenuPlanet : Planet {
 
-    PlanetInfo planetInfo;
+    
     bool isMouseOver = false;
 
     GUIStyle style;
 
 	// Use this for initialization
-	void Start () {
-
+	new void Start () {
+        base.Start();
         style = new GUIStyle();
         style.normal.textColor = Color.blue;
         style.fontSize = 24;
-      
-	
+      	
 	}
 
-    public void LoadInfo(PlanetInfo planetInfo)
-    {
-        this.planetInfo = planetInfo;        
-    }
+    
 
-   
-
-      
-
+         
     void OnMouseEnter()
     {
         renderer.material.shader = Shader.Find("Unlit/Texture");

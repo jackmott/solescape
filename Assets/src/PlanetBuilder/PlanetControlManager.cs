@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Threading;
 
 public class PlanetControlManager : MonoBehaviour {
 
@@ -11,9 +11,16 @@ public class PlanetControlManager : MonoBehaviour {
 
     static PlanetControlManager instance;
 
-    int width = 2048;
-    int height = 1024;
+    int width = 1024;
+    int height = 512;
 
+    private bool legit = true;
+
+    private PlanetGenerator pg;
+    private Texture2D planetTex;
+
+    MenuPlanet mp;
+    GameObject planet;
     
 	// Use this for initialization
 
@@ -35,13 +42,27 @@ public class PlanetControlManager : MonoBehaviour {
     {
         instance = this;
     }
+
 	void Start () {
+        planetTex = new Texture2D(width,height,TextureFormat.ARGB32,false);
+        pg = new PlanetGenerator(width, height, planetTex);
+
+        planet = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(0, 1.35f, -7), Quaternion.identity);
+        planet.transform.localScale = new Vector3(2, 2, 2);
+        planet.name = "PLANET";
+        planet.AddComponent("MenuPlanet");
+        mp = planet.GetComponent<MenuPlanet>();        
+        
         RedrawPlanet();	
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if (pg.IsReady())
+        {
+            print("loadplanet");
+            mp.SetPlanet(width, height, pg.GetPlanetColors(), pg.GetPlanetInfo());
+        }
 	}
 
     public void OnColorMouseUp(dfControl control, dfMouseEventArgs mouseEvent)
@@ -53,6 +74,14 @@ public class PlanetControlManager : MonoBehaviour {
 
     public void OnSliderChanged(dfControl control, float value)
     {
+        if (legit)
+        {
+            legit = false;
+        }
+        else
+        {
+            return;
+        }
         dfSlider[] sliders = new dfSlider[5];
         int currIndex = 0;
         int sum = 0;
@@ -68,45 +97,42 @@ public class PlanetControlManager : MonoBehaviour {
         //check if sum adds up to one hunnered
         if (sum < 100)
         {
-            int adjustIndex = (currIndex+1)%sliders.Length;
-            sliders[adjustIndex].IsEnabled = false;
-            sliders[adjustIndex].Value = 100 - sum;
-            sliders[adjustIndex].IsEnabled = true;
+            int adjustIndex = (currIndex+1)%sliders.Length;            
+            sliders[adjustIndex].Value += 100 - sum;            
         }
         else if (sum > 100)
         {
             int adjustIndex = (currIndex + 1) % sliders.Length;
             do
             {
+                print("sum:" + sum);
                 int adjustmentNeeded = sum - 100;
                 sum = (int)(sum - sliders[adjustIndex].Value);
                 int adjustmentAvailable = (int)sliders[adjustIndex].Value;
-                sliders[adjustIndex].IsEnabled = false;
+                print("Slider preadjusted val:" + sliders[adjustIndex].Value);
                 sliders[adjustIndex].Value -= Mathf.Min(adjustmentNeeded, adjustmentAvailable);
-                sliders[adjustIndex].IsEnabled = true;
+                print("Slider adjusted val:" + sliders[adjustIndex].Value);
                 sum = (int)(sum + sliders[adjustIndex].Value);
                 adjustIndex = (adjustIndex + 1) % sliders.Length;
             } while (sum > 100);
-        }        
+        }
+
+        legit = true;
     }
 
    
     public void RedrawPlanet()
     {
-        GameObject planet = GameObject.Find("PLANET");
-        if (planet != null) Destroy(planet);
-        planet = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(0, 1.35f, -7), Quaternion.identity);
-        planet.transform.localScale = new Vector3(2, 2, 2);
-        planet.name = "PLANET";
-        planet.AddComponent("MenuPlanet");
-        MenuPlanet mp = planet.GetComponent<MenuPlanet>();        
-        Texture2D tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
-        PlanetGenerator pg = new PlanetGenerator(width, height, tex);
-        pg.generatePlanet(CreateInfo());
-        pg.LoadPlanet(mp);
+        
+        pg.planetInfo = CreateInfo();
+        Thread thread = new Thread(new ThreadStart(pg.startPlanetInfo));
+        thread.Start();
+        
         print("planet added");
         
     }
+
+    
 
     public PlanetInfo CreateInfo()
     {
@@ -125,27 +151,26 @@ public class PlanetControlManager : MonoBehaviour {
         planetInfo.planetSize = 500;
         planetInfo.rotationSpeed = 1;
         planetInfo.windZones = 3;
-        planetInfo.octaves = 3;
-        planetInfo.gain = 2;
-        planetInfo.lacunarity = 2;
+        planetInfo.octaves = (int)GameObject.Find("OctavesSlider").GetComponentInChildren<dfSlider>().Value;
+        planetInfo.gain = GameObject.Find("GainSlider").GetComponentInChildren<dfSlider>().Value;
+        planetInfo.lacunarity = GameObject.Find("LacunaritySlider").GetComponentInChildren<dfSlider>().Value;
 
         Color[] colors = new Color[6];
         float[] ranges = new float[5];
 
+        for (int i = 0; i < colors.Length;i++)
+        {
+            Color c = GameObject.Find("ColorDisplay" + (i + 1)).GetComponentInChildren<dfSlicedSprite>().Color;
+            if (i == 0) c.a = 0;
+            colors[i] = c;
+        }
 
-        colors[0] = GameObject.Find("ColorDisplay1").GetComponentInChildren<dfSlicedSprite>().Color;
-        ranges[0] = .2f;
-        colors[1] = GameObject.Find("ColorDisplay2").GetComponentInChildren<dfSlicedSprite>().Color;
-        ranges[1] = .2f;
-        colors[2] = GameObject.Find("ColorDisplay3").GetComponentInChildren<dfSlicedSprite>().Color;
-        ranges[2] = .2f;
-        colors[3] = GameObject.Find("ColorDisplay4").GetComponentInChildren<dfSlicedSprite>().Color;
-        ranges[3] = .2f;
-        colors[4] = GameObject.Find("ColorDisplay5").GetComponentInChildren<dfSlicedSprite>().Color;
-        ranges[4] = .2f;
-        colors[5] = GameObject.Find("ColorDisplay6").GetComponentInChildren<dfSlicedSprite>().Color;
-
+        for (int i = 0; i < ranges.Length; i++)
+        {
+            ranges[i] = GameObject.Find("Slider" + (i + 1)).GetComponentInChildren<dfSlider>().Value / 100f;
+        }
         
+                
 
         ColorRamp r = new ColorRamp(colors, ranges);
         planetInfo.colorRamp = r;

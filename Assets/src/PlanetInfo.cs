@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public struct PlanetInfo  {
+
+public class PlanetInfo  {
 
     public string planetName;
     public float coalReserves;
@@ -21,7 +22,34 @@ public struct PlanetInfo  {
     public int octaves;
     public float gain;
     public float lacunarity;
+    public float stretch;
 
     public ColorRamp colorRamp;
+
+    public override string ToString()
+    {
+        string result = planetName + ",";
+        result += coalReserves+",";
+        result += oilFactor+",";
+        result += windFactor+",";
+        result += sunFactor+",";
+        result += rotationSpeed+",";
+        result += gameLength+",";
+        result += planetSize+",";
+        result += population+",";
+        result += iq+",";
+        result += startEnergy+",";
+        result += startPollution+",";
+        result += pollutionClearance+",";
+        result += maxPollution+",";
+        result += windZones+",";
+        result += octaves+",";
+        result += gain + ",";
+        result += lacunarity + ",";
+        result += stretch;
+        result += colorRamp.ToString();
+        return result;
+
+    }
 
 }
