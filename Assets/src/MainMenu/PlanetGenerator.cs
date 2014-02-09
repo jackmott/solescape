@@ -43,6 +43,7 @@ public class PlanetGenerator  {
     //generate random planets, forever
     public void start()
     {
+        Debug.Log("start() pg");
         while (true)
         {
             if (!ready)
@@ -57,7 +58,8 @@ public class PlanetGenerator  {
     
     //generate 1 planet, with the current planetinfo
     public void startPlanetInfo()
-    {        
+    {
+        Debug.Log("startPlanetInfo() pg");   
         generatePlanet(planetInfo);
     }
 
@@ -192,7 +194,7 @@ public class PlanetGenerator  {
    
     private void Generate3DPerlinMap()
     {
-
+        Debug.Log("generate3dperlin() pg");   
 
         float pi = 3.14159265359f;
         float twopi = pi * 2.0f;
@@ -227,7 +229,7 @@ public class PlanetGenerator  {
                 x3d = Mathf.Cos(theta) * sinPhi;
                 y3d = Mathf.Sin(theta) * sinPhi;
                 
-                color = noise.fbm3(x3d * 2 + offsetx, y3d * 2 + offsety, z3d * stretch , octaves, gain, lacunarity);
+                color = noise.fbm3(x3d * 2 + offsetx, y3d * stretch + offsety, z3d * 2 , octaves, gain, lacunarity);
 
                 if (color < min) min = color;
                 if (color > max) max = color;
@@ -241,6 +243,7 @@ public class PlanetGenerator  {
         if (generateClouds)
             cloudColors = noise.rescaleArray(floatColors,min,max);
         ready = true;
+        Debug.Log("ENDgenerate3dperlin() pg");   
     }
 
 }

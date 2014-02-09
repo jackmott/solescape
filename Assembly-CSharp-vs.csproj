@@ -204,7 +204,6 @@
      <Compile Include="Assets\src\Sun.cs" />
      <Compile Include="Assets\src\TickManager.cs" />
      <Compile Include="Assets\src\Tornado.cs" />
-     <Compile Include="Assets\src\Water.cs" />
      <None Include="Assets\Resources\descriptions\Windmill.txt" />
      <None Include="Assets\Resources\descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\descriptions\SETITelescope.txt" />

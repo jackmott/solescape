@@ -28,7 +28,7 @@ public class MenuPlanet : Planet {
 
     void OnMouseExit()
     {
-        renderer.material.shader = Shader.Find("Diffuse");
+        renderer.material.shader = Shader.Find("Transparent/Cutout/Bumped Diffuse");
         isMouseOver = false;
     }
 
@@ -42,18 +42,18 @@ public class MenuPlanet : Planet {
 	// Update is called once per frame
 	void Update () {
 
-        transform.RotateAround(transform.position, Vector3.up, Time.deltaTime * 25);
+        transform.RotateAround(transform.position, Vector3.up, Time.deltaTime * 10);
 	
 	}
 
     void OnGUI()
     {
-        if (isMouseOver)
+        if (isMouseOver && planetInfo != null)
         {
             
             Vector3 guiPos = Camera.main.WorldToScreenPoint(transform.position);            
                         
-            GUI.Label(new Rect(guiPos.x-120, Screen.height - (guiPos.y-125), 300, 20), "Begin "+planetInfo.planetName+" Game", style);
+            GUI.Label(new Rect(guiPos.x-120, Screen.height - (guiPos.y-225), 300, 20), "Begin "+planetInfo.planetName+" Game", style);
         }
     }
 }

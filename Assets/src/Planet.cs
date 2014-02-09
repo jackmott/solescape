@@ -23,9 +23,9 @@ public class Planet : MonoBehaviour
     // Use this for initialization
     protected void Start()
     {
-        print("PLANET START");
+                
         state = GameState.Instance;
-        print("STATE ENERGY:" + state.energy);
+        
     }
 
     public void BeginGame()
@@ -62,6 +62,8 @@ public class Planet : MonoBehaviour
         planetTex.SetPixels(colors);
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;
+        Color c = planetInfo.colorRamp.gradient[0];
+        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);
     }
     
 
@@ -114,9 +116,12 @@ public class Planet : MonoBehaviour
         pg.generatePlanet(planetInfo);        
         cloudsTex.SetPixels(pg.GetCloudColors());
         cloudsTex.Apply();
-        GameObject.Find("Clouds").renderer.material.mainTexture = cloudsTex;
+        GameObject clouds = GameObject.Find("Clouds");
+        if (clouds != null) clouds.renderer.material.mainTexture = cloudsTex;
         Color c = planetInfo.colorRamp.gradient[0];
-        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);
+        
+        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);        
+        
         planetTex.SetPixels(pg.GetPlanetColors());
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;

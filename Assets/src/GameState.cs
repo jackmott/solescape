@@ -117,11 +117,7 @@ public class GameState : MonoBehaviour
     {
         get
         {
-            while (instance == null)
-            {
-                System.Threading.Thread.Sleep(1000);
-                print("GameState instance");
-            }
+            
             return instance;
         }
     }
@@ -526,6 +522,7 @@ public class GameState : MonoBehaviour
             planetInfo.gain = float.Parse(splitLine[16]);
             planetInfo.lacunarity = float.Parse(splitLine[17]);
             planetInfo.stretch = float.Parse(splitLine[18]);
+            
 
             List<Color> colors = new List<Color>();
             List<float> ranges = new List<float>();

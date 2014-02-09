@@ -40,19 +40,19 @@ public class PlanetControlManager : MonoBehaviour {
 
     void Awake()
     {
+        print("AWAKE");
         instance = this;
     }
 
 	void Start () {
+        print("START");
         planetTex = new Texture2D(width,height,TextureFormat.ARGB32,false);
         pg = new PlanetGenerator(width, height, planetTex);
-
-        planet = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(0, 1.35f, -7), Quaternion.identity);
-        planet.transform.localScale = new Vector3(2, 2, 2);
-        planet.name = "PLANET";
-        planet.AddComponent("MenuPlanet");
-        mp = planet.GetComponent<MenuPlanet>();        
-        
+        print("STARTB");
+        planet = GameObject.Find("Planet");
+        print("STARTC");                        
+        mp = planet.GetComponent<MenuPlanet>();
+        print("STARTD");
         RedrawPlanet();	
 	}
 	
@@ -62,6 +62,7 @@ public class PlanetControlManager : MonoBehaviour {
         {
             print("loadplanet");
             mp.SetPlanet(width, height, pg.GetPlanetColors(), pg.GetPlanetInfo());
+            pg.Finished();
         }
 	}
 
@@ -154,6 +155,7 @@ public class PlanetControlManager : MonoBehaviour {
         planetInfo.octaves = (int)GameObject.Find("OctavesSlider").GetComponentInChildren<dfSlider>().Value;
         planetInfo.gain = GameObject.Find("GainSlider").GetComponentInChildren<dfSlider>().Value;
         planetInfo.lacunarity = GameObject.Find("LacunaritySlider").GetComponentInChildren<dfSlider>().Value;
+        planetInfo.stretch = 2;
 
         Color[] colors = new Color[6];
         float[] ranges = new float[5];
