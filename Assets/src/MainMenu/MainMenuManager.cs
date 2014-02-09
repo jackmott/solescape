@@ -10,6 +10,7 @@ public class MainMenuManager : MonoBehaviour {
     
     
     public GameObject menuPlanetPrefab;
+    public GameObject waterPrefab;
     public GameObject roguePlanetObj;
                 
     MenuPlanet rogueMP;
@@ -31,6 +32,10 @@ public class MainMenuManager : MonoBehaviour {
         foreach (PlanetInfo pi in planets)
         {
             GameObject planet = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(-2.5f + count * 1.5f, 1.35f, -7), Quaternion.identity);
+            GameObject water = (GameObject)Instantiate(waterPrefab, new Vector3(-2.5f + count * 1.5f, 1.35f, -7), Quaternion.identity);
+            water.transform.parent = planet.transform;
+            water.transform.localScale *= .99f;
+            water.name = "Water";
             planet.AddComponent("MenuPlanet");            
             MenuPlanet mp = planet.GetComponent<MenuPlanet>();
             mp.GeneratePlanetNoise(width, height, pi);            
@@ -42,6 +47,10 @@ public class MainMenuManager : MonoBehaviour {
         thread = new Thread(new ThreadStart(pgThread.start));
         thread.Start();
         roguePlanetObj = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(0, .2f, -7), Quaternion.identity);
+        GameObject rogueWater = (GameObject)Instantiate(waterPrefab, new Vector3(0, .2f, -7), Quaternion.identity);
+        rogueWater.transform.parent = roguePlanetObj.transform;
+        rogueWater.transform.localScale *= .99f;
+        rogueWater.name = "Water";
         roguePlanetObj.AddComponent("MenuPlanet");
         rogueMP = roguePlanetObj.GetComponent<MenuPlanet>();
 	}

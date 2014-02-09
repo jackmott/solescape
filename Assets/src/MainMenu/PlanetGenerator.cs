@@ -211,17 +211,18 @@ public class PlanetGenerator  {
         float stretch = planetInfo.stretch;
 
         float x3d, y3d, z3d, theta, phi, color;
-        int row;
+        int count = 0 ;
 
         float sinPhi;
 
         for (int y = 0; y < height; y++)
         {
-            //such fast! MUCH SPEED!
-            row = y * width;
+            /**** SUCH FAST! MUCH OPTIMIZE!! ****/            
             phi = pi * (y / (float)height);
-            z3d = -Mathf.Cos(phi);
+            z3d = Mathf.Cos(phi);
             sinPhi = Mathf.Sin(phi);
+            /**** GOT ALL THIS OUT OF THE INNER LOOP!!! ****/
+
             for (int x = 0; x < width; x++)
             {
                 theta = twopi * (x / (float)width);
@@ -230,10 +231,12 @@ public class PlanetGenerator  {
                 y3d = Mathf.Sin(theta) * sinPhi;
                 
                 color = noise.fbm3(x3d * 2 + offsetx, y3d * stretch + offsety, z3d * 2 , octaves, gain, lacunarity);
-
+                
                 if (color < min) min = color;
                 if (color > max) max = color;
-                floatColors[row + x] = color;
+
+                floatColors[count] = color;
+                count++;
 
             }
         }

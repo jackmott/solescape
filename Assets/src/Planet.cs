@@ -61,9 +61,8 @@ public class Planet : MonoBehaviour
         this.planetInfo = planetInfo;
         planetTex.SetPixels(colors);
         planetTex.Apply();
-        renderer.material.mainTexture = planetTex;
-        Color c = planetInfo.colorRamp.gradient[0];
-        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);
+        renderer.material.mainTexture = planetTex;        
+        SetWater(planetInfo.colorRamp.gradient[0]);
     }
     
 
@@ -101,7 +100,18 @@ public class Planet : MonoBehaviour
         
     }
 
-   
+    private void SetWater(Color c)
+    {
+        Transform[] children = gameObject.GetComponentsInChildren<Transform>();
+        foreach (Transform t in children)
+        {
+            if (t.gameObject.name == "Water")
+            {
+                t.gameObject.renderer.material.color = new Color(c.r, c.g, c.b, 1);
+            }
+        }
+
+    }
 
     private void GeneratePlanet(int width, int height)
     {
@@ -118,9 +128,9 @@ public class Planet : MonoBehaviour
         cloudsTex.Apply();
         GameObject clouds = GameObject.Find("Clouds");
         if (clouds != null) clouds.renderer.material.mainTexture = cloudsTex;
-        Color c = planetInfo.colorRamp.gradient[0];
-        
-        GameObject.Find("Water").renderer.material.color = new Color(c.r, c.g, c.b, 1);        
+
+        SetWater(planetInfo.colorRamp.gradient[0]);
+      
         
         planetTex.SetPixels(pg.GetPlanetColors());
         planetTex.Apply();
