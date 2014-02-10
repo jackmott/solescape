@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ColorRamp
@@ -11,7 +11,7 @@ public class ColorRamp
 
 
     
-    public ColorRamp(Color[] inColors, float[] ranges)
+	public ColorRamp(Color[] inColors, float[] ranges)
     {
         this.colors = inColors;
         int colorIndex = 0;
@@ -65,7 +65,7 @@ public class ColorRamp
                 result += "|";
             }
         }
-        return result;
+		return result;
     }
 
 

@@ -106,7 +106,7 @@ public class GameState : MonoBehaviour
         }
 
         planet.transform.localScale = new Vector3(pi.planetSize, pi.planetSize, pi.planetSize);
-        planet.GeneratePlanetNoise(2048, 1024, pi);
+        planet.GeneratePlanet(2048, 1024, pi);
         planet.BeginGame();
         gameStats = new GameStats[gameLength + 1];
         InvokeRepeating("UpdateState", 1f, 1.0f);
@@ -487,7 +487,7 @@ public class GameState : MonoBehaviour
 
         List<PlanetInfo> planets = new List<PlanetInfo>();
 
-        int numCol = 19; //number of columns before dependency list
+        int numCol = 21; //number of columns before dependency list
 
 
         string line = reader.ReadLine();
@@ -503,30 +503,53 @@ public class GameState : MonoBehaviour
 
             PlanetInfo planetInfo = new PlanetInfo();
 
-            planetInfo.planetName = splitLine[0].Trim();
-            planetInfo.coalReserves = int.Parse(splitLine[1]);
-            planetInfo.oilFactor = float.Parse(splitLine[2]);
-            planetInfo.windFactor = float.Parse(splitLine[3]);
-            planetInfo.sunFactor = float.Parse(splitLine[4]);
-            planetInfo.rotationSpeed = float.Parse(splitLine[5]);
-            planetInfo.gameLength = int.Parse(splitLine[6]);
-            planetInfo.planetSize = int.Parse(splitLine[7]);
-            planetInfo.population = int.Parse(splitLine[8]);
-            planetInfo.iq = float.Parse(splitLine[9]);
-            planetInfo.startEnergy = int.Parse(splitLine[10]);
-            planetInfo.startPollution = int.Parse(splitLine[11]);
-            planetInfo.pollutionClearance = int.Parse(splitLine[12]);
-            planetInfo.maxPollution = int.Parse(splitLine[13]);
-            planetInfo.windZones = int.Parse(splitLine[14]);
-            planetInfo.octaves = int.Parse(splitLine[15]);
-            planetInfo.gain = float.Parse(splitLine[16]);
-            planetInfo.lacunarity = float.Parse(splitLine[17]);
-            planetInfo.stretch = float.Parse(splitLine[18]);
-            
+            int i = 0;
+            planetInfo.planetName = splitLine[i].Trim();
+            i++;
+            planetInfo.skybox = splitLine[i].Trim();
+            i++;
+            planetInfo.normals = splitLine[i].Trim();
+            i++;
+            planetInfo.coalReserves = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.oilFactor = float.Parse(splitLine[i]); 
+            i++;
+            planetInfo.windFactor = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.sunFactor = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.rotationSpeed = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.gameLength = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.planetSize = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.population = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.iq = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.startEnergy = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.startPollution = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.pollutionClearance = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.maxPollution = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.windZones = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.octaves = int.Parse(splitLine[i]);
+            i++;
+            planetInfo.gain = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.lacunarity = float.Parse(splitLine[i]);
+            i++;
+            planetInfo.stretch = float.Parse(splitLine[i]);
+                        
 
             List<Color> colors = new List<Color>();
             List<float> ranges = new List<float>();
-            for (int i = 0; i < splitLine.Length - numCol; i++)
+            for (i = 0; i < splitLine.Length - numCol; i++)
             {
                 string colorString = splitLine[i + numCol].Trim();
                 if (colorString == "")

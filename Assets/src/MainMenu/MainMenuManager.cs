@@ -38,7 +38,7 @@ public class MainMenuManager : MonoBehaviour {
             water.name = "Water";
             planet.AddComponent("MenuPlanet");            
             MenuPlanet mp = planet.GetComponent<MenuPlanet>();
-            mp.GeneratePlanetNoise(width, height, pi);            
+            mp.GeneratePlanet(width, height, pi);            
             print("planet added");
             count++;
         }

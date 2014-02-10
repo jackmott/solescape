@@ -49,10 +49,12 @@ public class Planet : MonoBehaviour
     }
     
 
-    public void GeneratePlanetNoise(int width, int height, PlanetInfo planetInfo)
+    public void GeneratePlanet(int width, int height, PlanetInfo planetInfo)
     {
         this.planetInfo = planetInfo;
-        GeneratePlanet(width,height);        
+        GeneratePlanet(width,height);
+        SetSkyBox(planetInfo.skybox);
+        SetNormals(planetInfo.normals);
     }
 
     public void SetPlanet(int width, int height, Color[] colors, PlanetInfo planetInfo)
@@ -63,6 +65,19 @@ public class Planet : MonoBehaviour
         planetTex.Apply();
         renderer.material.mainTexture = planetTex;        
         SetWater(planetInfo.colorRamp.gradient[0]);
+        
+    }
+
+    public static void SetSkyBox(string skybox)
+    {        
+        Material box = (Material)Resources.Load("SkyBox/"+skybox);
+        RenderSettings.skybox = box;
+    }
+
+    public void SetNormals(string normals)
+    {
+        Texture2D normalMap = (Texture2D)Resources.Load("PlanetNormals/" + normals);
+        this.renderer.material.SetTexture("_BumpMap", normalMap);
     }
     
 

@@ -40,6 +40,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 7d6655a19250c264fbabec39d50c37f5, type: 2}
   items:
+  - name: dropdown
+    region:
+      serializedVersion: 2
+      x: .06640625
+      y: .609375
+      width: .03125
+      height: .03125
+    border:
+      m_Left: 2
+      m_Right: 2
+      m_Top: 2
+      m_Bottom: 2
+    rotated: 0
+    sizeInPixels: {x: 16, y: 16}
+    textureGUID: 268e94c75b136de4b8a140def8cb01bb
+    deleted: 0
+    texture: {fileID: 0}
   - name: scifi_box
     region:
       serializedVersion: 2
@@ -150,8 +167,8 @@ MonoBehaviour:
       width: .03125
       height: .03125
     border:
-      m_Left: 0
-      m_Right: 0
+      m_Left: 3
+      m_Right: 3
       m_Top: 0
       m_Bottom: 0
     rotated: 0
@@ -180,7 +197,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .609375
+      y: .64453125
       width: .015625
       height: .03125
     border:
@@ -197,7 +214,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .64453125
+      y: .6796875
       width: .015625
       height: .03125
     border:
@@ -367,7 +384,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .57421875
+      y: .5390625
       width: .03125
       height: .03125
     border:
@@ -384,7 +401,7 @@ MonoBehaviour:
     region:
       serializedVersion: 2
       x: .06640625
-      y: .5390625
+      y: .57421875
       width: .03125
       height: .03125
     border:

@@ -8,12 +8,15 @@ public class MenuPlanet : Planet {
 
     GUIStyle style;
 
+    Shader startShader;
+
 	// Use this for initialization
 	new void Start () {
         base.Start();
         style = new GUIStyle();
         style.normal.textColor = Color.blue;
         style.fontSize = 24;
+        startShader = renderer.material.shader;
       	
 	}
 
@@ -28,7 +31,7 @@ public class MenuPlanet : Planet {
 
     void OnMouseExit()
     {
-        renderer.material.shader = Shader.Find("Transparent/Cutout/Bumped Diffuse");
+        renderer.material.shader = startShader;
         isMouseOver = false;
     }
 

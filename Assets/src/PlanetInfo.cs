@@ -5,6 +5,8 @@ using System.Collections;
 public class PlanetInfo  {
 
     public string planetName;
+    public string skybox;
+    public string normals;
     public float coalReserves;
     public float oilFactor;
     public float windFactor;

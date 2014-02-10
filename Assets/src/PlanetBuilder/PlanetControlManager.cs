@@ -11,13 +11,16 @@ public class PlanetControlManager : MonoBehaviour {
 
     static PlanetControlManager instance;
 
-    int width = 1024;
-    int height = 512;
+    int width = 2048;
+    int height = 1024;
 
     private bool legit = true;
 
     private PlanetGenerator pg;
     private Texture2D planetTex;
+
+    string[] skyboxes;
+    string[] planetNormals;
 
     MenuPlanet mp;
     GameObject planet;
@@ -42,29 +45,70 @@ public class PlanetControlManager : MonoBehaviour {
     {
         print("AWAKE");
         instance = this;
+        planetTex = new Texture2D(width, height, TextureFormat.ARGB32, false);
+        pg = new PlanetGenerator(width, height, planetTex);
     }
 
 	void Start () {
-        print("START");
-        planetTex = new Texture2D(width,height,TextureFormat.ARGB32,false);
-        pg = new PlanetGenerator(width, height, planetTex);
-        print("STARTB");
-        planet = GameObject.Find("Planet");
-        print("STARTC");                        
+        
+       
+        planet = GameObject.Find("Planet");       
         mp = planet.GetComponent<MenuPlanet>();
-        print("STARTD");
-        RedrawPlanet();	
+
+        
+
+        skyboxes = Utility.GetAllFilesInFolder("SkyBox", "mat");
+        dfDropdown skyboxDropdown = GameObject.Find("SkyBoxDropdown").GetComponent<dfDropdown>();
+        skyboxDropdown.Items = skyboxes;
+        skyboxDropdown.SelectedIndex = 0;
+
+        
+
+        planetNormals = Utility.GetAllFilesInFolder("PlanetNormals", "png");
+        dfDropdown normalDropdown = GameObject.Find("NormalDropdown").GetComponent<dfDropdown>();
+        normalDropdown.Items = planetNormals;
+        normalDropdown.SelectedIndex = 0;
+
+        RedrawPlanet();
+
+        
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
         if (pg.IsReady())
         {
-            print("loadplanet");
+            
             mp.SetPlanet(width, height, pg.GetPlanetColors(), pg.GetPlanetInfo());
+            float size = (float)mp.planetInfo.planetSize*.016f;
+            mp.transform.localScale = new Vector3(size,size,size);
+
+
             pg.Finished();
         }
 	}
+
+    public void OnSkyBoxChanged(dfControl control, int index)
+    {
+        
+        Planet.SetSkyBox(skyboxes[index]);
+        if (mp.planetInfo != null)
+        {
+            mp.planetInfo.skybox = skyboxes[index];
+        }
+        
+    }
+
+    public void OnNormalChanged(dfControl control, int index)
+    {
+        mp.SetNormals(planetNormals[index]);
+        if (mp.planetInfo != null)
+        {
+            mp.planetInfo.normals = planetNormals[index];
+        }
+    }
+
 
     public void OnColorMouseUp(dfControl control, dfMouseEventArgs mouseEvent)
     {
@@ -138,10 +182,12 @@ public class PlanetControlManager : MonoBehaviour {
     public PlanetInfo CreateInfo()
     {
         PlanetInfo planetInfo = new PlanetInfo();
-        planetInfo.coalReserves = 10000;
-        planetInfo.oilFactor = 1;
-        planetInfo.windFactor = 1;
-        planetInfo.sunFactor = 1;
+        planetInfo.skybox = skyboxes[GameObject.Find("SkyBoxDropdown").GetComponent<dfDropdown>().SelectedIndex];
+        planetInfo.normals = planetNormals[GameObject.Find("NormalDropdown").GetComponent<dfDropdown>().SelectedIndex];
+        planetInfo.coalReserves = 10000 * GameObject.Find("CoalSlider").GetComponentInChildren<dfSlider>().Value;
+        planetInfo.oilFactor = GameObject.Find("OilSlider").GetComponentInChildren<dfSlider>().Value; ;
+        planetInfo.windFactor = GameObject.Find("WindSlider").GetComponentInChildren<dfSlider>().Value; ;
+        planetInfo.sunFactor = GameObject.Find("SunSlider").GetComponentInChildren<dfSlider>().Value; ;
         planetInfo.pollutionClearance = 20;
         planetInfo.startPollution = 0;
         planetInfo.maxPollution = 5000;
@@ -149,13 +195,14 @@ public class PlanetControlManager : MonoBehaviour {
         planetInfo.population = 100;
         planetInfo.iq = 1;
         planetInfo.gameLength = 1000;
-        planetInfo.planetSize = 500;
+        planetInfo.planetSize = (int)GameObject.Find("SizeSlider").GetComponentInChildren<dfSlider>().Value;
+        print(planetInfo.planetSize);
         planetInfo.rotationSpeed = 1;
         planetInfo.windZones = 3;
         planetInfo.octaves = (int)GameObject.Find("OctavesSlider").GetComponentInChildren<dfSlider>().Value;
         planetInfo.gain = GameObject.Find("GainSlider").GetComponentInChildren<dfSlider>().Value;
         planetInfo.lacunarity = GameObject.Find("LacunaritySlider").GetComponentInChildren<dfSlider>().Value;
-        planetInfo.stretch = 2;
+        planetInfo.stretch = GameObject.Find("StretchSlider").GetComponentInChildren<dfSlider>().Value;
 
         Color[] colors = new Color[6];
         float[] ranges = new float[5];

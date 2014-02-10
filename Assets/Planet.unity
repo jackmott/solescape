@@ -360,7 +360,6 @@ GameObject:
   - 92: {fileID: 73226496}
   - 124: {fileID: 73226495}
   - 81: {fileID: 73226494}
-  - 45: {fileID: 73226501}
   - 82: {fileID: 73226502}
   - 114: {fileID: 73226499}
   m_Layer: 0
@@ -445,14 +444,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ZoomSpeed: 100
---- !u!45 &73226501
-Skybox:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 73226493}
-  m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: 966766f4829d6ad419eaaf7cf0712f85, type: 2}
 --- !u!82 &73226502
 AudioSource:
   m_ObjectHideFlags: 0

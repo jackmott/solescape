@@ -1,5 +1,7 @@
 ﻿<columns>
   <column name="Name" type="Text" allowwrap="true" />
+  <column name="New Column 4" type="Text" />
+  <column name="New Column 3" type="Text" />
   <column name="Coal" type="Text" allowwrap="true" />
   <column name="Oil" type="Text" allowwrap="true" />
   <column name="Wind" type="Text" allowwrap="true" />
