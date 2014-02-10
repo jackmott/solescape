@@ -6,9 +6,7 @@ public class PlanetControlManager : MonoBehaviour {
 
     public dfControl ColorPanel;
     public dfButton ColorDialogButton;
-
-    public GameObject menuPlanetPrefab;
-
+    
     static PlanetControlManager instance;
 
     int width = 2048;
@@ -22,7 +20,7 @@ public class PlanetControlManager : MonoBehaviour {
     string[] skyboxes;
     string[] planetNormals;
 
-    MenuPlanet mp;
+    Planet mp;
     GameObject planet;
     
 	// Use this for initialization
@@ -53,41 +51,42 @@ public class PlanetControlManager : MonoBehaviour {
         
        
         planet = GameObject.Find("Planet");       
-        mp = planet.GetComponent<MenuPlanet>();
-
+        mp = planet.GetComponent<Planet>();
         
-
         skyboxes = Utility.GetAllFilesInFolder("SkyBox", "mat");
         dfDropdown skyboxDropdown = GameObject.Find("SkyBoxDropdown").GetComponent<dfDropdown>();
         skyboxDropdown.Items = skyboxes;
         skyboxDropdown.SelectedIndex = 0;
-
         
-
         planetNormals = Utility.GetAllFilesInFolder("PlanetNormals", "png");
         dfDropdown normalDropdown = GameObject.Find("NormalDropdown").GetComponent<dfDropdown>();
         normalDropdown.Items = planetNormals;
         normalDropdown.SelectedIndex = 0;
 
         RedrawPlanet();
-
-        
-        
+                
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (planet != null)
+            planet.transform.RotateAround(planet.transform.position, Vector3.up, Time.deltaTime * 5);
         if (pg.IsReady())
         {
             
             mp.SetPlanet(width, height, pg.GetPlanetColors(), pg.GetPlanetInfo());
             float size = (float)mp.planetInfo.planetSize*.016f;
             mp.transform.localScale = new Vector3(size,size,size);
-
-
             pg.Finished();
         }
 	}
+
+    public void OnPlay()
+    {
+        Persistence p = GameObject.Find("Persistence").GetComponent<Persistence>();
+        p.pi = mp.planetInfo;
+        Application.LoadLevel("Planet");
+    }
 
     public void OnSkyBoxChanged(dfControl control, int index)
     {
@@ -172,9 +171,7 @@ public class PlanetControlManager : MonoBehaviour {
         pg.planetInfo = CreateInfo();
         Thread thread = new Thread(new ThreadStart(pg.startPlanetInfo));
         thread.Start();
-        
-        print("planet added");
-        
+                        
     }
 
     
