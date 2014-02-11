@@ -9,3 +9,5 @@ EditorBuildSettings:
     path: Assets/MainMenu.unity
   - enabled: 1
     path: Assets/Planet.unity
+  - enabled: 1
+    path: Assets/PlanetBuilder.unity

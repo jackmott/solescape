@@ -240,10 +240,10 @@ public class GuiEventHandler : MonoBehaviour {
     {
 
 
-        GameObject radar = (GameObject)Instantiate(Resources.Load("prefabs/RadarPlane"),Vector3.zero, Quaternion.identity);
+        GameObject radar = (GameObject)Instantiate(Resources.Load("Prefabs/RadarPlane"),Vector3.zero, Quaternion.identity);
         radar.transform.parent = Camera.main.transform;
 
-        GameObject radarBG = (GameObject)Instantiate(Resources.Load("prefabs/RadarBackgroundPlane"), Vector3.zero, Quaternion.identity);
+        GameObject radarBG = (GameObject)Instantiate(Resources.Load("Prefabs/RadarBackgroundPlane"), Vector3.zero, Quaternion.identity);
         radarBG.transform.parent = Camera.main.transform;
 
 

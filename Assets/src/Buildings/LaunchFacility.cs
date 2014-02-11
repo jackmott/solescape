@@ -37,7 +37,7 @@ public class LaunchFacility : Building
                         {
                             state.AddEnergy(-bi.cost);
                             Vector3 launchVector = transform.position;                            
-                            GameObject launchObject = (GameObject)Instantiate(Resources.Load("prefabs/buildings/" + bi.className), launchVector, transform.rotation);
+                            GameObject launchObject = (GameObject)Instantiate(Resources.Load("Prefabs/buildings/" + bi.className), launchVector, transform.rotation);
                             launchObject.transform.parent = state.planet.transform;
                             SpaceBuilding b = launchObject.GetComponent<SpaceBuilding>();
                             b.supplyFacility = this;

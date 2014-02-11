@@ -113,7 +113,7 @@ public class Oil : MonoBehaviour
                         }
                         if (scanner == null)
                         {
-                            scanner = (GameObject)Instantiate(Resources.Load("prefabs/oilscan/OilScanPlane"), planetHit.point, Quaternion.identity);
+                            scanner = (GameObject)Instantiate(Resources.Load("Prefabs/oilscan/OilScanPlane"), planetHit.point, Quaternion.identity);
                         }
 
                         scanner.transform.position = planetHit.point;
@@ -123,7 +123,7 @@ public class Oil : MonoBehaviour
 
                         if (scanGlow == null)
                         {
-                            scanGlow = (GameObject)Instantiate(Resources.Load("prefabs/oilscan/ScanGlow"), planetHit.point, Quaternion.identity);
+                            scanGlow = (GameObject)Instantiate(Resources.Load("Prefabs/oilscan/ScanGlow"), planetHit.point, Quaternion.identity);
                         }
                         scanGlow.transform.position = planetHit.point;
                         scanGlow.transform.LookAt(transform);
@@ -133,7 +133,7 @@ public class Oil : MonoBehaviour
 
                         if (oilCam == null)
                         {
-                            oilCam = (GameObject)Instantiate(Resources.Load("prefabs/oilscan/OilCamera"), planetHit.point, Quaternion.identity);
+                            oilCam = (GameObject)Instantiate(Resources.Load("Prefabs/oilscan/OilCamera"), planetHit.point, Quaternion.identity);
                         }
                         oilCam.transform.position = planetHit.point;
                         oilCam.transform.LookAt(transform);
@@ -161,7 +161,7 @@ public class Oil : MonoBehaviour
                         if (target == null)
                         {
                             print("instant target");
-                            target = (GameObject)Instantiate(Resources.Load("prefabs/oilscan/OilTargetPlane"), planetHit.point, Quaternion.identity);
+                            target = (GameObject)Instantiate(Resources.Load("Prefabs/oilscan/OilTargetPlane"), planetHit.point, Quaternion.identity);
                         }
 
                         target.transform.position = planetHit.point;

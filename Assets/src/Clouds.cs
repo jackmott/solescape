@@ -30,10 +30,12 @@ public class Clouds : MonoBehaviour
         float r = 1f - .8f * fractionalPollution;
         float g = 1f - .9f * fractionalPollution;
         float b = 1f - .98f * fractionalPollution;
-        float a = 2.0f * fractionalPollution;
+        float a = 1.0f * fractionalPollution;
 
 
-        renderer.material.SetColor("_Color", new Color(r, g, b, a));
+        renderer.material.SetColor("_Color", new Color(r, g, b));
+        renderer.material.SetFloat("_Alpha", a);
+
         
 
     }

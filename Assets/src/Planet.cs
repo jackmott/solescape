@@ -95,7 +95,7 @@ public class Planet : MonoBehaviour
             float y3d = radius * Mathf.Sin(theta) * Mathf.Sin(phi);
             float z3d = radius * -Mathf.Cos(phi);
 
-            GameObject tornado = (GameObject)Instantiate(Resources.Load("prefabs/TornadoParticle"), new Vector3(x3d,y3d,z3d), Quaternion.identity);
+            GameObject tornado = (GameObject)Instantiate(Resources.Load("Prefabs/TornadoParticle"), new Vector3(x3d,y3d,z3d), Quaternion.identity);
 
             Ray planetRay = new Ray(tornado.transform.position, Vector3.zero - tornado.transform.position);
 
@@ -141,6 +141,8 @@ public class Planet : MonoBehaviour
         pg.generatePlanet(planetInfo);        
         cloudsTex.SetPixels(pg.GetCloudColors());
         cloudsTex.Apply();
+      
+        
         GameObject clouds = GameObject.Find("Clouds");
         if (clouds != null) clouds.renderer.material.mainTexture = cloudsTex;
 
@@ -294,7 +296,7 @@ public class Planet : MonoBehaviour
             print("DESTRYOEDDDDD");
         }
         placeMode = true;
-        placeObject = (GameObject)Instantiate(Resources.Load("prefabs/buildings/" + buildingType), Vector3.zero, Quaternion.identity);
+        placeObject = (GameObject)Instantiate(Resources.Load("Prefabs/buildings/" + buildingType), Vector3.zero, Quaternion.identity);
 
         if (placeObject == null)
         {

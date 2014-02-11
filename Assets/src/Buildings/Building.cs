@@ -306,7 +306,7 @@ public abstract class Building : MonoBehaviour
                     Quaternion rotation = this.transform.rotation;
                     state.planet.placedBuildings.Remove(this);
                     Destroy(this.gameObject);
-                    GameObject upgradeObject = (GameObject)Instantiate(Resources.Load("prefabs/buildings/" + upgradeBi.className), position, rotation);
+                    GameObject upgradeObject = (GameObject)Instantiate(Resources.Load("Prefabs/buildings/" + upgradeBi.className), position, rotation);
                     upgradeObject.audio.Play();
                     upgradeObject.transform.parent = state.planet.transform;
                     upgradeObject.rigidbody.mass = 999999;

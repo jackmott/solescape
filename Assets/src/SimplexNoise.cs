@@ -654,12 +654,16 @@ public class Noise
         Color[] result = new Color[a.Length];
 
         for (int i = 0; i < a.Length; i++)
-        {            
-            result[i] = colors[(int)(((a[i] + offset) * scale) * (colors.Length - 1))];
+        {
             if (result[i].a == 0)
             {
                 result[i] = new Color(colors[0].r, colors[0].g, colors[0].b, 1);
             }
+            else
+            {
+                result[i] = colors[(int)(((a[i] + offset) * scale) * (colors.Length - 1))];
+            }
+            
         }
         return result;
     }
@@ -673,7 +677,7 @@ public class Noise
         for (int i = 0; i < a.Length; i++)
         {
             float x = (a[i] + offset) * scale;
-            result[i] = new Color(x, x, x,0f);
+            result[i] = new Color(1,1, 1,x);
         }
         return result;
     }
