@@ -49,11 +49,11 @@ public class Planet : MonoBehaviour
     }
     
 
-    public void GeneratePlanet(int width, int height, PlanetInfo planetInfo)
+    public void GeneratePlanet(int width, int height, PlanetInfo planetInfo, bool setSkybox = true)
     {
         this.planetInfo = planetInfo;
         GeneratePlanet(width,height);
-        SetSkyBox(planetInfo.skybox);
+        if (setSkybox) SetSkyBox(planetInfo.skybox);
         SetNormals(planetInfo.normals);
     }
 

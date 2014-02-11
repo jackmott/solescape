@@ -462,28 +462,17 @@ public class GameState : MonoBehaviour
 
 
     private void GetData()
-    {
-
-        TextAsset research = Resources.Load<TextAsset>("research");
-        TextAsset buildings = Resources.Load<TextAsset>("buildings");
-
-
-        Stream researchStream = GenerateStreamFromString(research.text);
-        Stream buildingStream = GenerateStreamFromString(buildings.text);
-
-
-        LoadResearchTree(new StreamReader(researchStream));
-        LoadBuildings(new StreamReader(buildingStream));
-
-
+    {        
+        LoadResearchTree(Utility.GetConfigFileReader("config","research", "csv"));
+        LoadBuildings(Utility.GetConfigFileReader("config","buildings", "csv"));
     }
 
     public static List<PlanetInfo> LoadPlanets()
     {
 
-        TextAsset planetsFile = Resources.Load<TextAsset>("planets");
-        Stream planetStream = GenerateStreamFromString(planetsFile.text);
-        StreamReader reader = new StreamReader(planetStream);
+
+
+        StreamReader reader = Utility.GetConfigFileReader("config","planets", "csv");
 
         List<PlanetInfo> planets = new List<PlanetInfo>();
 
@@ -672,15 +661,7 @@ public class GameState : MonoBehaviour
         UpdateAvailableResearch();
     }
 
-    public static Stream GenerateStreamFromString(string s)
-    {
-        MemoryStream stream = new MemoryStream();
-        StreamWriter writer = new StreamWriter(stream);
-        writer.Write(s);
-        writer.Flush();
-        stream.Position = 0;
-        return stream;
-    }
+   
 
 }
 

@@ -35,8 +35,8 @@ public class PlanetGenerator  {
 
     private void SharedConstructor(int width, int height)
     {
-        skyboxes = Utility.GetAllFilesInFolder("SkyBox", "mat");
-        planetNormals = Utility.GetAllFilesInFolder("PlanetNormals", "png");
+        skyboxes = Utility.GetSkyboxes();
+        planetNormals = Utility.GetPlanetNormals();
 
         planetInfo = new PlanetInfo();
         rand = new System.Random();        

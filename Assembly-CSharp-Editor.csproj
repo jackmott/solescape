@@ -152,6 +152,9 @@
  <Reference Include="dfScriptLite">
  <HintPath>Assets\Daikon Forge\DataBinding\Plugins\dfScriptLite.dll</HintPath>
  </Reference>
+ <Reference Include="ShaderForge">
+ <HintPath>Assets\ShaderForge\Editor\Code\ShaderForge.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.Graphs.dll</HintPath>
  </Reference>
@@ -169,9 +172,6 @@
  </Reference>
  <Reference Include="UnityEditor.Android.Extensions">
  <HintPath>C:\Program Files (x86)\Unity\Editor\Data\PlaybackEngines\AndroidPlayer\EditorExtensions\UnityEditor.Android.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="ShaderForge">
- <HintPath>Assets\ShaderForge\Editor\Code\ShaderForge.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

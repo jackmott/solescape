@@ -52,13 +52,13 @@ public class PlanetControlManager : MonoBehaviour {
        
         planet = GameObject.Find("Planet");       
         mp = planet.GetComponent<Planet>();
-        
-        skyboxes = Utility.GetAllFilesInFolder("SkyBox", "mat");
+
+        skyboxes = Utility.GetSkyboxes();
         dfDropdown skyboxDropdown = GameObject.Find("SkyBoxDropdown").GetComponent<dfDropdown>();
         skyboxDropdown.Items = skyboxes;
         skyboxDropdown.SelectedIndex = 0;
-        
-        planetNormals = Utility.GetAllFilesInFolder("PlanetNormals", "png");
+
+        planetNormals = Utility.GetPlanetNormals();
         dfDropdown normalDropdown = GameObject.Find("NormalDropdown").GetComponent<dfDropdown>();
         normalDropdown.Items = planetNormals;
         normalDropdown.SelectedIndex = 0;

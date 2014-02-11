@@ -1,0 +1,13 @@
+Name,Energy Cost,IQ Cost,PreReq1,PreReq2,PreReq3
+Higher Education,10,500,Agriculture,,
+Agriculture,10,10,,,
+Geology,10,30,Oil,,
+Oil,10,15,,,
+Composites,10,100,Oil,,
+Environmentalism,10,100,Agriculture,,
+Electronics,10,500,Higher Education,,
+Advanced Physics,10,2000,Electronics,,
+Spaceflight,10,1000,Electronics,Composites,
+Genetics,10,1000,Environmentalism,Higher Education,
+Grand Unified Theory,10,5000,Advanced Physics,,
+Climate Science,10,500,Environmentalism,,
