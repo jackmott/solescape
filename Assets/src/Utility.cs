@@ -4,8 +4,8 @@ using System.IO;
 public class Utility
 {
 
-    static string[] skyboxes = { "Borgish Expanse", "Cool Blue", "Electric Nebula", "Fire Nebula", "Glowing Dust" };
-    static string[] planetNormals = { "Cracked", "DarkDunes", "Drifting Continents", "Extreme", "Frozen Rock", "Gas Giant", "Hilly", "Hurricanes", "Lava Crust", "Lava Valleys", "Lush Green", "Mountains", "Mud Ice And Water", "Rocky", "Sand" };
+    static string[] skyboxes = { "Borgish Expanse", "Electric Nebula", "Glowing Dust" };
+    static string[] planetNormals = { "Cracked", "Dark Dunes", "Drifting Continents", "Extreme", "Frozen Rock", "Gas Giant", "Hilly", "Hurricanes", "Lava Crust", "Lava Valleys", "Lush Green", "Mountains", "Mud Ice And Water", "Rocky", "Sand" };
 
     public static string[] GetSkyboxes()
     {

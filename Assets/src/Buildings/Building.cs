@@ -480,7 +480,8 @@ public abstract class Building : MonoBehaviour
 
         foreach (MeshRenderer r in renderers)
         {
-            r.enabled = true;
+            Color c = r.material.GetColor("_Color");
+            r.material.SetColor("_Color",new Color(c.r,c.g,c.b,1));
         }
 
 
@@ -493,7 +494,8 @@ public abstract class Building : MonoBehaviour
 
         foreach (MeshRenderer r in renderers)
         {
-            r.enabled = false;
+            Color c = r.material.GetColor("_Color");
+            r.material.SetColor("_Color", new Color(c.r, c.g, c.b, .4f));
         }
 
     }

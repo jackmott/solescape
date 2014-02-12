@@ -211,7 +211,6 @@
      <None Include="Assets\Resources\Descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\Descriptions\SETITelescope.txt" />
      <None Include="Assets\Shaders\MaskShader.shader" />
-     <None Include="Assets\Blue Button\SciFi Buttons\Font\Font Readme.txt" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\LightCone.shader" />
      <None Include="Assets\Shaders\PlanetShader.shader" />
@@ -227,7 +226,6 @@
      <None Include="Assets\ShaderForge\Example Assets\Shaders\Cubemaps.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\Refraction.shader" />
      <None Include="Assets\Resources\Descriptions\OTree.txt" />
-     <None Include="Assets\Daikon Forge\Examples\Resources\Fonts\SIL Open Font License.txt" />
      <None Include="Assets\Color Picker\Shaders\ColorPickerHue.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\Parallax.shader" />
      <None Include="Assets\Resources\Descriptions\CyberneticFactory.txt" />
@@ -245,9 +243,8 @@
      <None Include="Assets\ShaderForge\Example Assets\Shaders\TessellationDisplacement.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\Tiles.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\CustomLighting.shader" />
-     <None Include="Assets\Shaders\OilProducerShader.shader" />
+     <None Include="Assets\Shaders\BuildingShader.shader" />
      <None Include="Assets\Resources\Descriptions\CoalProducer.txt" />
-     <None Include="Assets\Daikon Forge\Examples\Resources\Fonts\OpenSans Font License.txt" />
      <None Include="Assets\Resources\Descriptions\RecyclingCenter.txt" />
      <None Include="Assets\Resources\Descriptions\LaunchFacility.txt" />
  <Reference Include="dfScriptLite">

@@ -55,6 +55,10 @@ public class MainMenuManager : MonoBehaviour {
         rogueMP = roguePlanetObj.GetComponent<MenuPlanet>();
 	}
 
+    public void OnPlanetAssembler()
+    {
+        Application.LoadLevel("PlanetBuilder");
+    }
    
     
     // Update is called once per frame
