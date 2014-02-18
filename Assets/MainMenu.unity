@@ -536,8 +536,9 @@ GameObject:
   - 4: {fileID: 1110689878}
   - 114: {fileID: 1110689880}
   - 65: {fileID: 1110689879}
+  - 114: {fileID: 1110689881}
   m_Layer: 8
-  m_Name: HowToButton
+  m_Name: PlanetBuildButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -550,7 +551,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1110689877}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -.130210876, y: .729167819, z: 0}
+  m_LocalPosition: {x: -.2265625, y: .729164124, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1729360843}
@@ -564,8 +565,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: .260416687, y: .09375, z: .00100000005}
-  m_Center: {x: .130208343, y: -.046875, z: 0}
+  m_Size: {x: .453125, y: .09375, z: .00100000005}
+  m_Center: {x: .2265625, y: -.046875, z: 0}
 --- !u!114 &1110689880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,7 +591,7 @@ MonoBehaviour:
   disabledColor:
     serializedVersion: 2
     rgba: 4294967295
-  size: {x: 100, y: 36}
+  size: {x: 174, y: 36}
   minSize: {x: 0, y: 0}
   maxSize: {x: 0, y: 0}
   clipChildren: 0
@@ -599,9 +600,9 @@ MonoBehaviour:
   layout:
     anchorStyle: 65
     margins:
-      left: 462
+      left: 425
       top: 104
-      right: 462
+      right: 425
       bottom: 628
     owner: {fileID: 1110689880}
   renderOrder: 3
@@ -616,8 +617,8 @@ MonoBehaviour:
   pressedSprite: scifi_button_down
   state: 0
   group: {fileID: 0}
-  text: How To
-  textAlign: 1
+  text: Planet Assembler
+  textAlign: 0
   vertAlign: 1
   normalColor:
     serializedVersion: 2
@@ -650,17 +651,34 @@ MonoBehaviour:
   textScaleMode: 0
   wordWrap: 0
   padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   textShadow: 0
   shadowColor:
     serializedVersion: 2
     rgba: 4294967295
   shadowOffset: {x: 1, y: -1}
-  autoSize: 0
+  autoSize: 1
   clickWhenSpacePressed: 1
+--- !u!114 &1110689881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1110689877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec4b6d41893ad6e499d2ffcefa532575, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DataSource:
+    Component: {fileID: 1110689880}
+    MemberName: MouseUp
+  DataTarget:
+    Component: {fileID: 293682650}
+    MemberName: OnPlanetAssembler
 --- !u!1 &1614354872
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,7 +1021,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2097060457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: .00130208337, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1729360843}

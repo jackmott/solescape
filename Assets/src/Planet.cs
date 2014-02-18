@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.IO;
 public class Planet : MonoBehaviour
 {
 
@@ -191,17 +192,22 @@ public class Planet : MonoBehaviour
 
     }
 
-  
+    
 
-    void OnMouseDown()
+    public void Save()
     {
-
-    }
-
-    void OnMouseUp()
-    {
-
-
+        if (Utility.FileExists("config", planetInfo.planetName, "userplanet"))
+        {
+            //dialog or something
+            print("planet already exists");
+        }
+        else
+        {
+            StreamWriter writer = Utility.GetConfigFileWriter("config", planetInfo.planetName, "userplanet");
+            writer.Write(planetInfo.ToString());
+            writer.Close();
+        }
+        
     }
 
     void CheckMousePosition()
@@ -248,11 +254,11 @@ public class Planet : MonoBehaviour
                 placeObject.transform.Rotate(90, 0, 0);
                 placeObject.transform.Rotate(0, buildingRotation, 0);
 
-                float adjustUpwards = (placeObject.transform.lossyScale.z / 2.0f) * .9f;
+              
                 placeObject.transform.position = planetHit.point;
-                placeObject.transform.Translate(Vector3.up * adjustUpwards);
+              
 
-                //placeObject.rigidbody.MovePosition(planetHit.point);                
+              
             }
             else
             {

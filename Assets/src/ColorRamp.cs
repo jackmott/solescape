@@ -59,10 +59,13 @@ public class ColorRamp
         string result = "";
         for (int i = 0; i < colors.Length; i++)
         {
-            result += colors[i];
+            result += colors[i].r.ToString("0.000") + "|"
+                   + colors[i].g.ToString("0.000") + "|"
+                   + colors[i].b.ToString("0.000") + "|"
+                   + colors[i].a.ToString("0.000");
             if (i < colors.Length - 1)
             {
-                result += "|";
+                result += ",";
             }
         }
 		return result;

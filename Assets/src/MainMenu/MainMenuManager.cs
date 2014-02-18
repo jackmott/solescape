@@ -44,8 +44,7 @@ public class MainMenuManager : MonoBehaviour {
         }
         
         pgThread = new PlanetGenerator(width, height);
-        thread = new Thread(new ThreadStart(pgThread.start));
-        thread.Start();
+        StartRandomPlanet();
         roguePlanetObj = (GameObject)Instantiate(menuPlanetPrefab, new Vector3(0, .2f, -7), Quaternion.identity);
         GameObject rogueWater = (GameObject)Instantiate(waterPrefab, new Vector3(0, .2f, -7), Quaternion.identity);
         rogueWater.transform.parent = roguePlanetObj.transform;
@@ -67,9 +66,16 @@ public class MainMenuManager : MonoBehaviour {
         if (pgThread.IsReady())
         {
             rogueMP.SetPlanet(width,height,pgThread.GetPlanetColors(), pgThread.GetPlanetInfo());
-            pgThread.Finished();
+            pgThread.Finished();            
+            Invoke("StartRandomPlanet", 3);
         }
 	}
+
+    void StartRandomPlanet()
+    {
+        thread = new Thread(new ThreadStart(pgThread.start));
+        thread.Start();
+    }
 
     void OnDestroy()
     {

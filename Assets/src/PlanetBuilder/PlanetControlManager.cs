@@ -49,6 +49,13 @@ public class PlanetControlManager : MonoBehaviour {
 
 	void Start () {
         
+        if (Utility.IsWeb())
+        {
+            dfButton saveButton = GameObject.Find("SaveButton").GetComponent<dfButton>();
+            saveButton.Hide();
+            dfTextbox saveText = GameObject.Find("NameTextbox").GetComponent<dfTextbox>();
+            saveText.Hide();
+        }
        
         planet = GameObject.Find("Planet");       
         mp = planet.GetComponent<Planet>();
@@ -62,6 +69,16 @@ public class PlanetControlManager : MonoBehaviour {
         dfDropdown normalDropdown = GameObject.Find("NormalDropdown").GetComponent<dfDropdown>();
         normalDropdown.Items = planetNormals;
         normalDropdown.SelectedIndex = 0;
+
+        dfDropdown loadDropdown = GameObject.Find("LoadDropdown").GetComponent<dfDropdown>();
+        if (!Utility.IsWeb())
+        {         
+            loadDropdown.Items = Utility.GetAllFilesInFolder("config", "userplanet");
+        }
+        else
+        {
+            loadDropdown.Hide();
+        }
 
         RedrawPlanet();
                 
@@ -86,6 +103,20 @@ public class PlanetControlManager : MonoBehaviour {
         Persistence p = GameObject.Find("Persistence").GetComponent<Persistence>();
         p.pi = mp.planetInfo;
         Application.LoadLevel("Planet");
+    }
+
+    public void OnSave()
+    {
+        dfTextbox saveText = GameObject.Find("NameTextbox").GetComponent<dfTextbox>();
+        if (saveText.Text == "")
+        {
+            print("no planet name!");
+        }
+        else
+        {
+            mp.planetInfo.planetName = saveText.Text;
+            mp.Save();
+        }
     }
 
     public void OnSkyBoxChanged(dfControl control, int index)

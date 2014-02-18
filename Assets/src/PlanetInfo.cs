@@ -48,7 +48,7 @@ public class PlanetInfo  {
         result += octaves+",";
         result += gain + ",";
         result += lacunarity + ",";
-        result += stretch;
+        result += stretch + ",";
         result += colorRamp.ToString();
         return result;
 

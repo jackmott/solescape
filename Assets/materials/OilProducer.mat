@@ -36,13 +36,6 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _node3
-        second:
-          m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
           name: _Cube
         second:
           m_Texture: {fileID: 0}
@@ -53,6 +46,13 @@ Material:
           name: _Illum
         second:
           m_Texture: {fileID: 2800000, guid: e19f7d0cd17e6954697bedba600ac4e6, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _node3
+        second:
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -79,8 +79,16 @@ Material:
     m_Floats:
       data:
         first:
+          name: _Cutoff
+        second: .5
+      data:
+        first:
           name: _Shininess
         second: .277696669
+      data:
+        first:
+          name: _Alpha
+        second: 1
       data:
         first:
           name: _Parallax
@@ -93,6 +101,10 @@ Material:
         first:
           name: _Shinyness
         second: 0
+      data:
+        first:
+          name: _Illuminance
+        second: 1
     m_Colors:
       data:
         first:
@@ -109,4 +121,12 @@ Material:
       data:
         first:
           name: _SpecularColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _MainColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _IllumColor
         second: {r: 1, g: 1, b: 1, a: 1}

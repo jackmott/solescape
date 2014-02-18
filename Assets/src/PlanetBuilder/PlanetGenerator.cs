@@ -50,14 +50,13 @@ public class PlanetGenerator  {
     public void start()
     {
         Debug.Log("start() pg");
-        while (true)
-        {
+        
             if (!ready)
             {                
                 generateRandomPlanet();
-                Thread.Sleep(3000);
+        
             }
-        }
+        
 
     }
 
