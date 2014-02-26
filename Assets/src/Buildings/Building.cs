@@ -194,7 +194,6 @@ public abstract class Building : MonoBehaviour
         lastEnergy = energy;
         lastPollution = pollution;
 
-
         if (state.HasEnoughEnergyFor(-energy))
         {
             state.AddEnergy(energy);
@@ -205,8 +204,6 @@ public abstract class Building : MonoBehaviour
             Disable();
 
         }
-
-
     }
 
     //IS this... WATER??
@@ -481,7 +478,10 @@ public abstract class Building : MonoBehaviour
         foreach (MeshRenderer r in renderers)
         {
             Color c = r.material.GetColor("_Color");
-            r.material.SetColor("_Color",new Color(c.r,c.g,c.b,1));
+            r.material.SetColor("_Color",new Color(1,1,1));
+            r.material.SetColor("_Color", new Color(1, 1, 1));
+            r.material.SetColor("_SpecularColor", new Color(1, 1, 1));
+            r.material.SetColor("_IllumColor", new Color(1, 1, 1));
         }
 
 
@@ -495,7 +495,9 @@ public abstract class Building : MonoBehaviour
         foreach (MeshRenderer r in renderers)
         {
             Color c = r.material.GetColor("_Color");
-            r.material.SetColor("_Color", new Color(c.r, c.g, c.b, .4f));
+            r.material.SetColor("_Color", new Color(1,0,0));
+            r.material.SetColor("_SpecularColor", new Color(1, 0, 0));
+            r.material.SetColor("_IllumColor", new Color(1, 0, 0));
         }
 
     }

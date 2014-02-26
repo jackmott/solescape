@@ -50,6 +50,7 @@
      <None Include="Assets\Resources\Descriptions\Windmill.txt" />
      <None Include="Assets\Resources\Descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\Descriptions\SETITelescope.txt" />
+     <None Include="Assets\Shaders\BuildingShaderOpaque.shader" />
      <None Include="Assets\Shaders\MaskShader.shader" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\LightCone.shader" />

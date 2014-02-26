@@ -95,7 +95,7 @@ Material:
       data:
         first:
           name: WaveSpeed
-        second: {r: 9, g: 4.5, b: -8, a: -3.5}
+        second: {r: 9, g: 9, b: -3, a: -3}
       data:
         first:
           name: _ReflectiveColor_ST

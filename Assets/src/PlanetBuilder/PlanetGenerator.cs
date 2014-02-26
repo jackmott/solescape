@@ -219,27 +219,33 @@ public class PlanetGenerator  {
         float lacunarity = planetInfo.lacunarity;
         float stretch = planetInfo.stretch;
 
-        float x3d, y3d, z3d, theta, phi, color;
+        float x3d, y3d, z3d, theta, phi, color;        
+        phi = 0;
         int count = 0 ;
 
         float sinPhi;
 
+        float piOverHeight = pi / (float)height;
+        float twoPiOverWidth = twopi / (float)width;
+
         for (int y = 0; y < height; y++)
         {
-            /**** SUCH FAST! MUCH OPTIMIZE!! ****/            
-            phi = pi * (y / (float)height);
-            z3d = Mathf.Cos(phi);
+            
+            /**** SUCH FAST! MUCH OPTIMIZE!! ****/
+            phi += piOverHeight;
+            z3d = Mathf.Cos(phi) * stretch;
             sinPhi = Mathf.Sin(phi);
+            theta = 0;
             /**** GOT ALL THIS OUT OF THE INNER LOOP!!! ****/
-
+            
             for (int x = 0; x < width; x++)
             {
-                theta = twopi * (x / (float)width);
+                theta += twoPiOverWidth;
                 
                 x3d = Mathf.Cos(theta) * sinPhi;
                 y3d = Mathf.Sin(theta) * sinPhi;
                 
-                color = noise.fbm3(x3d * 2 + offsetx, y3d * 2 + offsety, z3d * stretch , octaves, gain, lacunarity);
+                color = noise.fbm3(x3d * 2 + offsetx, y3d * 2 + offsety, z3d , octaves, gain, lacunarity);
                 
                 if (color < min) min = color;
                 if (color > max) max = color;

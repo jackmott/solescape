@@ -193,6 +193,7 @@
      <Compile Include="Assets\src\MainMenu\MenuPlanet.cs" />
      <Compile Include="Assets\src\Moon.cs" />
      <Compile Include="Assets\src\Oil.cs" />
+     <Compile Include="Assets\src\ParticleKeepAlive.cs" />
      <Compile Include="Assets\src\Persistence.cs" />
      <Compile Include="Assets\src\Planet.cs" />
      <Compile Include="Assets\src\PlanetBuilder\ColorDialogButton.cs" />
@@ -210,6 +211,7 @@
      <None Include="Assets\Resources\Descriptions\Windmill.txt" />
      <None Include="Assets\Resources\Descriptions\SpaceSolar.txt" />
      <None Include="Assets\Resources\Descriptions\SETITelescope.txt" />
+     <None Include="Assets\Shaders\BuildingShaderOpaque.shader" />
      <None Include="Assets\Shaders\MaskShader.shader" />
      <None Include="Assets\Daikon Forge\DFGUI\Shaders\Default UI Shader.shader" />
      <None Include="Assets\ShaderForge\Example Assets\Shaders\LightCone.shader" />

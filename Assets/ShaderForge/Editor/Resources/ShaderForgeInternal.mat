@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: ShaderForgeInternal
-  m_Shader: {fileID: 4800000, guid: e2febbad131c48545969ab550a56a7ac, type: 3}
+  m_Shader: {fileID: 4800000, guid: e92456c31bc5c9d439d425b038b8cef7, type: 3}
   m_ShaderKeywords: []
   m_CustomRenderQueue: -1
   m_SavedProperties:
@@ -17,21 +17,14 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 2800000, guid: 27144356bf12ddd43ac93e392be949dc, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _BumpMap
         second:
-          m_Texture: {fileID: 2800000, guid: ba877fc6b2d9f20439134af449b664a2, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 0, y: 0}
-      data:
-        first:
-          name: _IlluminA
-        second:
-          m_Texture: {fileID: 2800000, guid: e19f7d0cd17e6954697bedba600ac4e6, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
     m_Floats:
@@ -39,32 +32,4 @@ Material:
         first:
           name: _Cutoff
         second: .5
-      data:
-        first:
-          name: _Shininess
-        second: 24.0122414
-      data:
-        first:
-          name: _Alpha
-        second: 1
-      data:
-        first:
-          name: _Illuminance
-        second: 1
-    m_Colors:
-      data:
-        first:
-          name: _Color
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _SpecularColor
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _MainColor
-        second: {r: 1, g: 1, b: 1, a: 1}
-      data:
-        first:
-          name: _IllumColor
-        second: {r: 1, g: 1, b: 1, a: 1}
+    m_Colors: {}

@@ -25,8 +25,8 @@ public class Dialog : MonoBehaviour
     private GameObject guiCameraLight = null;
     private GameObject renderObject = null;
 
-    //Set this to cover the whole screen
-    public dfPanel dimmerPanel;
+    
+    
 
     public System.DateTime timestamp;
     
@@ -72,22 +72,15 @@ public class Dialog : MonoBehaviour
     {
         
 
-        //Set the dimmer panel to dark the background
-        dimmerPanel.BackgroundColor = new Color(0, 0, 0, .7f);
-
-        //Set interactive to prevent button clicks
-        dimmerPanel.IsInteractive = true;
-        dimmerPanel.Show();
-
-        //bring the dimmer panel to the front, then the dialog on top of it
-        dimmerPanel.BringToFront();
-        dialogPanel.BringToFront();
+        
+        
 
         if (prefab != null)
         {
             guiCamera = (GameObject)Instantiate(guiCameraPrefab, Vector3.zero, Quaternion.identity);
             guiCameraLight = (GameObject)Instantiate(guiCameraLightPrefab, Vector3.zero, Quaternion.identity);
-            renderObject = (GameObject)Instantiate(prefab, guiCamera.transform.position + guiCamera.transform.forward * 45, Quaternion.identity);
+            renderObject = (GameObject)Instantiate(prefab, guiCamera.transform.position + guiCamera.transform.forward * 32, Quaternion.identity);
+            renderObject.transform.Translate(guiCamera.transform.up * -9);
             Building b = renderObject.GetComponent<Building>();
             if (b != null)
             {
@@ -143,10 +136,7 @@ public class Dialog : MonoBehaviour
         }
 
         dialogPanel.Hide();
-        dimmerPanel.BackgroundColor = new Color(0, 0, 0, 0);
-        dimmerPanel.IsInteractive = false;
-        dimmerPanel.Hide();
-
+        
         exitButton.Hide();
         restartButton.Hide();
 
@@ -162,17 +152,7 @@ public class Dialog : MonoBehaviour
     public void ShowStatsDialog()
     {
         
-        //Set the dimmer panel to dark the background
-        dimmerPanel.BackgroundColor = new Color(0, 0, 0, .7f);
-
-        //Set interactive to prevent button clicks
-        dimmerPanel.IsInteractive = true;
-        dimmerPanel.Hide();
-
-        //bring the dimmer panel to the front, then the dialog on top of it
-        dimmerPanel.BringToFront();
-        dialogPanel.BringToFront();
-
+        
         
         dialogImage.Parent.Hide();
         dialogImage.Hide();

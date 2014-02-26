@@ -99,7 +99,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 13283948}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.58504486, y: -1.44326782, z: 0}
+  m_LocalPosition: {x: 1.58504558, y: -1.60993493, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
@@ -153,7 +153,7 @@ MonoBehaviour:
       right: 199.486328
       bottom: 31.0195312
     owner: {fileID: 13283951}
-  renderOrder: 45
+  renderOrder: 43
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
@@ -406,7 +406,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 100
+  near clip plane: 25
   far clip plane: 4000
   field of view: 60
   orthographic: 0
@@ -761,14 +761,14 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 185613232}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.25, y: .833335876, z: 0}
+  m_LocalPosition: {x: -1.25, y: .916664124, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 474015189}
+  - {fileID: 947437605}
   - {fileID: 1037020905}
   - {fileID: 973394056}
   - {fileID: 13283949}
-  - {fileID: 1919498805}
   - {fileID: 1586687965}
   m_Father: {fileID: 852801660}
 --- !u!65 &185613234
@@ -781,8 +781,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 0
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 1.66666675, z: .00100000005}
-  m_Center: {x: 1.25, y: -.833333373, z: 0}
+  m_Size: {x: 2.5, y: 1.83333337, z: .00100000005}
+  m_Center: {x: 1.25, y: -.916666687, z: 0}
 --- !u!114 &185613235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,7 +807,7 @@ MonoBehaviour:
   disabledColor:
     serializedVersion: 2
     rgba: 4294967295
-  size: {x: 750, y: 500}
+  size: {x: 750, y: 550}
   minSize: {x: 0, y: 0}
   maxSize: {x: 0, y: 0}
   clipChildren: 0
@@ -817,15 +817,15 @@ MonoBehaviour:
     anchorStyle: 192
     margins:
       left: 105
-      top: 50
+      top: 25
       right: 105
-      bottom: 50
+      bottom: 25
     owner: {fileID: 185613235}
-  renderOrder: 39
+  renderOrder: 38
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
-  backgroundSprite: scifi_window
+  backgroundSprite: dropdown
   backgroundColor:
     serializedVersion: 2
     rgba: 4294967295
@@ -854,7 +854,6 @@ MonoBehaviour:
   restartButton: {fileID: 1586687967}
   guiCameraPrefab: {fileID: 100000, guid: b5969715b4506b444b48565d0c0edafc, type: 2}
   guiCameraLightPrefab: {fileID: 100000, guid: f09d007e2b880114f9ed8e6d6805852b, type: 2}
-  dimmerPanel: {fileID: 669713119}
 --- !u!1 &242430873
 GameObject:
   m_ObjectHideFlags: 0
@@ -2476,7 +2475,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 474015188}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.17333221, y: -1.44169617, z: 0}
+  m_LocalPosition: {x: 1.17333221, y: -1.60836792, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
@@ -2509,7 +2508,7 @@ MonoBehaviour:
   isInteractive: 1
   tooltip: 
   pivot: 0
-  zindex: 2
+  zindex: 3
   color:
     serializedVersion: 2
     rgba: 4294967295
@@ -2526,7 +2525,7 @@ MonoBehaviour:
     anchorStyle: 66
     margins:
       left: 352
-      top: 432.509766
+      top: 482.509766
       right: 351
       bottom: 31.4902344
     owner: {fileID: 474015191}
@@ -2604,97 +2603,6 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 185613236}
     MemberName: ButtonPressed
---- !u!1 &669713116
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 669713117}
-  - 114: {fileID: 669713119}
-  - 65: {fileID: 669713118}
-  m_Layer: 8
-  m_Name: DimmerPanel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &669713117
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 669713116}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.66366577, y: 1.04997253, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 852801660}
---- !u!65 &669713118
-BoxCollider:
-  m_ObjectHideFlags: 2
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 669713116}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 3.39333344, y: 2.12666678, z: .00100000005}
-  m_Center: {x: 1.69666672, y: -1.06333339, z: 0}
---- !u!114 &669713119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 669713116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18e0e5854c8aa374597bb28d9adf228a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anchorStyle: 15
-  isEnabled: 1
-  isVisible: 0
-  isInteractive: 0
-  tooltip: 
-  pivot: 0
-  zindex: 9
-  color:
-    serializedVersion: 2
-    rgba: 4294967295
-  disabledColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  size: {x: 1018, y: 638}
-  minSize: {x: 0, y: 0}
-  maxSize: {x: 0, y: 0}
-  clipChildren: 0
-  tabIndex: -1
-  canFocus: 0
-  layout:
-    anchorStyle: 15
-    margins:
-      left: -19
-      top: -15
-      right: -39
-      bottom: -23
-    owner: {fileID: 669713119}
-  renderOrder: 38
-  isLocalized: 0
-  hotZoneScale: {x: 1, y: 1}
-  atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
-  backgroundSprite: soldblue
-  backgroundColor:
-    serializedVersion: 2
-    rgba: 0
-  padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
 --- !u!1 &698273270
 GameObject:
   m_ObjectHideFlags: 0
@@ -3171,7 +3079,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 147008610}
-  - {fileID: 669713117}
   - {fileID: 1510664597}
   - {fileID: 185613233}
   - {fileID: 1075893534}
@@ -3481,10 +3388,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 947437604}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .00333404541, y: -.00333404541, z: 0}
+  m_LocalPosition: {x: .0233306885, y: -.0233306885, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 1919498805}
+  m_Father: {fileID: 185613233}
 --- !u!65 &947437606
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3508,13 +3415,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a877e86e956b4e14b813fad8d7040aa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorStyle: 192
+  anchorStyle: 12
   isEnabled: 1
   isVisible: 1
   isInteractive: 0
   tooltip: 
   pivot: 0
-  zindex: 0
+  zindex: 1
   color:
     serializedVersion: 2
     rgba: 4294967295
@@ -3528,14 +3435,14 @@ MonoBehaviour:
   tabIndex: -1
   canFocus: 0
   layout:
-    anchorStyle: 192
+    anchorStyle: 12
     margins:
-      left: 1
-      top: 1
-      right: 1
-      bottom: 1
+      left: 7
+      top: 6.99804688
+      right: 615
+      bottom: 415.001953
     owner: {fileID: 947437607}
-  renderOrder: 44
+  renderOrder: 40
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
   texture: {fileID: 8400000, guid: 37b49e19691ed6344873c893d95fa47b, type: 2}
@@ -4001,7 +3908,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 973394055}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .801277161, y: -.177749634, z: 0}
+  m_LocalPosition: {x: .430000007, y: -.0756640658, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
@@ -4028,7 +3935,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60e3359ffaefe124a992e17c8830875c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anchorStyle: 9
+  anchorStyle: 65
   isEnabled: 1
   isVisible: 1
   isInteractive: 0
@@ -4048,14 +3955,14 @@ MonoBehaviour:
   tabIndex: -1
   canFocus: 0
   layout:
-    anchorStyle: 9
+    anchorStyle: 65
     margins:
-      left: 240.384766
-      top: 53.3242188
-      right: 17.6152344
-      bottom: 397.675781
+      left: 128.246094
+      top: 22.6992188
+      right: 129.753906
+      bottom: 478.300781
     owner: {fileID: 973394058}
-  renderOrder: 40
+  renderOrder: 39
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
@@ -4709,7 +4616,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1037020904}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .113449097, y: -.576438904, z: 0}
+  m_LocalPosition: {x: .117164612, y: -.498847961, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
@@ -4723,8 +4630,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 0
   serializedVersion: 2
-  m_Size: {x: 2.12333345, y: .76333338, z: .00100000005}
-  m_Center: {x: 1.06166673, y: -.38166669, z: 0}
+  m_Size: {x: 2.2833333, y: 1.00333333, z: .00100000005}
+  m_Center: {x: 1.14166665, y: -.501666665, z: 0}
 --- !u!114 &1037020907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4742,14 +4649,14 @@ MonoBehaviour:
   isInteractive: 0
   tooltip: 
   pivot: 0
-  zindex: 1
+  zindex: 2
   color:
     serializedVersion: 2
     rgba: 4294967295
   disabledColor:
     serializedVersion: 2
     rgba: 4294967295
-  size: {x: 637, y: 229}
+  size: {x: 685, y: 301}
   minSize: {x: 0, y: 0}
   maxSize: {x: 0, y: 0}
   clipChildren: 0
@@ -4758,10 +4665,10 @@ MonoBehaviour:
   layout:
     anchorStyle: 5
     margins:
-      left: 34.0351562
-      top: 172.931641
-      right: 78.9648438
-      bottom: 98.0683594
+      left: 35.1503906
+      top: 149.654297
+      right: 29.8496094
+      bottom: 99.3457031
     owner: {fileID: 1037020907}
   renderOrder: 41
   isLocalized: 0
@@ -7938,7 +7845,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1586687964}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .645370483, y: -1.44254303, z: 0}
+  m_LocalPosition: {x: .645370483, y: -1.60921478, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
@@ -7988,11 +7895,11 @@ MonoBehaviour:
     anchorStyle: 6
     margins:
       left: 193.611328
-      top: 432.763672
+      top: 482.763672
       right: 466.388672
       bottom: 31.2363281
     owner: {fileID: 1586687967}
-  renderOrder: 46
+  renderOrder: 44
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
@@ -9297,98 +9204,6 @@ MonoBehaviour:
   startValue: {x: 200, y: 300}
   endValue: {x: 200, y: 165}
   direction: 0
---- !u!1 &1919498804
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 1919498805}
-  - 114: {fileID: 1919498807}
-  - 65: {fileID: 1919498806}
-  m_Layer: 8
-  m_Name: ImageContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1919498805
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1919498804}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: .310180664, y: -.0864181519, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 947437605}
-  m_Father: {fileID: 185613233}
---- !u!65 &1919498806
-BoxCollider:
-  m_ObjectHideFlags: 2
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1919498804}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: .433333337, y: .433333337, z: .00100000005}
-  m_Center: {x: .216666669, y: -.216666669, z: 0}
---- !u!114 &1919498807
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1919498804}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18e0e5854c8aa374597bb28d9adf228a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anchorStyle: 5
-  isEnabled: 1
-  isVisible: 1
-  isInteractive: 0
-  tooltip: 
-  pivot: 0
-  zindex: 3
-  color:
-    serializedVersion: 2
-    rgba: 4294967295
-  disabledColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  size: {x: 130, y: 130}
-  minSize: {x: 0, y: 0}
-  maxSize: {x: 0, y: 0}
-  clipChildren: 0
-  tabIndex: -1
-  canFocus: 0
-  layout:
-    anchorStyle: 5
-    margins:
-      left: 93.0546875
-      top: 25.9257812
-      right: 526.945312
-      bottom: 344.074219
-    owner: {fileID: 1919498807}
-  renderOrder: 43
-  isLocalized: 0
-  hotZoneScale: {x: 1, y: 1}
-  atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
-  backgroundSprite: scifi_scroll_normal
-  backgroundColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  padding:
-    m_Left: 10
-    m_Right: 10
-    m_Top: 10
-    m_Bottom: 10
 --- !u!1 &1947920061
 GameObject:
   m_ObjectHideFlags: 0

@@ -32,6 +32,10 @@ Material:
         first:
           name: _Shininess
         second: .078125
+      data:
+        first:
+          name: _Z
+        second: 0
     m_Colors:
       data:
         first:

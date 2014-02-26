@@ -64,8 +64,8 @@ Shader "PlanetShader" {
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.binormalDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 /////// Normals:
-                float2 node_39 = i.uv0;
-                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_39.rg, _BumpMap))).rgb;
+                float2 node_27 = i.uv0;
+                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_27.rg, _BumpMap))).rgb;
                 float3 normalDirection =  mul( normalLocal, tangentTransform ); // Perturbed normals
                 float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
 ////// Lighting:
@@ -76,7 +76,7 @@ Shader "PlanetShader" {
                 float3 diffuse = max( 0.0, NdotL) * attenColor + UNITY_LIGHTMODEL_AMBIENT.xyz*2;
                 float3 finalColor = 0;
                 float3 diffuseLight = diffuse;
-                float4 node_2 = tex2D(_MainTex,TRANSFORM_TEX(node_39.rg, _MainTex));
+                float4 node_2 = tex2D(_MainTex,TRANSFORM_TEX(node_27.rg, _MainTex));
                 finalColor += diffuseLight * node_2.rgb;
 /// Final Color:
                 return fixed4(finalColor,node_2.a);
@@ -135,8 +135,8 @@ Shader "PlanetShader" {
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.binormalDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 /////// Normals:
-                float2 node_40 = i.uv0;
-                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_40.rg, _BumpMap))).rgb;
+                float2 node_28 = i.uv0;
+                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_28.rg, _BumpMap))).rgb;
                 float3 normalDirection =  mul( normalLocal, tangentTransform ); // Perturbed normals
                 float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));
 ////// Lighting:
@@ -147,7 +147,7 @@ Shader "PlanetShader" {
                 float3 diffuse = max( 0.0, NdotL) * attenColor;
                 float3 finalColor = 0;
                 float3 diffuseLight = diffuse;
-                float4 node_2 = tex2D(_MainTex,TRANSFORM_TEX(node_40.rg, _MainTex));
+                float4 node_2 = tex2D(_MainTex,TRANSFORM_TEX(node_28.rg, _MainTex));
                 finalColor += diffuseLight * node_2.rgb;
 /// Final Color:
                 return fixed4(finalColor * node_2.a,0);

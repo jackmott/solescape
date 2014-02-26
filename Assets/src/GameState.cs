@@ -106,7 +106,7 @@ public class GameState : MonoBehaviour
         }
 
         planet.transform.localScale = new Vector3(pi.planetSize, pi.planetSize, pi.planetSize);
-        planet.GeneratePlanet(2048, 1024, pi);
+        planet.GeneratePlanet(4096, 2048, pi);
         planet.BeginGame();
         gameStats = new GameStats[gameLength + 1];
         InvokeRepeating("UpdateState", 1f, 1.0f);
