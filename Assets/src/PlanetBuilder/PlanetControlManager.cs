@@ -116,6 +116,7 @@ public class PlanetControlManager : MonoBehaviour {
         {
             mp.planetInfo.planetName = saveText.Text;
             mp.Save();
+            Notification.Instance.SetNotification("Planet Saved");
         }
     }
 
@@ -137,6 +138,11 @@ public class PlanetControlManager : MonoBehaviour {
         {
             mp.planetInfo.normals = planetNormals[index];
         }
+    }
+
+    public void OnLoadChanged(dfControl control, int index)
+    {
+
     }
 
 
