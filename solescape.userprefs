@@ -1,10 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\PlanetBuilder\PlanetControlManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\src\GameState.cs">
     <Files>
-      <File FileName="Assets\src\ColorRamp.cs" Line="1" Column="1" />
-      <File FileName="Assets\src\PlanetBuilder\PlanetControlManager.cs" Line="6" Column="6" />
-      <File FileName="Assets\src\GUI\Notification.cs" Line="18" Column="18" />
+      <File FileName="Assets\src\GameState.cs" Line="6" Column="6" />
+      <File FileName="Assets\src\ColorRamp.cs" Line="6" Column="6" NotebookId="1" />
+      <File FileName="Assets\src\PlanetBuilder\PlanetControlManager.cs" Line="9" Column="9" NotebookId="1" />
+      <File FileName="Assets\src\GUI\Notification.cs" Line="26" Column="26" NotebookId="1" />
+      <File FileName="Assets\src\Buildings\Building.cs" Line="17" Column="17" NotebookId="1" />
+      <File FileName="Assets\src\PlanetInfo.cs" Line="37" Column="37" NotebookId="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

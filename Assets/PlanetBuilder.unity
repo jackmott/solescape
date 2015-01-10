@@ -851,6 +851,7 @@ Transform:
   - {fileID: 2105992422}
   - {fileID: 1931720126}
   - {fileID: 360305546}
+  - {fileID: 959360350}
   m_Father: {fileID: 0}
   m_RootOrder: 4
 --- !u!33 &104205984
@@ -5741,6 +5742,208 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
+--- !u!1 &959360349
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 959360350}
+  - 114: {fileID: 959360355}
+  - 65: {fileID: 959360354}
+  - 114: {fileID: 959360353}
+  - 114: {fileID: 959360352}
+  - 114: {fileID: 959360351}
+  m_Layer: 8
+  m_Name: NotificationPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &959360350
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: .974868774, y: .0884246826, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 104205983}
+  m_RootOrder: 4
+--- !u!114 &959360351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20d7a8f60b96cf748b75615174476897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notification: {fileID: 959360355}
+--- !u!114 &959360352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71c938d677f00a54cbbf59a261666cf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Tween: {fileID: 959360353}
+  EventSource: {fileID: 959360355}
+  StartEvent: ControlShown
+  StopEvent: ControlHidden
+  ResetEvent: 
+--- !u!114 &959360353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a8c518628d86c43b78aecafd8bb696, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tweenName: NotificationBlink
+  target:
+    Component: {fileID: 959360355}
+    MemberName: Color
+  easingType: 10
+  animCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+    - time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+  length: .150000006
+  syncStartWhenRun: 0
+  startValueIsOffset: 0
+  syncEndWhenRun: 0
+  endValueIsOffset: 0
+  loopType: 1
+  autoRun: 0
+  skipToEndOnStop: 0
+  delayBeforeStarting: 0
+  startValue:
+    serializedVersion: 2
+    rgba: 4294921216
+  endValue:
+    serializedVersion: 2
+    rgba: 4294967295
+  direction: 0
+--- !u!65 &959360354
+BoxCollider:
+  m_ObjectHideFlags: 2
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Size: {x: .620000005, y: .656666696, z: .00100000005}
+  m_Center: {x: .310000002, y: -.328333348, z: 0}
+--- !u!114 &959360355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 959360349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60e3359ffaefe124a992e17c8830875c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anchorStyle: 10
+  isEnabled: 1
+  isVisible: 0
+  isInteractive: 0
+  tooltip: 
+  pivot: 0
+  zindex: 8
+  color:
+    serializedVersion: 2
+    rgba: 4294967295
+  disabledColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  size: {x: 186, y: 197}
+  minSize: {x: 0, y: 0}
+  maxSize: {x: 0, y: 0}
+  clipChildren: 0
+  tabIndex: -1
+  canFocus: 0
+  autoFocus: 0
+  layout:
+    anchorStyle: 10
+    margins:
+      left: 772
+      top: 273
+      right: 2
+      bottom: 130
+    owner: {fileID: 959360355}
+  renderOrder: 109
+  isLocalized: 0
+  hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
+  atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
+  font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
+  backgroundSprite: 
+  backgroundColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  autoSize: 0
+  autoHeight: 0
+  wordWrap: 1
+  text: 'New Buildings Available
+
+    Upgrades Unlocked!'
+  bottomColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  align: 1
+  vertAlign: 1
+  textScale: 1.5
+  textScaleMode: 0
+  charSpacing: 0
+  colorizeSymbols: 0
+  processMarkup: 0
+  outline: 0
+  outlineWidth: 1
+  enableGradient: 0
+  outlineColor:
+    serializedVersion: 2
+    rgba: 4278190080
+  shadow: 0
+  shadowColor:
+    serializedVersion: 2
+    rgba: 4278190080
+  shadowOffset: {x: 1, y: -1}
+  padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  tabSize: 48
+  tabStops: 
 --- !u!1 &965345456
 GameObject:
   m_ObjectHideFlags: 0
@@ -9283,7 +9486,7 @@ MonoBehaviour:
     MemberName: SelectedIndexChanged
   DataTarget:
     Component: {fileID: 1931720127}
-    MemberName: OnNormalChanged
+    MemberName: OnLoadChanged
   AutoBind: 1
   AutoUnbind: 1
 --- !u!65 &1453747219
