@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -42,10 +42,10 @@ using System.Collections.Generic;
 [dfTooltip( "Displays text information, optionally allowing the use of markup to specify colors and embedded sprites" )]
 [dfHelp( "http://www.daikonforge.com/docs/df-gui/classdf_label.html" )]
 [AddComponentMenu( "Daikon Forge/User Interface/Label" )]
-public class dfLabel : dfControl, IDFMultiRender
+public class dfLabel : dfControl, IDFMultiRender, IRendersText
 {
 
-	#region Public events 
+	#region Public events
 
 	/// <summary>
 	/// Raised whenever the value of the <see cref="Text"/> property changes
@@ -173,7 +173,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	/// </summary>
 	public dfFontBase Font
 	{
-		get 
+		get
 		{
 			if( this.font == null )
 			{
@@ -183,13 +183,15 @@ public class dfLabel : dfControl, IDFMultiRender
 					this.font = view.DefaultFont;
 				}
 			}
-			return this.font; 
+			return this.font;
 		}
 		set
 		{
 			if( value != this.font )
 			{
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
 				Invalidate();
 			}
 		}
@@ -239,6 +241,7 @@ public class dfLabel : dfControl, IDFMultiRender
 			value = Mathf.Max( 0.1f, value );
 			if( !Mathf.Approximately( textScale, value ) )
 			{
+				dfFontManager.Invalidate( this.Font );
 				this.textScale = value;
 				Invalidate();
 			}
@@ -348,12 +351,20 @@ public class dfLabel : dfControl, IDFMultiRender
 		get { return this.text; }
 		set
 		{
-			value = value.Replace( "\\t", "\t" ).Replace( "\\n", "\n" );
+
+			if( value == null )
+				value = string.Empty;
+			else
+				value = value.Replace( "\\t", "\t" ).Replace( "\\n", "\n" );
+
 			if( !string.Equals( value, this.text ) )
 			{
+				dfFontManager.Invalidate( this.Font );
+				this.localizationKey = value;
 				this.text = this.getLocalizedValue( value );
 				OnTextChanged();
 			}
+
 		}
 	}
 
@@ -368,7 +379,8 @@ public class dfLabel : dfControl, IDFMultiRender
 		{
 			if( value != autoSize )
 			{
-				if( value ) autoHeight = false;
+				if( value )
+					autoHeight = false;
 				autoSize = value;
 				Invalidate();
 			}
@@ -376,7 +388,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	}
 
 	/// <summary>
-	/// Gets or sets whether the <see cref="dfLabel"/> label will be automatically
+	/// Gets or sets whether the label will be automatically
 	/// resized vertically to contain the rendered text.
 	/// </summary>
 	public bool AutoHeight
@@ -386,7 +398,8 @@ public class dfLabel : dfControl, IDFMultiRender
 		{
 			if( value != autoHeight )
 			{
-				if( value ) autoSize = false;
+				if( value )
+					autoSize = false;
 				autoHeight = value;
 				Invalidate();
 			}
@@ -549,7 +562,8 @@ public class dfLabel : dfControl, IDFMultiRender
 	{
 		get
 		{
-			if( padding == null ) padding = new RectOffset();
+			if( padding == null )
+				padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -593,6 +607,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	#region Private runtime variables
 
 	private Vector2 startSize = Vector2.zero;
+	private bool isFontCallbackAssigned = false;
 
 	#endregion
 
@@ -601,7 +616,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	protected internal override void OnLocalize()
 	{
 		base.OnLocalize();
-		this.Text = getLocalizedValue( this.text );
+		this.Text = getLocalizedValue( this.localizationKey ?? this.text );
 	}
 
 	protected internal void OnTextChanged()
@@ -609,13 +624,19 @@ public class dfLabel : dfControl, IDFMultiRender
 
 		Invalidate();
 
-		Signal( "OnTextChanged", this.text );
+		Signal( "OnTextChanged", this, this.text );
 
 		if( TextChanged != null )
 		{
 			TextChanged( this, this.text );
 		}
 
+	}
+
+	public override void Start()
+	{
+		base.Start();
+		this.localizationKey = this.Text;
 	}
 
 	public override void OnEnable()
@@ -634,6 +655,8 @@ public class dfLabel : dfControl, IDFMultiRender
 			Font = GetManager().DefaultFont;
 		}
 
+		bindTextureRebuildCallback();
+
 		#endregion
 
 		// Default size for newly-created dfLabel controls
@@ -644,13 +667,20 @@ public class dfLabel : dfControl, IDFMultiRender
 
 	}
 
+	public override void OnDisable()
+	{
+		base.OnDisable();
+		unbindTextureRebuildCallback();
+	}
+
 	public override void Update()
 	{
 
 		// Autosize overrides autoheight (may only be an issue during dev, where this
 		// value is being set on a protected field via the default Inspector rather 
 		// than through the exposed property).
-		if( autoSize ) autoHeight = false;
+		if( autoSize )
+			autoHeight = false;
 
 		// Make sure that there is always a font assigned, if possible
 		if( this.Font == null )
@@ -689,7 +719,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	[HideInInspector]
 	public override void Invalidate()
 	{
-		
+
 		base.Invalidate();
 
 		if( this.Font == null || !this.Font.IsValid || GetManager() == null )
@@ -706,15 +736,29 @@ public class dfLabel : dfControl, IDFMultiRender
 		if( string.IsNullOrEmpty( this.Text ) )
 		{
 
+			var lastSize = this.size;
+			var newSize = lastSize;
+
 			if( sizeIsUninitialized )
-				Size = new Vector2( 150, 24 );
+				newSize = new Vector2( 150, 24 );
+
 			if( this.AutoSize || this.AutoHeight )
-				Height = Mathf.CeilToInt( Font.LineHeight * TextScale );
+				newSize.y = Mathf.CeilToInt( Font.LineHeight * TextScale );
+
+			if( lastSize != newSize )
+			{
+				this.SuspendLayout();
+				this.Size = newSize;
+				this.ResumeLayout();
+			}
 
 			return;
 
 		}
 
+		var previousSize = this.size;
+
+		// TODO: There should be no need to do this when the text, font, and textscale have not changed
 		using( var textRenderer = obtainRenderer() )
 		{
 
@@ -724,6 +768,11 @@ public class dfLabel : dfControl, IDFMultiRender
 			// below is intentional. Not only do we not need the full host of actions
 			// that would be caused by assigning to the property, but doing so actually
 			// causes issues: http://daikonforge.com/issues/view.php?id=37
+
+			// NOTE: The call to raiseSizeChangedEvent() was added to address a user-reported 
+			// issue where an AutoSize or AutoHeight label that was contained in a ScrollPanel 
+			// did not notify the parent ScrollPanel that it had to redo the layout and clipping 
+			// operations. raiseSizeChangedEvent() performs that notification.
 
 			if( AutoSize || sizeIsUninitialized )
 			{
@@ -736,6 +785,11 @@ public class dfLabel : dfControl, IDFMultiRender
 
 		}
 
+		if( ( this.size - previousSize ).sqrMagnitude >= 1f )
+		{
+			raiseSizeChangedEvent();
+		}
+
 	}
 
 	private dfFontRendererBase obtainRenderer()
@@ -746,7 +800,8 @@ public class dfLabel : dfControl, IDFMultiRender
 		var clientSize = this.Size - new Vector2( padding.horizontal, padding.vertical );
 
 		var effectiveSize = ( this.autoSize || sizeIsUninitialized ) ? getAutoSizeDefault() : clientSize;
-		if( autoHeight ) effectiveSize = new Vector2( clientSize.x, int.MaxValue );
+		if( autoHeight )
+			effectiveSize = new Vector2( clientSize.x, int.MaxValue );
 
 		var p2u = PixelsToUnits();
 		var origin = ( pivot.TransformToUpperLeft( Size ) + new Vector3( padding.left, -padding.top ) ) * p2u;
@@ -790,7 +845,7 @@ public class dfLabel : dfControl, IDFMultiRender
 		}
 
 		return textRenderer;
-	
+
 	}
 
 	private float getTextScaleMultiplier()
@@ -833,7 +888,7 @@ public class dfLabel : dfControl, IDFMultiRender
 		var p2u = PixelsToUnits();
 		var renderedSize = textRenderer.MeasureString( this.text ) * p2u;
 		var origin = textRenderer.VectorOffset;
-		var clientHeight = (Height - padding.vertical) * p2u;
+		var clientHeight = ( Height - padding.vertical ) * p2u;
 
 		if( renderedSize.y >= clientHeight )
 			return origin;
@@ -889,7 +944,7 @@ public class dfLabel : dfControl, IDFMultiRender
 	#region IDFMultiRender Members
 
 	private dfRenderData textRenderData = null;
-	private dfList<dfRenderData> buffers = dfList<dfRenderData>.Obtain();
+	private dfList<dfRenderData> renderDataBuffers = dfList<dfRenderData>.Obtain();
 
 	public dfList<dfRenderData> RenderMultiple()
 	{
@@ -897,7 +952,30 @@ public class dfLabel : dfControl, IDFMultiRender
 		try
 		{
 
-			//@Profiler.BeginSample( "dfLabel.RenderMultiple()" );
+#if UNITY_EDITOR
+			//@Profiler.BeginSample( "Rendering " + GetType().Name );
+#endif
+
+			// If control is not dirty, update the transforms on the 
+			// render buffers (in case control moved) and return 
+			// pre-rendered data
+			if( !isControlInvalidated && ( textRenderData != null || renderData != null ) )
+			{
+
+				//@Profiler.BeginSample( "Re-using existing render buffers" );
+
+				var matrix = transform.localToWorldMatrix;
+
+				for( int i = 0; i < renderDataBuffers.Count; i++ )
+				{
+					renderDataBuffers[ i ].Transform = matrix;
+				}
+
+				//@Profiler.EndSample();
+
+				return renderDataBuffers;
+
+			}
 
 			if( Atlas == null || Font == null || !isVisible )
 				return null;
@@ -913,25 +991,6 @@ public class dfLabel : dfControl, IDFMultiRender
 
 			}
 
-			// If control is not dirty, update the transforms on the 
-			// render buffers (in case control moved) and return 
-			// pre-rendered data
-			if( !isControlInvalidated )
-			{
-
-				//@Profiler.BeginSample( "Re-using existing render buffers" );
-
-				for( int i = 0; i < buffers.Count; i++ )
-				{
-					buffers[ i ].Transform = transform.localToWorldMatrix;
-				}
-
-				//@Profiler.EndSample();
-
-				return buffers;
-
-			}
-
 			// Clear the render buffers
 			resetRenderBuffers();
 
@@ -940,11 +999,11 @@ public class dfLabel : dfControl, IDFMultiRender
 
 			if( string.IsNullOrEmpty( this.Text ) )
 			{
-				
+
 				if( this.AutoSize || this.AutoHeight )
 					Height = Mathf.CeilToInt( Font.LineHeight * TextScale );
 
-				return buffers;
+				return renderDataBuffers;
 
 			}
 
@@ -969,13 +1028,18 @@ public class dfLabel : dfControl, IDFMultiRender
 			// Make sure that the collider size always matches the control
 			updateCollider();
 
-			return buffers;
+			return renderDataBuffers;
 
 		}
 		finally
 		{
+
 			this.isControlInvalidated = false;
+
+#if UNITY_EDITOR
 			//@Profiler.EndSample();
+#endif
+
 		}
 
 	}
@@ -983,30 +1047,102 @@ public class dfLabel : dfControl, IDFMultiRender
 	private void resetRenderBuffers()
 	{
 
-		buffers.Clear();
+		renderDataBuffers.Clear();
+
+		var matrix = transform.localToWorldMatrix;
 
 		if( renderData != null )
 		{
-			
+
 			renderData.Clear();
 			renderData.Material = Atlas.Material;
-			renderData.Transform = this.transform.localToWorldMatrix;
-			
-			buffers.Add( renderData );
+			renderData.Transform = matrix;
+
+			renderDataBuffers.Add( renderData );
 
 		}
 
 		if( textRenderData != null )
 		{
-			
+
 			textRenderData.Clear();
 			textRenderData.Material = Atlas.Material;
-			textRenderData.Transform = this.transform.localToWorldMatrix;
-		
-			buffers.Add( textRenderData );
+			textRenderData.Transform = matrix;
+
+			renderDataBuffers.Add( textRenderData );
 
 		}
 
+	}
+
+	#endregion
+
+	#region Dynamic font management 
+
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( font.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+			isFontCallbackAssigned = true;
+
+		}
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( font.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+		}
+
+		isFontCallbackAssigned = false;
+
+	}
+
+	private void requestCharacterInfo()
+	{
+
+		var dynamicFont = this.Font as dfDynamicFont;
+		if( dynamicFont == null )
+			return;
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+		if( string.IsNullOrEmpty( this.text ) )
+			return;
+
+		var effectiveTextScale = TextScale * getTextScaleMultiplier();
+		var effectiveFontSize = Mathf.CeilToInt( this.font.FontSize * effectiveTextScale );
+
+		dynamicFont.AddCharacterRequest( this.text, effectiveFontSize, FontStyle.Normal );
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		requestCharacterInfo();
+		Invalidate();
+	}
+
+	public void UpdateFontInfo()
+	{
+		requestCharacterInfo();
 	}
 
 	#endregion

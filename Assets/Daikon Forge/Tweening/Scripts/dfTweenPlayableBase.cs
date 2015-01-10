@@ -1,4 +1,5 @@
-﻿using System;
+﻿/* Copyright 2013-2014 Daikon Forge */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,3 +72,19 @@ public abstract class dfTweenPlayableBase : MonoBehaviour
 	#endregion
 
 }
+
+/// <summary>
+/// Indicates the current state of a Tween
+/// </summary>
+public enum dfTweenState
+{
+	/// <summary>The tween is not currently running</summary>
+	Stopped,
+	/// <summary>The tween is currently paused</summary>
+	Paused,
+	/// <summary>The tween is currently running</summary>
+	Playing,
+	/// <summary>The tween was started, but is waiting for the StartDelay to expire</summary>
+	Started
+}
+

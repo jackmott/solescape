@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -30,7 +30,7 @@ public class dfTabContainer : dfControl
 
 	#endregion
 
-	#region Protected serialized members 
+	#region Protected serialized members
 
 	[SerializeField]
 	protected dfAtlas atlas;
@@ -100,7 +100,8 @@ public class dfTabContainer : dfControl
 	{
 		get
 		{
-			if( this.padding == null ) this.padding = new RectOffset();
+			if( this.padding == null )
+				this.padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -129,7 +130,7 @@ public class dfTabContainer : dfControl
 		}
 	}
 
-	#endregion 
+	#endregion
 
 	#region Public methods
 
@@ -166,7 +167,7 @@ public class dfTabContainer : dfControl
 
 	#endregion
 
-	#region Events 
+	#region Events
 
 	public override void OnEnable()
 	{
@@ -197,7 +198,7 @@ public class dfTabContainer : dfControl
 	protected internal virtual void OnSelectedIndexChanged( int Index )
 	{
 
-		SignalHierarchy( "OnSelectedIndexChanged", Index );
+		SignalHierarchy( "OnSelectedIndexChanged", this, Index );
 
 		if( SelectedIndexChanged != null )
 		{
@@ -242,7 +243,7 @@ public class dfTabContainer : dfControl
 
 	#endregion
 
-	#region Private utility methods 
+	#region Private utility methods
 
 	private void selectPageByIndex( int value )
 	{

@@ -1,17 +1,12 @@
-﻿/* Copyright 2013 Daikon Forge */
-
-using UnityEngine;
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 using System;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Provides Editor support for binding a keypress event on a
 /// control to a compatible method on another Component
+/// </summary>
 [AddComponentMenu( "Daikon Forge/Data Binding/Key Binding" )]
 [Serializable]
 public class dfControlKeyBinding : MonoBehaviour, IDataBindingComponent
@@ -103,6 +98,11 @@ public class dfControlKeyBinding : MonoBehaviour, IDataBindingComponent
 		}
 	}
 
+	/// <summary>
+	/// Returns whether this component is currenly bound
+	/// </summary>
+	public bool IsBound { get { return this.isBound; } }
+
 	#endregion
 
 	#region Private instance variables
@@ -167,7 +167,7 @@ public class dfControlKeyBinding : MonoBehaviour, IDataBindingComponent
 
 	#region Event handler 
 
-	void eventSource_KeyDown( dfControl control, dfKeyEventArgs args )
+	void eventSource_KeyDown( dfControl sourceControl, dfKeyEventArgs args )
 	{
 
 		// TODO: Check for args.Used?

@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 /// methods with bespoke implementations that do not allocate 
 /// iterators, etc.
 /// </summary>
-public class dfList<T> : IList<T>, IDisposable
+public class dfList<T> : IList<T>, IDisposable, IPoolable
 {
 
 	#region Object pooling 
@@ -26,6 +26,20 @@ public class dfList<T> : IList<T>, IDisposable
 	private static Queue<object> pool = new Queue<object>( 1024 );
 
 	#endregion 
+
+	/// <summary>
+	/// Releases all instances in the object pool.
+	/// </summary>
+	public static void ClearPool()
+	{
+
+		lock( pool )
+		{
+			pool.Clear();
+			pool.TrimExcess();
+		}
+
+	}
 
 	/// <summary>
 	/// Returns a reference to a <see cref="dfList<T>"/> instance. If there are 
@@ -68,15 +82,44 @@ public class dfList<T> : IList<T>, IDisposable
 	}
 
 	/// <summary>
+	/// If the element type implements the IPoolable interface, will call the Release()
+	/// method of each item in the collection, and the collection will be cleared.
+	/// </summary>
+	public void ReleaseItems()
+	{
+
+		if( !isElementTypePoolable )
+			throw new InvalidOperationException( string.Format( "Element type {0} does not implement the {1} interface", typeof( T ).Name, typeof( IPoolable ).Name ) );
+
+		for( int i = 0; i < count; i++ )
+		{
+			var item = items[ i ] as IPoolable;
+			item.Release();
+		}
+
+		Clear();
+
+	}
+
+	/// <summary>
 	/// Releases the <see cref="dfList"/> back to the object pool
 	/// </summary>
 	public void Release()
 	{
 
-		Clear();
-
 		lock( pool )
 		{
+
+			if( autoReleaseItems && isElementTypePoolable )
+			{
+				autoReleaseItems = false;
+				ReleaseItems();
+			}
+			else
+			{
+				Clear();
+			}
+
 			pool.Enqueue( this );
 		}
 
@@ -90,7 +133,10 @@ public class dfList<T> : IList<T>, IDisposable
 
 	private T[] items = new T[ DEFAULT_CAPACITY ];
 	private int count = 0;
-	private bool isValueType = false;
+
+	private bool isElementTypeValueType = false;
+	private bool isElementTypePoolable = false;
+	private bool autoReleaseItems = false;
 
 	#endregion
 
@@ -98,10 +144,13 @@ public class dfList<T> : IList<T>, IDisposable
 
 	internal dfList()
 	{
+
 #if !UNITY_EDITOR && UNITY_METRO 
-		isValueType = typeof( T ).GetTypeInfo().IsValueType;
+		isElementTypeValueType = typeof( T ).GetTypeInfo().IsValueType;
+		isElementTypePoolable = typeof( IPoolable ).GetTypeInfo().IsAssignableFrom( typeof( T ).GetTypeInfo() );
 #else
-		isValueType = typeof( T ).IsValueType;
+		isElementTypeValueType = typeof( T ).IsValueType;
+		isElementTypePoolable = typeof( IPoolable ).IsAssignableFrom( typeof( T ) );
 #endif
 
 	}
@@ -121,6 +170,16 @@ public class dfList<T> : IList<T>, IDisposable
 	#endregion
 
 	#region Public properties 
+
+	/// <summary>
+	/// If set to TRUE (defaults to FALSE), will attempt to call IPoolable.Release() on each contained item
+	/// when the Release() method is called.
+	/// </summary>
+	public bool AutoReleaseItems
+	{
+		get { return this.autoReleaseItems; }
+		set { autoReleaseItems = value; }
+	}
 
 	/// <summary>
 	/// Returns the number of items in the list
@@ -219,6 +278,31 @@ public class dfList<T> : IList<T>, IDisposable
 	}
 
 	/// <summary>
+	/// Returns the last item in the collection and removes it frm the list.
+	/// Provided only for call-level compatibility with code that treats this
+	/// collection as a Stack.
+	/// </summary>
+	/// <returns></returns>
+	public T Pop()
+	{
+		lock( items )
+		{
+
+			if( this.count == 0 )
+				throw new IndexOutOfRangeException();
+
+			var item = this.items[ this.count - 1 ];
+
+			this.items[ this.count - 1 ] = default( T );
+
+			this.count -= 1;
+
+			return item;
+
+		}
+	}
+
+	/// <summary>
 	/// Returns a shallow copy of this <see cref="dfList<T>"/> instance 
 	/// </summary>
 	/// <returns></returns>
@@ -226,8 +310,8 @@ public class dfList<T> : IList<T>, IDisposable
 	{
 
 		var clone = Obtain( this.count );
-			
-		Array.Copy( this.items, clone.items, this.count );
+
+		Array.Copy( this.items, 0, clone.items, 0, this.count );
 			
 		clone.count = this.count;
 			
@@ -297,7 +381,7 @@ public class dfList<T> : IList<T>, IDisposable
 	public void AddRange( dfList<T> list )
 	{
 
-		var listCount = list.Count;
+		var listCount = list.count;
 
 		EnsureCapacity( this.count + listCount );
 		Array.Copy( list.items, 0, this.items, this.count, listCount );
@@ -493,12 +577,33 @@ public class dfList<T> : IList<T>, IDisposable
 	}
 
 	/// <summary>
+	/// Adds two items to the collection
+	/// </summary>
+	public void Add( T item0, T item1 )
+	{
+		EnsureCapacity( this.count + 2 );
+		this.items[ this.count++ ] = item0;
+		this.items[ this.count++ ] = item1;
+	}
+
+	/// <summary>
+	/// Adds three items to the collection
+	/// </summary>
+	public void Add( T item0, T item1, T item2 )
+	{
+		EnsureCapacity( this.count + 3 );
+		this.items[ this.count++ ] = item0;
+		this.items[ this.count++ ] = item1;
+		this.items[ this.count++ ] = item2;
+	}
+
+	/// <summary>
 	/// Removes all items from the collection
 	/// </summary>
 	public void Clear()
 	{
 
-		if( !isValueType )
+		if( !isElementTypeValueType )
 		{
 			Array.Clear( this.items, 0, this.items.Length );
 		}
@@ -604,6 +709,17 @@ public class dfList<T> : IList<T>, IDisposable
 	}
 
 	/// <summary>
+	/// Returns a List&lt;T&gt; collection containing all elements of this collection
+	/// </summary>
+	/// <returns></returns>
+	public List<T> ToList()
+	{
+		var list = new List<T>( this.count );
+		list.AddRange( this.ToArray() );
+		return list;
+	}
+
+	/// <summary>
 	/// Returns an array containing all elements of this collection
 	/// </summary>
 	public T[] ToArray()
@@ -611,7 +727,7 @@ public class dfList<T> : IList<T>, IDisposable
 
 		var array = new T[ this.count ];
 
-		Array.Copy( this.items, array, this.count );
+		Array.Copy( this.items, 0, array, 0, this.count );
 
 		return array;
 
@@ -881,14 +997,13 @@ public class dfList<T> : IList<T>, IDisposable
 	// use a for(;;) loop instead of foreach(). Note that this may also apply to using
 	// LINQ queries, which may use foreach() or an GetEnumerator() internally.
 
-#if UNITY_IPHONE
 	/// <summary>
 	/// Returns an IEnumerator instance that can be used to iterate through
 	/// the elements in this list.
 	/// </summary>
 	public IEnumerator<T> GetEnumerator()
 	{
-		throw new Exception( "Generic-Typed enumerators not work properly on iOS. Please use a for() loop instead of foreach()" );
+		return PooledEnumerator.Obtain( this, null );
 	}
 
 	/// <summary>
@@ -897,27 +1012,8 @@ public class dfList<T> : IList<T>, IDisposable
 	/// </summary>
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		throw new Exception( "Generic-Typed enumerators not work properly on iOS. Please use a for() loop instead of foreach()" );
+		return PooledEnumerator.Obtain( this, null );
 	}
-#else
-	/// <summary>
-	/// Returns an IEnumerator instance that can be used to iterate through
-	/// the elements in this list.
-	/// </summary>
-	public IEnumerator<T> GetEnumerator()
-	{
-		return PooledEnumerator.Obtain( this );
-	}
-
-	/// <summary>
-	/// Returns an IEnumerator instance that can be used to iterate through
-	/// the elements in this list.
-	/// </summary>
-	IEnumerator IEnumerable.GetEnumerator()
-	{
-		return PooledEnumerator.Obtain( this );
-	}
-#endif
 
 	#endregion
 
@@ -970,7 +1066,7 @@ public class dfList<T> : IList<T>, IDisposable
 
 		#region Pooling
 
-		public static PooledEnumerator Obtain( dfList<T> list, Func<T, bool> predicate = null )
+		public static PooledEnumerator Obtain( dfList<T> list, Func<T, bool> predicate )
 		{
 
 			var enumerator = ( pool.Count > 0 ) ? pool.Dequeue() : new PooledEnumerator();
@@ -1010,7 +1106,7 @@ public class dfList<T> : IList<T>, IDisposable
 
 		#region Private utility methods
 
-		private void ResetInternal( dfList<T> list, Func<T, bool> predicate = null )
+		private void ResetInternal( dfList<T> list, Func<T, bool> predicate )
 		{
 			this.isValid = true;
 			this.list = list;

@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -17,10 +17,10 @@ using System.Collections.Generic;
 [dfTooltip( "Implements a drop-down list control" )]
 [dfHelp( "http://www.daikonforge.com/docs/df-gui/classdf_dropdown.html" )]
 [AddComponentMenu( "Daikon Forge/User Interface/Dropdown List" )]
-public class dfDropdown : dfInteractiveBase, IDFMultiRender
+public class dfDropdown : dfInteractiveBase, IDFMultiRender, IRendersText
 {
 
-	#region Public enumerations 
+	#region Public enumerations
 
 	/// <summary>
 	/// Specifies whether the pop-up list will appear under or over the
@@ -45,7 +45,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Public events 
+	#region Public events
 
 	/// <summary>
 	/// Specifies the method signature required to process the DropdownOpen and DropdownClose events
@@ -73,7 +73,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Serialized protected members 
+	#region Serialized protected members
 
 	[SerializeField]
 	protected dfFontBase font;
@@ -146,9 +146,10 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Private non-serialized variables 
+	#region Private non-serialized variables
 
 	private bool eventsAttached = false;
+	private bool isFontCallbackAssigned = false;
 
 	private dfListbox popup = null;
 
@@ -189,7 +190,9 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 			if( value != this.font )
 			{
 				ClosePopup();
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
 				Invalidate();
 			}
 		}
@@ -287,10 +290,14 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	/// </summary>
 	public string SelectedValue
 	{
-		get { return this.items[ this.selectedIndex ]; }
+        get { return (0 <= this.selectedIndex) ? this.items[this.selectedIndex] : null; }
 		set
 		{
+
 			this.selectedIndex = -1;
+
+			// Look for the value in the current items. If found,
+			// set SelectedIndex to match the value's index.
 			for( int i = 0; i < this.items.Length; i++ )
 			{
 				if( items[ i ] == value )
@@ -299,7 +306,9 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 					break;
 				}
 			}
+
 			Invalidate();
+
 		}
 	}
 
@@ -315,7 +324,8 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 			value = Mathf.Min( items.Length - 1, value );
 			if( value != this.selectedIndex )
 			{
-				if( popup != null ) popup.SelectedIndex = value;
+				if( popup != null )
+					popup.SelectedIndex = value;
 				this.selectedIndex = value;
 				OnSelectedIndexChanged();
 				Invalidate();
@@ -331,7 +341,8 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( textFieldPadding == null ) textFieldPadding = new RectOffset();
+			if( textFieldPadding == null )
+				textFieldPadding = new RectOffset();
 			return this.textFieldPadding;
 		}
 		set
@@ -387,6 +398,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 			if( !Mathf.Approximately( textScale, value ) )
 			{
 				ClosePopup();
+				dfFontManager.Invalidate( this.Font );
 				this.textScale = value;
 				Invalidate();
 			}
@@ -418,13 +430,15 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( items == null ) items = new string[] { };
+			if( items == null )
+				items = new string[] { };
 			return items;
 		}
 		set
 		{
 			ClosePopup();
-			if( value == null ) value = new string[] { };
+			if( value == null )
+				value = new string[] { };
 			items = value;
 			Invalidate();
 		}
@@ -438,7 +452,8 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( listPadding == null ) listPadding = new RectOffset();
+			if( listPadding == null )
+				listPadding = new RectOffset();
 			return this.listPadding;
 		}
 		set
@@ -569,9 +584,9 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 		}
 	}
 
-	#endregion 
+	#endregion
 
-	#region Event handlers 
+	#region Event handlers
 
 	protected internal override void OnMouseWheel( dfMouseEventArgs args )
 	{
@@ -638,7 +653,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	public override void OnEnable()
 	{
-		
+
 		base.OnEnable();
 
 		#region Ensure that this control always has a valid font, if possible
@@ -654,11 +669,14 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 		#endregion
 
+		bindTextureRebuildCallback();
+
 	}
 
 	public override void OnDisable()
 	{
 		base.OnDisable();
+		unbindTextureRebuildCallback();
 		ClosePopup( false );
 	}
 
@@ -700,13 +718,13 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 		if( popup.Scrollbar != null && popup.Scrollbar.collider.Raycast( ray, out hitInfo, camera.farClipPlane ) )
 			return;
 
-		if( this.collider.Raycast ( ray, out hitInfo, camera.farClipPlane ) )
-		   return;
+		if( this.collider.Raycast( ray, out hitInfo, camera.farClipPlane ) )
+			return;
 
 		ClosePopup();
 
 	}
-	
+
 	public override void LateUpdate()
 	{
 
@@ -770,7 +788,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	protected internal virtual void OnSelectedIndexChanged()
 	{
 
-		SignalHierarchy( "OnSelectedIndexChanged", this.selectedIndex );
+		SignalHierarchy( "OnSelectedIndexChanged", this, this.selectedIndex );
 
 		if( SelectedIndexChanged != null )
 		{
@@ -805,12 +823,12 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Rendering  
+	#region Rendering
 
 	private void renderText( dfRenderData buffer )
 	{
 
-		if( selectedIndex < 0 || selectedIndex >= items.Length  )
+		if( selectedIndex < 0 || selectedIndex >= items.Length )
 			return;
 
 		var selectedItem = items[ selectedIndex ];
@@ -860,7 +878,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	/// <summary>
 	/// Adds a new value to the collection of list items
@@ -870,10 +888,10 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 
 		var newList = new string[ items.Length + 1 ];
-		
+
 		Array.Copy( items, newList, items.Length );
 		newList[ items.Length ] = item;
-		
+
 		items = newList;
 
 	}
@@ -928,12 +946,6 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 			var right = popup.transform.TransformDirection( Vector3.right );
 			var scrollbarPosition = popup.transform.position + right * ( popupSize.x - activeScrollbar.Width ) * p2u;
 
-			activeScrollbar.transform.parent = popup.transform;
-			activeScrollbar.transform.position = scrollbarPosition;
-
-			activeScrollbar.Anchor = dfAnchorStyle.Top | dfAnchorStyle.Bottom;
-			activeScrollbar.Height = popup.Height;
-
 			popup.AddControl( activeScrollbar );
 			popup.Width -= activeScrollbar.Width;
 			popup.Scrollbar = activeScrollbar;
@@ -942,6 +954,12 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 			{
 				activeScrollbar.Height = control.Height;
 			};
+
+			activeScrollbar.transform.parent = popup.transform;
+			activeScrollbar.transform.position = scrollbarPosition;
+
+			activeScrollbar.Anchor = dfAnchorStyle.Top | dfAnchorStyle.Bottom;
+			activeScrollbar.Height = popup.Height;
 
 		}
 
@@ -974,7 +992,12 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	}
 
-	public void ClosePopup( bool allowOverride = true )
+	public void ClosePopup()
+	{
+		ClosePopup( true );
+	}
+
+	public void ClosePopup( bool allowOverride )
 	{
 
 		if( popup == null )
@@ -994,7 +1017,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 		{
 			Destroy( popup.gameObject );
 			popup = null;
-			return;	
+			return;
 		}
 
 		bool overridden = false;
@@ -1019,41 +1042,31 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Private utility methods 
+	#region Private utility methods
 
 	private Vector3 calculatePopupPosition( int height )
 	{
 
 		var p2u = PixelsToUnits();
-		var pivotOffset = pivot.TransformToUpperLeft( Size );
-		var controlPosition = transform.position + pivotOffset * p2u;
-
+		var controlPosition = this.transform.position + pivot.TransformToUpperLeft( size ) * p2u;
 		var down = getScaledDirection( Vector3.down );
-		var offset = transformOffset( listOffset ) * p2u;
-		var positionBelow = controlPosition + offset + ( down * Size.y * p2u );
-		var positionAbove = controlPosition + offset - ( down * popup.Size.y * p2u );
+		var offset = transformOffset( listOffset );
+		var positionBelow = controlPosition + ( offset + ( down * Size.y ) ) * p2u;
+		var positionAbove = controlPosition + ( offset - ( down * popup.Size.y ) ) * p2u;
 
 		if( listPosition == PopupListPosition.Above )
 			return positionAbove;
 		else if( listPosition == PopupListPosition.Below )
 			return positionBelow;
 
-		var parentPosition = popup.transform.parent.position / p2u
-			+ popup.Parent.Pivot.TransformToUpperLeft( Size );
+		var screenSize = GetManager().GetScreenSize();
 
-		// TODO: Comparing y values only works on vertically-oriented controls, need to fix this known issue
-
-		var parentBottom = parentPosition + down * parent.Size.y;
-		var listBottom = positionBelow / p2u + down * popup.Size.y;
-		if( listBottom.y < parentBottom.y )
-			return positionAbove;
-
-		var listBottomScreen = GetCamera().WorldToScreenPoint( listBottom * p2u );
-		if( listBottomScreen.y <= 0 )
+		var listBottom = GetAbsolutePosition().y + Height + height;
+		if( listBottom >= screenSize.y )
 			return positionAbove;
 
 		return positionBelow;
-	
+
 	}
 
 	private Vector2 calculatePopupSize()
@@ -1076,7 +1089,7 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 	{
 		if( args.KeyCode == KeyCode.Escape || args.KeyCode == KeyCode.Return )
 		{
-			ClosePopup(); 
+			ClosePopup();
 			this.Focus();
 		}
 	}
@@ -1179,6 +1192,79 @@ public class dfDropdown : dfInteractiveBase, IDFMultiRender
 
 		return buffers;
 
+	}
+
+	#endregion
+
+	#region Dynamic font management
+
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( font.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+			isFontCallbackAssigned = true;
+
+		}
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( font.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+		}
+
+		isFontCallbackAssigned = false;
+
+	}
+
+	private void requestCharacterInfo()
+	{
+
+		var dynamicFont = this.Font as dfDynamicFont;
+		if( dynamicFont == null )
+			return;
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+        
+		var text = this.SelectedValue;
+        
+		if( string.IsNullOrEmpty( text ) )
+			return;
+
+		var effectiveTextScale = TextScale; // * getTextScaleMultiplier();
+		var effectiveFontSize = Mathf.CeilToInt( this.font.FontSize * effectiveTextScale );
+
+		dynamicFont.AddCharacterRequest( text, effectiveFontSize, FontStyle.Normal );
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		requestCharacterInfo();
+		Invalidate();
+	}
+
+	public void UpdateFontInfo()
+	{
+		requestCharacterInfo();
 	}
 
 	#endregion

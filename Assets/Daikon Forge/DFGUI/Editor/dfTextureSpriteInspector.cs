@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -52,6 +52,60 @@ public class dfTextureSpriteInspector : dfControlInspector
 			{
 				dfEditorUtil.MarkUndo( control, "Assign color" );
 				control.Color = color;
+			}
+
+		}
+
+		if( control.Texture != null )
+		{
+
+			using( dfEditorUtil.BeginGroup( "Cropping" ) )
+			{
+
+				var prevCropValue = control.CropTexture;
+				var useCustom = EditorGUILayout.Toggle( "Crop", control.CropTexture );
+				if( useCustom != control.CropTexture )
+				{
+					dfEditorUtil.MarkUndo( control, "Toggle texture cropping" );
+					control.CropTexture = useCustom;
+				}
+
+				if( useCustom )
+				{
+
+					var maxWidth = control.Texture.width;
+					var maxHeight = control.Texture.height;
+
+					if( !prevCropValue )
+					{
+						control.CropRect = new Rect( 0, 0, maxWidth, maxHeight );
+					}
+
+					var uv = control.CropRect;
+
+					EditorGUI.BeginChangeCheck();
+
+					var location = EditInt2( "Offset", "Left", "Top", new Vector2( uv.x, uv.y ) );
+					var size = EditInt2( "Size", "Width", "Height", new Vector2( uv.width, uv.height ) );
+
+					if( EditorGUI.EndChangeCheck() )
+					{
+
+						dfEditorUtil.MarkUndo( control, "Modify Texture crop area" );
+
+						var customUV = new Rect(
+							location.x,
+							location.y,
+							size.x,
+							size.y
+						);
+
+						control.CropRect = customUV;
+
+					}
+
+				}
+
 			}
 
 		}

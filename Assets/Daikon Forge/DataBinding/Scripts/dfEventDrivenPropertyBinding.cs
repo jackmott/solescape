@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -56,6 +56,71 @@ public class dfEventDrivenPropertyBinding : dfPropertyBinding
 	}
 
 	#endregion
+
+	#region Static helper methods
+
+	/// <summary>
+	/// Creates a dfEventDrivenPropertyBinding component that binds the source and target properties 
+	/// </summary>
+	/// <param name="sourceComponent">The component instance that will act as the data source</param>
+	/// <param name="sourceProperty">The name of the property on the source component that will be bound</param>
+	/// <param name="targetComponent">The component instance that will act as the data target</param>
+	/// <param name="targetProperty">The name of the property on the target component that will be bound</param>
+	/// <returns>An active and bound dfEventDrivenPropertyBinding instance</returns>
+	public static dfEventDrivenPropertyBinding Bind( Component sourceComponent, string sourceProperty, string sourceEvent, Component targetComponent, string targetProperty, string targetEvent )
+	{
+		return Bind( sourceComponent.gameObject, sourceComponent, sourceProperty, sourceEvent, targetComponent, targetProperty, targetEvent );
+	}
+
+	/// <summary>
+	/// Creates a dfEventDrivenPropertyBinding component that binds the source and target properties 
+	/// </summary>
+	/// <param name="hostObject">The GameObject instance to attach the dfEventDrivenPropertyBinding component to. Required.</param>
+	/// <param name="sourceComponent">The component instance that will act as the data source. Required.</param>
+	/// <param name="sourceProperty">The name of the property on the source component that will be bound. Required.</param>
+	/// <param name="sourceEvent">The name of the event on the source component that will indicate that the source value should be copied to the target property. Required.</param>
+	/// <param name="targetComponent">The component instance that will act as the data target. Required.</param>
+	/// <param name="targetProperty">The name of the property on the target component that will be bound. Required.</param>
+	/// <param name="targetEvent">The name of the property on the target component that will indicate that the target value should be copied to the source property.
+	/// This value is optional, and should be set to NULL if two-way binding is not needed.</param>
+	/// <returns>An active and bound dfEventDrivenPropertyBinding instance</returns>
+	public static dfEventDrivenPropertyBinding Bind( GameObject hostObject, Component sourceComponent, string sourceProperty, string sourceEvent, Component targetComponent, string targetProperty, string targetEvent )
+	{
+
+		if( hostObject == null )
+			throw new ArgumentNullException( "hostObject" );
+
+		if( sourceComponent == null )
+			throw new ArgumentNullException( "sourceComponent" );
+
+		if( targetComponent == null )
+			throw new ArgumentNullException( "targetComponent" );
+
+		if( string.IsNullOrEmpty( sourceProperty ) )
+			throw new ArgumentNullException( "sourceProperty" );
+
+		if( string.IsNullOrEmpty( targetProperty ) )
+			throw new ArgumentNullException( "targetProperty" );
+
+		// Make sure that an event name is specified for the source. Note that the same
+		// check is not performed for the target event, because having a one-way binding
+		// is a valid condition.
+		if( string.IsNullOrEmpty( sourceEvent ) )
+			throw new ArgumentNullException( "sourceEvent" );
+
+		var binding = hostObject.AddComponent<dfEventDrivenPropertyBinding>();
+		binding.DataSource = new dfComponentMemberInfo() { Component = sourceComponent, MemberName = sourceProperty };
+		binding.DataTarget = new dfComponentMemberInfo() { Component = targetComponent, MemberName = targetProperty };
+		binding.SourceEventName = sourceEvent;
+		binding.TargetEventName = targetEvent;
+
+		binding.Bind();
+
+		return binding;
+
+	}
+
+	#endregion 
 
 	#region Public methods
 

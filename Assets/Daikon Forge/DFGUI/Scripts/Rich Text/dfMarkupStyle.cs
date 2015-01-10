@@ -7,13 +7,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-/****************************************************************************
- * PLEASE NOTE: The code in this file is under extremely active development
- * and is likely to change quite frequently. It is not recommended to modify
- * the code in this file, as your changes are likely to be overwritten by
- * the next product update when it is published.
- * **************************************************************************/
-
 public struct dfMarkupBorders
 {
 
@@ -190,6 +183,9 @@ public struct dfMarkupStyle
 
 	#region Public fields
 
+	/// <summary> For internal use only </summary>
+	internal int Version;
+
 	/// <summary>
 	/// References the dfRichTextLabel host
 	/// </summary>
@@ -284,6 +280,7 @@ public struct dfMarkupStyle
 		Host = null;
 		Atlas = null;
 
+		this.Version = 0x00;
 		this.Font = Font;
 		this.FontSize = FontSize;
 		this.FontStyle = FontStyle;

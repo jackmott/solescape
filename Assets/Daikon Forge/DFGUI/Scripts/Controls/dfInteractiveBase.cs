@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -16,7 +16,7 @@ using System.Collections.Generic;
 public class dfInteractiveBase : dfControl
 {
 
-	#region Protected serialized fields 
+	#region Protected serialized fields
 
 	[SerializeField]
 	protected dfAtlas atlas;
@@ -35,7 +35,7 @@ public class dfInteractiveBase : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by this control
@@ -135,14 +135,14 @@ public class dfInteractiveBase : dfControl
 
 	#endregion
 
-	#region Overrides and event handling 
+	#region Overrides and event handling
 
 	/// <summary>
 	/// Gets a value indicating whether the control can receive focus.
 	/// </summary>
 	public override bool CanFocus
 	{
-		get 
+		get
 		{
 			if( this.IsEnabled && this.IsVisible )
 				return true;
@@ -172,7 +172,7 @@ public class dfInteractiveBase : dfControl
 
 	protected internal override void OnMouseEnter( dfMouseEventArgs args )
 	{
-			
+
 		base.OnMouseEnter( args );
 
 		// This control needs to redraw itself when the mouse is hovering
@@ -182,7 +182,7 @@ public class dfInteractiveBase : dfControl
 
 	protected internal override void OnMouseLeave( dfMouseEventArgs args )
 	{
-			
+
 		base.OnMouseLeave( args );
 
 		// This control needs to redraw itself when the mouse is no longer hovering
@@ -247,7 +247,8 @@ public class dfInteractiveBase : dfControl
 	protected virtual Color32 getActiveColor()
 	{
 
-		if( IsEnabled ) return this.color;
+		if( IsEnabled )
+			return this.color;
 
 		if( !string.IsNullOrEmpty( this.disabledSprite ) )
 		{
@@ -317,4 +318,3 @@ public class dfInteractiveBase : dfControl
 	#endregion
 
 }
-

@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -30,11 +30,32 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	public dfComponentMemberInfo DataTarget;
 
+	/// <summary>
+	/// If set to TRUE (default), this component will attempt to bind the 
+	/// event handler when the component is Enabled.
+	/// </summary>
+	public bool AutoBind = true;
+
+	/// <summary>
+	/// If set to TRUE (default), this component will unbind the event
+	/// handler (if bound) when the component is Disabled.
+	/// </summary>
+	public bool AutoUnbind = true;
+
+	#endregion
+
+	#region Public properties
+
+	/// <summary>
+	/// Returns whether this component is currenly bound
+	/// </summary>
+	public bool IsBound { get { return this.isBound; } }
+
 	#endregion
 
 	#region Private fields
 
-	private bool isBound = false;
+	private bool isBound;
 
 	private Component sourceComponent;
 	private Component targetComponent;
@@ -51,7 +72,7 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 
 	public void OnEnable()
 	{
-		if( DataSource != null && !isBound && DataSource.IsValid && DataTarget.IsValid )
+		if( AutoBind && DataSource != null && !isBound && DataSource.IsValid && DataTarget.IsValid )
 		{
 			Bind();
 		}
@@ -59,13 +80,21 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 
 	public void Start()
 	{
-		if( DataSource != null && !isBound && DataSource.IsValid && DataTarget.IsValid )
+		if( AutoBind && DataSource != null && !isBound && DataSource.IsValid && DataTarget.IsValid )
 		{
 			Bind();
 		}
 	}
 
 	public void OnDisable()
+	{
+		if( AutoUnbind )
+		{
+			Unbind();
+		}
+	}
+
+	public void OnDestroy()
 	{
 		Unbind();
 	}
@@ -550,24 +579,27 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 			arguments = null;
 
 		var result = handlerProxy.Invoke( targetComponent, arguments );
-		if( result is IEnumerator )
+
+		if( !( result is IEnumerator ) )
+			return;
+
+		if( targetComponent is MonoBehaviour )
 		{
-			if( targetComponent is MonoBehaviour )
-			{
-				( (MonoBehaviour)targetComponent ).StartCoroutine( (IEnumerator)result );
-			}
+			( (MonoBehaviour)targetComponent ).StartCoroutine( (IEnumerator)result );
 		}
-		
+
 	}
 
-	private FieldInfo getField( Component sourceComponent, string fieldName )
+	private static FieldInfo getField( Component component, string fieldName )
 	{
 
+		if( component == null )
+			throw new ArgumentNullException( "component" );
+
 		return
-			sourceComponent.GetType()
+			component.GetType()
 			.GetAllFields()
-			.Where( f => f.Name == fieldName )
-			.FirstOrDefault();
+			.FirstOrDefault(f => f.Name == fieldName);
 
 	}
 
@@ -600,14 +632,14 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 		this.handlerProxy = eventHandler;
 		this.handlerParameters = eventHandler.GetParameters();
 
-		Delegate eventDelegate;
+		Delegate createdDelegate;
 #if !UNITY_EDITOR && UNITY_METRO
-		eventDelegate = proxyMethod.CreateDelegate( delegateType, this );
+		createdDelegate = proxyMethod.CreateDelegate( delegateType, this );
 #else
-		eventDelegate = Delegate.CreateDelegate( delegateType, this, proxyMethod, true );
+		createdDelegate = Delegate.CreateDelegate( delegateType, this, proxyMethod, true );
 #endif
 
-		return eventDelegate;
+		return createdDelegate;
 
 	}
 
@@ -620,7 +652,7 @@ public class dfEventBinding : MonoBehaviour, IDataBindingComponent
 		if( lhs.Length != rhs.Length )
 			return false;
 
-		for( int i = 0; i < lhs.Length; i++ )
+		for( var i = 0; i < lhs.Length; i++ )
 		{
 			if( !areTypesCompatible( lhs[i], rhs[i] ) )
 				return false;

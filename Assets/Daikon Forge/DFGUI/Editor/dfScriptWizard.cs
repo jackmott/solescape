@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using System;
 using System.IO;
 using System.Text;
@@ -295,7 +295,7 @@ public class dfScriptWizard : EditorWindow
 
 					var savedColor = GUI.color;
 					if( referencedComponents.Count( x => x.Name == component.Name ) > 1 )
-						GUI.color = Color.red;
+						GUI.color = EditorGUIUtility.isProSkin ? Color.yellow : Color.red;
 
 					component.Name = EditorGUILayout.TextField( "Name", component.Name );
 

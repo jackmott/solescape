@@ -1,5 +1,5 @@
 ﻿// @cond DOXY_IGNORE
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -9,6 +9,19 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+
+/// <summary>
+/// Describes the minimum required interface for poolable objects
+/// </summary>
+public interface IPoolable
+{
+
+	/// <summary>
+	/// Release the object back to the object pool, freeing it for re-use
+	/// </summary>
+	void Release();
+
+}
 
 [Serializable]
 public class dfDesignGuide
@@ -126,8 +139,12 @@ public static class dfNumberExtensions
 	/// </summary>
 	public static int Quantize( this int value, int stepSize )
 	{
-		if( stepSize <= 0 ) return value;
+
+		if( stepSize <= 0 )
+			return value;
+
 		return ( value / stepSize ) * stepSize;
+
 	}
 
 	/// <summary>
@@ -135,8 +152,12 @@ public static class dfNumberExtensions
 	/// </summary>
 	public static float Quantize( this float value, float stepSize )
 	{
-		if( stepSize <= 0 ) return value;
+
+		if( stepSize <= 0 ) 
+			return value;
+
 		return Mathf.Floor( value / stepSize ) * stepSize;
+
 	}
 
 	/// <summary>
@@ -145,11 +166,12 @@ public static class dfNumberExtensions
 	public static int RoundToNearest( this int value, int stepSize )
 	{
 
-		if( stepSize <= 0 ) return value;
+		if( stepSize <= 0 ) 
+			return value;
 
 		var result = ( value / stepSize ) * stepSize;
+
 		var remainder = value % stepSize;
-		
 		if( remainder >= stepSize / 2 )
 			return result + stepSize;
 
@@ -163,12 +185,13 @@ public static class dfNumberExtensions
 	public static float RoundToNearest( this float value, float stepSize )
 	{
 
-		if( stepSize <= 0 ) return value;
+		if( stepSize <= 0 )
+			return value;
 
-		var result = Mathf.FloorToInt( value / stepSize ) * stepSize;
-		var remainder = value % stepSize;
+		var result = (float)Mathf.Floor( value / stepSize ) * stepSize;
 
-		if( remainder >= stepSize * 0.5f )
+		var remainder = value - ( stepSize * Mathf.Floor( value / stepSize ) );
+		if( remainder >= stepSize * 0.5f - float.Epsilon )
 			return result + stepSize;
 
 		return result;
@@ -177,7 +200,7 @@ public static class dfNumberExtensions
 
 }
 
-public static class VectorExtensions
+public static class dfVectorExtensions
 {
 
 	/// <summary>
@@ -291,7 +314,12 @@ public static class VectorExtensions
 
 }
 
-public static class RectExtensions
+public static class dfRectOffsetExtensions
+{
+	public static readonly RectOffset Empty = new RectOffset();
+}
+
+public static class dfRectExtensions
 {
 
 	public static RectOffset ConstrainPadding( this RectOffset borders )
@@ -331,7 +359,7 @@ public static class RectExtensions
 		float ymin = Mathf.Max( a.yMin, b.yMin );
 		float ymax = Mathf.Min( a.yMax, b.yMax );
 
-		return Rect.MinMaxRect( xmin, ymax, xmax, ymin );
+		return Rect.MinMaxRect( xmin, ymin, xmax, ymax );
 
 	}
 
@@ -374,7 +402,7 @@ public static class RectExtensions
 
 		var outside =
 			rect.xMax < other.xMin ||
-			rect.yMax < other.xMin ||
+			rect.yMax < other.yMin ||
 			rect.xMin > other.xMax ||
 			rect.yMin > other.yMax;
 
@@ -399,7 +427,7 @@ public static class RectExtensions
 
 }
 
-public static class ReflectionExtensions
+public static class dfReflectionExtensions
 {
 
 	public static Type[] EmptyTypes = new Type[ 0 ];
@@ -555,7 +583,7 @@ public static class ReflectionExtensions
 
 			#region Look for a parameterless method with the given name
 
-			var handlerWithoutParams = getMethod( component.GetType(), messageName, ReflectionExtensions.EmptyTypes );
+			var handlerWithoutParams = getMethod( component.GetType(), messageName, dfReflectionExtensions.EmptyTypes );
 
 			if( handlerWithoutParams != null )
 			{

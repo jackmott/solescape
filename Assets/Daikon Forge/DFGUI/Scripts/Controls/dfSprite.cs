@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 public class dfSprite : dfControl
 {
 
-	#region Static variables 
+	#region Static variables
 
 	private static int[] TRIANGLE_INDICES = new int[] { 0, 1, 3, 3, 1, 2 };
 
@@ -91,7 +91,7 @@ public class dfSprite : dfControl
 	public string SpriteName
 	{
 		get { return spriteName; }
-		set 
+		set
 		{
 			value = getLocalizedValue( value );
 			if( value != spriteName )
@@ -121,12 +121,12 @@ public class dfSprite : dfControl
 	{
 		get
 		{
-				
+
 			var result = (dfAtlas.ItemInfo)null;
-				
+
 			if( Atlas == null )
 				return null;
-					
+
 			result = Atlas[ spriteName ];
 
 			return result;
@@ -210,7 +210,7 @@ public class dfSprite : dfControl
 	protected internal virtual void OnSpriteNameChanged( string value )
 	{
 
-		Signal( "OnSpriteNameChanged", value );
+		Signal( "OnSpriteNameChanged", this, value );
 
 		if( SpriteNameChanged != null )
 		{
@@ -277,6 +277,9 @@ public class dfSprite : dfControl
 	internal static void renderSprite( dfRenderData data, RenderOptions options )
 	{
 
+		if( options.fillAmount <= float.Epsilon )
+			return;
+
 #if UNITY_EDITOR
 
 		var atlas = options.atlas;
@@ -298,7 +301,7 @@ public class dfSprite : dfControl
 		rebuildUV( data, options );
 		rebuildColors( data, options );
 
-		if( options.fillAmount > -1 && options.fillAmount < 1f )
+		if( options.fillAmount < 1f - float.Epsilon )
 		{
 			doFill( data, options );
 		}
@@ -369,14 +372,22 @@ public class dfSprite : dfControl
 
 		if( options.flip.IsSet( dfSpriteFlip.FlipHorizontal ) )
 		{
-			temp = result[ 1 ]; result[ 1 ] = result[ 0 ]; result[ 0 ] = temp;
-			temp = result[ 3 ]; result[ 3 ] = result[ 2 ]; result[ 2 ] = temp;
+			temp = result[ 1 ];
+			result[ 1 ] = result[ 0 ];
+			result[ 0 ] = temp;
+			temp = result[ 3 ];
+			result[ 3 ] = result[ 2 ];
+			result[ 2 ] = temp;
 		}
 
 		if( options.flip.IsSet( dfSpriteFlip.FlipVertical ) )
 		{
-			temp = result[ 0 ]; result[ 0 ] = result[ 3 ]; result[ 3 ] = temp;
-			temp = result[ 1 ]; result[ 1 ] = result[ 2 ]; result[ 2 ] = temp;
+			temp = result[ 0 ];
+			result[ 0 ] = result[ 3 ];
+			result[ 3 ] = temp;
+			temp = result[ 1 ];
+			result[ 1 ] = result[ 2 ];
+			result[ 2 ] = temp;
 		}
 
 	}
@@ -397,13 +408,17 @@ public class dfSprite : dfControl
 		{
 			if( options.fillDirection == dfFillDirection.Horizontal )
 			{
-				ul = baseIndex + 1; ur = baseIndex + 0;
-				bl = baseIndex + 2; br = baseIndex + 3;
+				ul = baseIndex + 1;
+				ur = baseIndex + 0;
+				bl = baseIndex + 2;
+				br = baseIndex + 3;
 			}
 			else
 			{
-				ul = baseIndex + 3; ur = baseIndex + 2;
-				bl = baseIndex + 0; br = baseIndex + 1;
+				ul = baseIndex + 3;
+				ur = baseIndex + 2;
+				bl = baseIndex + 0;
+				br = baseIndex + 1;
 			}
 		}
 

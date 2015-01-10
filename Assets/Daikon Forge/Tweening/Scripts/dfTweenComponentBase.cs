@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -59,8 +59,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 
 	#region Private instance variables
 
-	protected bool isRunning = false;
-	protected bool isPaused = false;
+	protected dfTweenState state = dfTweenState.Stopped;
 	protected dfEasingFunctions.EasingFunction easingFunction;
 	protected dfObservableProperty boundProperty;
 	protected bool wasAutoStarted = false;
@@ -118,7 +117,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 	}
 
 	/// <summary>
-	/// The amount of time in seconds before the tween will start
+	/// The amount of time in seconds after Play() is called before the tween will start animating
 	/// </summary>
 	public float StartDelay
 	{
@@ -135,7 +134,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 		set
 		{
 			this.easingType = value;
-			if( isRunning )
+			if( state != dfTweenState.Stopped )
 			{
 				Stop();
 				Play();
@@ -152,7 +151,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 		set
 		{
 			this.loopType = value;
-			if( isRunning )
+			if( state != dfTweenState.Stopped )
 			{
 				Stop();
 				Play();
@@ -214,7 +213,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 	/// </summary>
 	public override bool IsPlaying
 	{
-		get { return this.enabled && this.isRunning; }
+		get { return this.enabled && state != dfTweenState.Stopped; }
 	}
 
 	/// <summary>
@@ -222,17 +221,15 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 	/// </summary>
 	public bool IsPaused
 	{
-		get { return this.isPaused; }
+		get { return state == dfTweenState.Paused; }
 		set
 		{
-			if( value != isPaused )
+			var isPaused = ( this.state == dfTweenState.Paused );
+			if( value != isPaused && state != dfTweenState.Stopped )
 			{
-				if( value && !isRunning )
-				{
-					isPaused = false;
-					return;
-				}
-				this.isPaused = value;
+
+				state = value ? dfTweenState.Paused : dfTweenState.Playing;
+
 				if( value )
 				{
 					onPaused();
@@ -241,6 +238,7 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 				{
 					onResumed();
 				}
+
 			}
 		}
 	}
@@ -269,6 +267,12 @@ public abstract class dfTweenComponentBase : dfTweenPlayableBase
 			Play();
 		}
 
+	}
+
+	public void OnDisable()
+	{
+		Stop();
+		wasAutoStarted = false;
 	}
 
 	#endregion

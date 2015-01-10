@@ -1,11 +1,7 @@
-/* Copyright 2013 Daikon Forge */
-using UnityEngine;
+/* Copyright 2013-2014 Daikon Forge */
 
 using System;
-using System.Linq;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Provides a basic Button implementation that allows the developer
@@ -18,7 +14,7 @@ using System.Collections.Generic;
 [dfTooltip( "Provides a basic Button implementation that allows the developer to specify individual sprite images to be used to represent common button states." )]
 [dfHelp( "http://www.daikonforge.com/docs/df-gui/classdf_button.html" )]
 [AddComponentMenu( "Daikon Forge/User Interface/Button" )]
-public class dfButton : dfInteractiveBase, IDFMultiRender
+public class dfButton : dfInteractiveBase, IDFMultiRender, IRendersText
 {
 
 	#region Public enums
@@ -218,7 +214,8 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 			if( value != this.autoSize )
 			{
 				this.autoSize = value;
-				if( value ) this.textAlign = TextAlignment.Left;
+				if( value )
+					this.textAlign = TextAlignment.Left;
 				Invalidate();
 			}
 		}
@@ -271,7 +268,8 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( padding == null ) padding = new RectOffset();
+			if( padding == null )
+				padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -307,7 +305,9 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		{
 			if( value != this.font )
 			{
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
 			}
 			Invalidate();
 		}
@@ -323,6 +323,8 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		{
 			if( value != this.text )
 			{
+				dfFontManager.Invalidate( this.Font );
+				this.localizationKey = value;
 				this.text = getLocalizedValue( value );
 				Invalidate();
 			}
@@ -467,6 +469,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 			value = Mathf.Max( 0.1f, value );
 			if( !Mathf.Approximately( textScale, value ) )
 			{
+				dfFontManager.Invalidate( this.Font );
 				this.textScale = value;
 				Invalidate();
 			}
@@ -556,6 +559,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 	#region Private runtime variables
 
 	private Vector2 startSize = Vector2.zero;
+	private bool isFontCallbackAssigned = false;
 
 	#endregion
 
@@ -564,7 +568,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 	protected internal override void OnLocalize()
 	{
 		base.OnLocalize();
-		this.Text = getLocalizedValue( this.text );
+		this.Text = getLocalizedValue( this.localizationKey ?? this.text );
 	}
 
 	[HideInInspector]
@@ -578,6 +582,12 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 			this.autoSizeToText();
 		}
 
+	}
+
+	public override void Start()
+	{
+		base.Start();
+		this.localizationKey = this.Text;
 	}
 
 	public override void OnEnable()
@@ -598,6 +608,14 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 
 		#endregion
 
+		bindTextureRebuildCallback();
+
+	}
+
+	public override void OnDisable()
+	{
+		base.OnDisable();
+		unbindTextureRebuildCallback();
 	}
 
 	public override void Awake()
@@ -777,7 +795,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 
 		this.state = value;
 
-		Signal( "OnButtonStateChanged", value );
+		Signal( "OnButtonStateChanged", this, value );
 
 		if( ButtonStateChanged != null )
 		{
@@ -834,7 +852,12 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 			var textSize = textRenderer.MeasureString( this.Text );
 			var newSize = new Vector2( textSize.x + padding.horizontal, textSize.y + padding.vertical );
 
-			this.Size = newSize;
+			if( this.size != newSize )
+			{
+				this.SuspendLayout();
+				this.Size = newSize;
+				this.ResumeLayout();
+			}
 
 		}
 
@@ -1020,7 +1043,8 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 
 		// TODO: Implement some sort of logic-based "fallback" logic when indicated sprite is not available?
 
-		if( result == null ) result = atlas[ backgroundSprite ];
+		if( result == null )
+			result = atlas[ backgroundSprite ];
 
 		return result;
 
@@ -1036,9 +1060,6 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 	public dfList<dfRenderData> RenderMultiple()
 	{
 
-		if( this.name == "DEBUG" )
-			Debug.Log( "Rendering: " + this.name );
-
 		if( renderData == null )
 		{
 			renderData = dfRenderData.Obtain();
@@ -1046,13 +1067,18 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 			isControlInvalidated = true;
 		}
 
+		var matrix = transform.localToWorldMatrix;
+
 		if( !isControlInvalidated )
 		{
+
 			for( int i = 0; i < buffers.Count; i++ )
 			{
-				buffers[ i ].Transform = transform.localToWorldMatrix;
+				buffers[ i ].Transform = matrix;
 			}
+
 			return buffers;
+
 		}
 
 		isControlInvalidated = false;
@@ -1064,7 +1090,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		{
 
 			renderData.Material = Atlas.Material;
-			renderData.Transform = this.transform.localToWorldMatrix;
+			renderData.Transform = matrix;
 
 			renderBackground();
 			buffers.Add( renderData );
@@ -1074,7 +1100,7 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 		var textBuffer = renderText();
 		if( textBuffer != null && textBuffer != renderData )
 		{
-			textBuffer.Transform = this.transform.localToWorldMatrix;
+			textBuffer.Transform = matrix;
 			buffers.Add( textBuffer );
 		}
 
@@ -1087,5 +1113,74 @@ public class dfButton : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-}
+	#region Dynamic font management
 
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( font.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+			isFontCallbackAssigned = true;
+
+		}
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( font.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+		}
+
+		isFontCallbackAssigned = false;
+
+	}
+
+	private void requestCharacterInfo()
+	{
+
+		var dynamicFont = this.Font as dfDynamicFont;
+		if( dynamicFont == null )
+			return;
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+		if( string.IsNullOrEmpty( this.text ) )
+			return;
+
+		var effectiveTextScale = TextScale * getTextScaleMultiplier();
+		var effectiveFontSize = Mathf.CeilToInt( this.font.FontSize * effectiveTextScale );
+
+		dynamicFont.AddCharacterRequest( this.text, effectiveFontSize, FontStyle.Normal );
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		requestCharacterInfo();
+		Invalidate();
+	}
+
+	public void UpdateFontInfo()
+	{
+		requestCharacterInfo();
+	}
+
+	#endregion
+
+}

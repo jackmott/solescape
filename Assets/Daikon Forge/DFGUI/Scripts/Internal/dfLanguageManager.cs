@@ -91,7 +91,7 @@ public class dfLanguageManager : MonoBehaviour
 
 	#region Unity events 
 
-	//@ private
+	// @private
 	public void Start()
 	{
 

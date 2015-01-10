@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -36,6 +36,15 @@ public class dfProxyPropertyBinding : MonoBehaviour, IDataBindingComponent
 	/// be mirrored to DataTarget.
 	/// </summary>
 	public bool TwoWay = false;
+
+	#endregion
+
+	#region Public properties
+
+	/// <summary>
+	/// Returns whether this component is currenly bound
+	/// </summary>
+	public bool IsBound { get { return this.isBound; } }
 
 	#endregion
 

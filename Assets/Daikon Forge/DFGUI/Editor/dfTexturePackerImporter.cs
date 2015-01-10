@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using System;
 using System.IO;
 using System.Text;
@@ -12,7 +12,6 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
-using UnityObject = UnityEngine.Object;
 using DICT = System.Collections.Generic.Dictionary<string, object>;
 
 /// <summary>
@@ -162,6 +161,10 @@ public class dfTexturePackerImporter : EditorWindow
 		atlas.Items.Clear();
 		atlas.Items.AddRange( newSprites );
 
+		EditorUtility.SetDirty( atlas.gameObject );
+		EditorUtility.SetDirty( atlas );
+		EditorUtility.SetDirty( atlas.Material );
+		
 		var prefabPath = AssetDatabase.GetAssetPath( atlas );
 		var go = atlas.gameObject;
 
@@ -175,7 +178,7 @@ public class dfTexturePackerImporter : EditorWindow
 		{
 			EditorUtility.FocusProjectWindow();
 			go = AssetDatabase.LoadMainAssetAtPath( prefabPath ) as GameObject;
-			Selection.objects = new UnityObject[] { go };
+			Selection.objects = new UnityEngine.Object[] { go };
 			EditorGUIUtility.PingObject( go );
 			Debug.Log( "Texture Atlas prefab re-imported at " + prefabPath, go );
 			EditorApplication.delayCall -= callback;
@@ -281,7 +284,7 @@ public class dfTexturePackerImporter : EditorWindow
 			{
 				EditorUtility.FocusProjectWindow();
 				go = AssetDatabase.LoadMainAssetAtPath( prefabPath ) as GameObject;
-				Selection.objects = new UnityObject[] { go };
+				Selection.objects = new UnityEngine.Object[] { go };
 				EditorGUIUtility.PingObject( go );
 				Debug.Log( "Texture Atlas prefab created at " + prefabPath, prefab );
 				EditorApplication.delayCall -= callback;

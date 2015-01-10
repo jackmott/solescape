@@ -103,6 +103,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 0
 --- !u!65 &13283950
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -147,6 +148,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 10
     margins:
@@ -158,6 +160,7 @@ MonoBehaviour:
   renderOrder: 43
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -230,6 +233,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 185613236}
     MemberName: Exit
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &20939878
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,6 +263,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 0
 --- !u!65 &20939880
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -300,6 +306,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -311,6 +318,7 @@ MonoBehaviour:
   renderOrder: 5
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -420,8 +428,11 @@ Camera:
     m_Bits: 4294967039
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
   m_HDR: 0
   m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: .0219999999
 --- !u!4 &73226498
 Transform:
   m_ObjectHideFlags: 0
@@ -435,6 +446,7 @@ Transform:
   - {fileID: 1512516283}
   - {fileID: 1355969061}
   m_Father: {fileID: 698273271}
+  m_RootOrder: 0
 --- !u!114 &73226499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -532,11 +544,12 @@ Transform:
   m_LocalPosition: {x: -1.59896851, y: .903121948, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 990011012}
-  - {fileID: 1853368578}
   - {fileID: 786837342}
+  - {fileID: 990011012}
   - {fileID: 1695457321}
+  - {fileID: 1853368578}
   m_Father: {fileID: 852801660}
+  m_RootOrder: 0
 --- !u!65 &147008611
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -579,6 +592,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -590,6 +604,7 @@ MonoBehaviour:
   renderOrder: 21
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: 
   backgroundColor:
@@ -629,6 +644,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 1
 --- !u!65 &156845060
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -671,6 +687,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -682,6 +699,7 @@ MonoBehaviour:
   renderOrder: 9
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -739,6 +757,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &185613232
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,13 +787,14 @@ Transform:
   m_LocalPosition: {x: -1.25, y: .916664124, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 13283949}
   - {fileID: 474015189}
   - {fileID: 947437605}
-  - {fileID: 1037020905}
   - {fileID: 973394056}
-  - {fileID: 13283949}
+  - {fileID: 1037020905}
   - {fileID: 1586687965}
   m_Father: {fileID: 852801660}
+  m_RootOrder: 1
 --- !u!65 &185613234
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -818,6 +839,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 192
     margins:
@@ -829,6 +851,7 @@ MonoBehaviour:
   renderOrder: 38
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: dropdown
   backgroundColor:
@@ -900,9 +923,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!199 &242430875
 ParticleSystemRenderer:
   m_ObjectHideFlags: 0
@@ -921,9 +943,8 @@ ParticleSystemRenderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_MaxParticleSize: .5
   m_CameraVelocityScale: 0
@@ -958,6 +979,7 @@ Transform:
   - {fileID: 1795793770}
   - {fileID: 781471631}
   m_Father: {fileID: 0}
+  m_RootOrder: 4
 --- !u!114 &242430879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2071,6 +2093,7 @@ Transform:
   m_LocalScale: {x: .800000012, y: .800000012, z: .800000012}
   m_Children: []
   m_Father: {fileID: 242430877}
+  m_RootOrder: 0
 --- !u!114 &263896073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2101,9 +2124,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!33 &263896075
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2226,6 +2248,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 6
 --- !u!1 &429915539
 GameObject:
   m_ObjectHideFlags: 0
@@ -2253,13 +2276,14 @@ Transform:
   m_LocalPosition: {x: -.60332489, y: .208328247, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 156845059}
   - {fileID: 20939879}
+  - {fileID: 156845059}
   - {fileID: 755148877}
   - {fileID: 1593072635}
-  - {fileID: 2105992066}
   - {fileID: 1838068574}
+  - {fileID: 2105992066}
   m_Father: {fileID: 1484658321}
+  m_RootOrder: 0
 --- !u!65 &429915541
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -2302,6 +2326,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -2313,6 +2338,7 @@ MonoBehaviour:
   renderOrder: 3
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: 
   backgroundColor:
@@ -2339,6 +2365,9 @@ MonoBehaviour:
   wheelDirection: 0
   scrollWithArrowKeys: 0
   useScrollMomentum: 0
+  useVirtualScrolling: 0
+  autoFitVirtualTiles: 1
+  virtualScrollingTile: {fileID: 0}
 --- !u!1 &432399419
 GameObject:
   m_ObjectHideFlags: 0
@@ -2368,6 +2397,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183581708}
+  m_RootOrder: 0
 --- !u!65 &432399421
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -2410,6 +2440,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 64
     margins:
@@ -2421,6 +2452,7 @@ MonoBehaviour:
   renderOrder: 33
   isLocalized: 1
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_label
   progressSprite: solidblue
@@ -2456,6 +2488,8 @@ MonoBehaviour:
     MemberName: Value
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &474015188
 GameObject:
   m_ObjectHideFlags: 0
@@ -2485,6 +2519,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 1
 --- !u!65 &474015190
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -2529,6 +2564,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 66
     margins:
@@ -2540,6 +2576,7 @@ MonoBehaviour:
   renderOrder: 42
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -2612,6 +2649,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 185613236}
     MemberName: ButtonPressed
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &698273270
 GameObject:
   m_ObjectHideFlags: 0
@@ -2640,6 +2679,7 @@ Transform:
   m_Children:
   - {fileID: 73226498}
   m_Father: {fileID: 0}
+  m_RootOrder: 0
 --- !u!114 &698273272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2679,6 +2719,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 7
 --- !u!114 &736081799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2739,6 +2780,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 2
 --- !u!65 &755148878
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -2781,6 +2823,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -2792,6 +2835,7 @@ MonoBehaviour:
   renderOrder: 4
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -2858,6 +2902,7 @@ Transform:
   m_LocalScale: {x: .999000013, y: .999000013, z: .999000013}
   m_Children: []
   m_Father: {fileID: 242430877}
+  m_RootOrder: 2
 --- !u!23 &781471634
 Renderer:
   m_ObjectHideFlags: 0
@@ -2877,9 +2922,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!33 &781471635
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2919,6 +2963,7 @@ Transform:
   m_Children:
   - {fileID: 904865015}
   m_Father: {fileID: 147008610}
+  m_RootOrder: 0
 --- !u!65 &786837343
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -2961,6 +3006,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -2972,6 +3018,7 @@ MonoBehaviour:
   renderOrder: 27
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_window
   backgroundColor:
@@ -2998,6 +3045,9 @@ MonoBehaviour:
   wheelDirection: 0
   scrollWithArrowKeys: 0
   useScrollMomentum: 0
+  useVirtualScrolling: 0
+  autoFitVirtualTiles: 1
+  virtualScrollingTile: {fileID: 0}
 --- !u!114 &786837345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3100,6 +3150,7 @@ Transform:
   - {fileID: 1558430893}
   - {fileID: 2143935546}
   m_Father: {fileID: 0}
+  m_RootOrder: 8
 --- !u!114 &852801661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3112,6 +3163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiScale: 1
+  uiScaleLegacy: 1
   inputManager: {fileID: 852801665}
   fixedWidth: 960
   fixedHeight: 600
@@ -3137,8 +3189,8 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 7d6655a19250c264fbabec39d50c37f5, type: 2}
-  - {fileID: 2100000, guid: 2a5fa1369fe0d2d45a315fa5a8fb48f9, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -3158,9 +3210,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!33 &852801663
 MeshFilter:
   m_ObjectHideFlags: 2
@@ -3193,6 +3244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderCamera: {fileID: 2143935545}
   useTouch: 1
+  useMouse: 1
   useJoystick: 0
   joystickClickButton: 0
   horizontalAxis: Horizontal
@@ -3200,6 +3252,8 @@ MonoBehaviour:
   axisPollingInterval: .150000006
   retainFocus: 0
   touchClickRadius: 20
+  hoverStartDelay: .25
+  hoverNotifactionFrequency: .100000001
 --- !u!1 &904865014
 GameObject:
   m_ObjectHideFlags: 0
@@ -3226,10 +3280,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 904865014}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: .116668701, y: -.133331299, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 786837342}
+  m_RootOrder: 0
 --- !u!114 &904865016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3247,6 +3302,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 1853368580}
     MemberName: Show
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &904865017
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3290,6 +3347,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 0
     margins:
@@ -3301,6 +3359,7 @@ MonoBehaviour:
   renderOrder: 28
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -3373,6 +3432,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 786837344}
     MemberName: Hide
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &947437604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,6 +3462,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 2
 --- !u!65 &947437606
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3445,6 +3507,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 12
     margins:
@@ -3456,12 +3519,20 @@ MonoBehaviour:
   renderOrder: 40
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   texture: {fileID: 8400000, guid: 37b49e19691ed6344873c893d95fa47b, type: 2}
   material: {fileID: 2100000, guid: 112f573cf4777554c89f8ba29b96b727, type: 2}
   flip: 0
   fillDirection: 0
   fillAmount: 1
   invertFill: 0
+  cropRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  cropImage: 0
 --- !u!1 &949712587
 GameObject:
   m_ObjectHideFlags: 0
@@ -3491,6 +3562,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1853368578}
+  m_RootOrder: 0
 --- !u!65 &949712589
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3534,6 +3606,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 0
     margins:
@@ -3545,6 +3618,7 @@ MonoBehaviour:
   renderOrder: 26
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -3617,6 +3691,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: ResearchClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &953744762
 GameObject:
   m_ObjectHideFlags: 0
@@ -3646,6 +3722,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 0
 --- !u!114 &953744764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3665,6 +3742,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &953744765
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3707,6 +3786,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -3718,6 +3798,7 @@ MonoBehaviour:
   renderOrder: 14
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -3785,6 +3866,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 1
 --- !u!114 &969021381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3804,6 +3886,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &969021382
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3846,6 +3930,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -3857,6 +3942,7 @@ MonoBehaviour:
   renderOrder: 12
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -3923,6 +4009,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 3
 --- !u!65 &973394057
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -3967,6 +4054,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 65
     margins:
@@ -3978,6 +4066,7 @@ MonoBehaviour:
   renderOrder: 39
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -4045,6 +4134,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 5
 --- !u!114 &983733530
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4062,6 +4152,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: MuteButtonClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &983733531
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4104,6 +4196,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 9
     margins:
@@ -4115,6 +4208,7 @@ MonoBehaviour:
   renderOrder: 30
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -4200,6 +4294,7 @@ Transform:
   m_Children:
   - {fileID: 1347934692}
   m_Father: {fileID: 147008610}
+  m_RootOrder: 1
 --- !u!65 &990011013
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4242,6 +4337,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -4253,6 +4349,7 @@ MonoBehaviour:
   renderOrder: 22
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_window
   backgroundColor:
@@ -4279,6 +4376,9 @@ MonoBehaviour:
   wheelDirection: 1
   scrollWithArrowKeys: 0
   useScrollMomentum: 0
+  useVirtualScrolling: 0
+  autoFitVirtualTiles: 1
+  virtualScrollingTile: {fileID: 0}
 --- !u!114 &990011015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4365,13 +4465,14 @@ Transform:
   m_LocalPosition: {x: -.303329468, y: .208328247, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1477943160}
-  - {fileID: 969021380}
-  - {fileID: 1312092260}
   - {fileID: 953744763}
+  - {fileID: 969021380}
   - {fileID: 1140993103}
+  - {fileID: 1312092260}
+  - {fileID: 1477943160}
   - {fileID: 1764936816}
   m_Father: {fileID: 1484658321}
+  m_RootOrder: 1
 --- !u!65 &993066688
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4414,6 +4515,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 9
     margins:
@@ -4425,6 +4527,7 @@ MonoBehaviour:
   renderOrder: 10
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: 
   backgroundColor:
@@ -4451,6 +4554,9 @@ MonoBehaviour:
   wheelDirection: 1
   scrollWithArrowKeys: 0
   useScrollMomentum: 0
+  useVirtualScrolling: 0
+  autoFitVirtualTiles: 1
+  virtualScrollingTile: {fileID: 0}
 --- !u!1 &1007324155
 GameObject:
   m_ObjectHideFlags: 0
@@ -4480,6 +4586,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1853368578}
+  m_RootOrder: 1
 --- !u!65 &1007324157
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4509,6 +4616,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: BuildClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1007324160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4540,6 +4649,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 0
     margins:
@@ -4551,6 +4661,7 @@ MonoBehaviour:
   renderOrder: 25
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -4633,6 +4744,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 4
 --- !u!65 &1037020906
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4677,6 +4789,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -4688,6 +4801,7 @@ MonoBehaviour:
   renderOrder: 41
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -4757,6 +4871,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 3
 --- !u!65 &1075893535
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -4786,6 +4901,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: ScanButtonClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1075893537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4804,6 +4921,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: BuildingBackClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1075893538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4835,6 +4954,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 6
     margins:
@@ -4846,6 +4966,7 @@ MonoBehaviour:
   renderOrder: 18
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -4919,6 +5040,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1140993102
 GameObject:
   m_ObjectHideFlags: 0
@@ -4949,6 +5072,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 2
 --- !u!114 &1140993104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4968,6 +5092,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1140993105
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5010,6 +5136,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -5021,6 +5148,7 @@ MonoBehaviour:
   renderOrder: 15
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -5078,6 +5206,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1174533309
 GameObject:
   m_ObjectHideFlags: 0
@@ -5116,6 +5246,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 7
 --- !u!1 &1183581707
 GameObject:
   m_ObjectHideFlags: 0
@@ -5143,12 +5274,13 @@ Transform:
   m_LocalPosition: {x: .536628723, y: -.708435059, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1406881325}
-  - {fileID: 1403343845}
-  - {fileID: 1947920062}
   - {fileID: 432399420}
+  - {fileID: 1403343845}
+  - {fileID: 1406881325}
   - {fileID: 1698045791}
+  - {fileID: 1947920062}
   m_Father: {fileID: 852801660}
+  m_RootOrder: 6
 --- !u!65 &1183581709
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5191,6 +5323,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 10
     margins:
@@ -5202,6 +5335,7 @@ MonoBehaviour:
   renderOrder: 31
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_scroll_normal
   backgroundColor:
@@ -5240,6 +5374,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1484658321}
+  m_RootOrder: 2
 --- !u!65 &1278439859
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5282,6 +5417,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 15
     margins:
@@ -5293,6 +5429,7 @@ MonoBehaviour:
   renderOrder: 17
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
 --- !u!1 &1312092259
 GameObject:
   m_ObjectHideFlags: 0
@@ -5322,6 +5459,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 3
 --- !u!114 &1312092261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5341,6 +5479,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1312092262
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5383,6 +5523,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -5394,6 +5535,7 @@ MonoBehaviour:
   renderOrder: 11
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -5459,10 +5601,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1347934691}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: .106666669, y: -.13333334, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 990011012}
+  m_RootOrder: 0
 --- !u!114 &1347934693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5480,6 +5623,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 1853368580}
     MemberName: Show
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1347934694
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5523,6 +5668,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 0
     margins:
@@ -5534,6 +5680,7 @@ MonoBehaviour:
   renderOrder: 23
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -5605,6 +5752,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: BuildingBackClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1347934697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5623,6 +5772,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 990011014}
     MemberName: Hide
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1355969060
 GameObject:
   m_ObjectHideFlags: 0
@@ -5652,6 +5803,7 @@ Transform:
   m_LocalScale: {x: 3, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 73226498}
+  m_RootOrder: 1
 --- !u!114 &1355969062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5692,9 +5844,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!33 &1355969064
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -5733,6 +5884,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183581708}
+  m_RootOrder: 1
 --- !u!114 &1403343846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5750,6 +5902,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: CancelResearch
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1403343847
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5792,6 +5946,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -5803,6 +5958,7 @@ MonoBehaviour:
   renderOrder: 36
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -5876,6 +6032,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1406881324
 GameObject:
   m_ObjectHideFlags: 0
@@ -5904,6 +6062,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183581708}
+  m_RootOrder: 2
 --- !u!65 &1406881326
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -5946,6 +6105,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 13
     margins:
@@ -5957,6 +6117,7 @@ MonoBehaviour:
   renderOrder: 34
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
 --- !u!1 &1411478154
 GameObject:
   m_ObjectHideFlags: 0
@@ -6020,6 +6181,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 2
 --- !u!114 &1411478157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6066,9 +6228,8 @@ ParticleSystemRenderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_MaxParticleSize: .5
   m_CameraVelocityScale: 0
@@ -7144,6 +7305,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 3
 --- !u!1 &1477943159
 GameObject:
   m_ObjectHideFlags: 0
@@ -7174,6 +7336,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 4
 --- !u!114 &1477943161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7193,6 +7356,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1477943162
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -7235,6 +7400,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -7246,6 +7412,7 @@ MonoBehaviour:
   renderOrder: 16
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -7303,6 +7470,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1484658320
 GameObject:
   m_ObjectHideFlags: 0
@@ -7331,9 +7500,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 429915540}
-  - {fileID: 1278439858}
   - {fileID: 993066687}
+  - {fileID: 1278439858}
   m_Father: {fileID: 852801660}
+  m_RootOrder: 9
 --- !u!65 &1484658322
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -7376,6 +7546,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 9
     margins:
@@ -7387,6 +7558,7 @@ MonoBehaviour:
   renderOrder: 2
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_text
   backgroundColor:
@@ -7428,6 +7600,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 2
 --- !u!114 &1510664598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7517,6 +7690,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 10
     margins:
@@ -7528,6 +7702,7 @@ MonoBehaviour:
   renderOrder: 37
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -7623,6 +7798,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 73226498}
+  m_RootOrder: 0
 --- !u!20 &1512516284
 Camera:
   m_ObjectHideFlags: 0
@@ -7650,8 +7826,11 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 10d4d12777f26dc4eab2299d828bc13c, type: 2}
+  m_TargetDisplay: 0
   m_HDR: 0
   m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: .0219999999
 --- !u!1 &1558430892
 GameObject:
   m_ObjectHideFlags: 0
@@ -7680,6 +7859,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 10
 --- !u!65 &1558430894
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -7722,6 +7902,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -7733,6 +7914,7 @@ MonoBehaviour:
   renderOrder: 19
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -7835,6 +8017,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 1
 --- !u!1 &1586687964
 GameObject:
   m_ObjectHideFlags: 0
@@ -7864,6 +8047,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 185613233}
+  m_RootOrder: 5
 --- !u!65 &1586687966
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -7908,6 +8092,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 6
     margins:
@@ -7919,6 +8104,7 @@ MonoBehaviour:
   renderOrder: 44
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -7991,6 +8177,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 185613236}
     MemberName: Restart
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &1593072634
 GameObject:
   m_ObjectHideFlags: 0
@@ -8019,6 +8207,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 3
 --- !u!65 &1593072636
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8061,6 +8250,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -8072,6 +8262,7 @@ MonoBehaviour:
   renderOrder: 7
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -8138,6 +8329,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 147008610}
+  m_RootOrder: 2
 --- !u!65 &1695457322
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8180,6 +8372,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 13
     margins:
@@ -8191,6 +8384,7 @@ MonoBehaviour:
   renderOrder: 29
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
 --- !u!1 &1698045790
 GameObject:
   m_ObjectHideFlags: 0
@@ -8220,6 +8414,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183581708}
+  m_RootOrder: 3
 --- !u!114 &1698045792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8239,6 +8434,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1698045793
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8281,6 +8478,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 64
     margins:
@@ -8292,6 +8490,7 @@ MonoBehaviour:
   renderOrder: 32
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -8361,6 +8560,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 4
 --- !u!114 &1736642490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8380,6 +8580,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1736642491
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8422,6 +8624,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 64
     margins:
@@ -8433,6 +8636,7 @@ MonoBehaviour:
   renderOrder: 20
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -8500,6 +8704,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 993066687}
+  m_RootOrder: 5
 --- !u!114 &1764936817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8519,6 +8724,8 @@ MonoBehaviour:
     MemberName: Text
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1764936818
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8561,6 +8768,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -8572,6 +8780,7 @@ MonoBehaviour:
   renderOrder: 13
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -8641,6 +8850,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 8
 --- !u!114 &1780591250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8660,6 +8870,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!65 &1780591251
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8689,6 +8901,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: WeatherScanButtonClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1780591253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8707,6 +8921,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: BuildingBackClick
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1780591254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8738,6 +8954,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 6
     margins:
@@ -8749,6 +8966,7 @@ MonoBehaviour:
   renderOrder: 1
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -8851,9 +9069,8 @@ Renderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!33 &1795793769
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -8872,6 +9089,7 @@ Transform:
   m_LocalScale: {x: 1.04999995, y: 1.04999995, z: 1.04999995}
   m_Children: []
   m_Father: {fileID: 242430877}
+  m_RootOrder: 1
 --- !u!1 &1838068573
 GameObject:
   m_ObjectHideFlags: 0
@@ -8900,6 +9118,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 4
 --- !u!65 &1838068575
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -8942,6 +9161,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -8953,6 +9173,7 @@ MonoBehaviour:
   renderOrder: 6
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -9022,9 +9243,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1007324156}
   - {fileID: 949712588}
+  - {fileID: 1007324156}
   m_Father: {fileID: 147008610}
+  m_RootOrder: 3
 --- !u!65 &1853368579
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -9067,6 +9289,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -9078,6 +9301,7 @@ MonoBehaviour:
   renderOrder: 24
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_window
   backgroundColor:
@@ -9104,6 +9328,9 @@ MonoBehaviour:
   wheelDirection: 0
   scrollWithArrowKeys: 0
   useScrollMomentum: 0
+  useVirtualScrolling: 0
+  autoFitVirtualTiles: 1
+  virtualScrollingTile: {fileID: 0}
 --- !u!114 &1853368581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9252,6 +9479,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1183581708}
+  m_RootOrder: 4
 --- !u!65 &1947920063
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -9294,6 +9522,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 0
+  autoFocus: 0
   layout:
     anchorStyle: 9
     margins:
@@ -9305,6 +9534,7 @@ MonoBehaviour:
   renderOrder: 35
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   backgroundSprite: scifi_button
   hoverSprite: scifi_button_hover
@@ -9376,6 +9606,8 @@ MonoBehaviour:
   DataTarget:
     Component: {fileID: 736081799}
     MemberName: PauseResearch
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!114 &1947920066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9395,6 +9627,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &2024442319
 GameObject:
   m_ObjectHideFlags: 0
@@ -9430,9 +9664,8 @@ ParticleSystemRenderer:
   m_UseLightProbes: 0
   m_LightProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
   m_SortingLayerID: 0
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_MaxParticleSize: .5
   m_CameraVelocityScale: 0
@@ -10508,6 +10741,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: 5
 --- !u!1 &2105992065
 GameObject:
   m_ObjectHideFlags: 0
@@ -10537,6 +10771,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 429915540}
+  m_RootOrder: 5
 --- !u!65 &2105992067
 BoxCollider:
   m_ObjectHideFlags: 2
@@ -10579,6 +10814,7 @@ MonoBehaviour:
   clipChildren: 0
   tabIndex: -1
   canFocus: 1
+  autoFocus: 0
   layout:
     anchorStyle: 5
     margins:
@@ -10590,6 +10826,7 @@ MonoBehaviour:
   renderOrder: 8
   isLocalized: 0
   hotZoneScale: {x: 1, y: 1}
+  allowSignalEvents: 1
   atlas: {fileID: 11400000, guid: 358ef3ca44eb77b43af2ca378d08b0a0, type: 2}
   font: {fileID: 11400000, guid: d2f9df1900af21446b1a15d5ab8ffbc2, type: 2}
   backgroundSprite: 
@@ -10647,6 +10884,8 @@ MonoBehaviour:
     MemberName: IsVisible
   FormatString: 
   TwoWay: 0
+  AutoBind: 1
+  AutoUnbind: 1
 --- !u!1 &2143935543
 GameObject:
   m_ObjectHideFlags: 0
@@ -10700,10 +10939,13 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 256
-  m_RenderingPath: -1
+  m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
   m_HDR: 0
   m_OcclusionCulling: 0
+  m_StereoConvergence: 10
+  m_StereoSeparation: .0219999999
 --- !u!4 &2143935546
 Transform:
   m_ObjectHideFlags: 0
@@ -10711,7 +10953,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2143935543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: .00166666671, y: .00166666671, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 852801660}
+  m_RootOrder: 11

@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -168,11 +168,34 @@ public class KeyBindingEditor : Editor
 				m.DeclaringType != typeof( Component ) &&
 				m.DeclaringType != typeof( UnityEngine.Object ) &&
 				m.DeclaringType != typeof( System.Object ) &&
-				m.GetParameters().Length == 0
+				isKeyHandlerSignature( m.GetParameters() )
 			)
 			.ToArray();
 
 		return methods;
+
+	}
+
+	private bool isKeyHandlerSignature( ParameterInfo[] parameterInfo )
+	{
+
+		if( parameterInfo.Length == 0 )
+			return true;
+
+		if( parameterInfo.Length == 2 )
+		{
+			
+			if( parameterInfo[ 0 ].ParameterType != typeof( dfControl ) )
+				return false;
+
+			if( parameterInfo[ 1 ].ParameterType != typeof( dfKeyEventArgs ) )
+				return false;
+
+			return true;
+
+		}
+
+		return false;
 
 	}
 

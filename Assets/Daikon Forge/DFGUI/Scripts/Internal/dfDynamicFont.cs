@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 /****************************************************************************
  * PLEASE NOTE: The code in this file is under extremely active development
@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 
-using UnityObject = UnityEngine.Object;
 using UnityMaterial = UnityEngine.Material;
 using UnityFont = UnityEngine.Font;
 using UnityShader = UnityEngine.Shader;
@@ -40,7 +39,6 @@ public class dfDynamicFont : dfFontBase
 	#region Static variables
 
 	private static List<dfDynamicFont> loadedFonts = new List<dfDynamicFont>();
-	private static UnityEngine.CharacterInfo[] glyphBuffer = new UnityEngine.CharacterInfo[ 1024 ];
 
 	#endregion
 
@@ -68,8 +66,7 @@ public class dfDynamicFont : dfFontBase
 
 	#region Private runtime variables
 
-	private bool invalidatingDependentControls = false;
-	private bool wasFontAtlasRebuilt = false;
+	protected dfList<FontCharacterRequest> requests = new dfList<FontCharacterRequest>();
 
 	#endregion
 
@@ -253,7 +250,6 @@ public class dfDynamicFont : dfFontBase
 
 	#region Public methods
 
-
 	/// <summary>
 	/// Returns a Vector2 structure containing the width and height that would be
 	/// required to render a single line of text at the given size and with the given style
@@ -265,17 +261,20 @@ public class dfDynamicFont : dfFontBase
 	public Vector2 MeasureText( string text, int size, FontStyle style )
 	{
 
-		var glyphs = RequestCharacters( text, size, style );
+		RequestCharacters( text, size, style );
 
 		var multiplier = (float)size / (float)FontSize;
 
 		var lineHeight = Mathf.CeilToInt( Baseline * multiplier );
 		var measuredSize = new Vector2( 0, lineHeight );
 
+		UnityEngine.CharacterInfo glyph = new UnityEngine.CharacterInfo();
+
 		for( int i = 0; i < text.Length; i++ )
 		{
 
-			var glyph = glyphs[ i ];
+			BaseFont.GetCharacterInfo( text[ i ], out glyph, size, style );
+
 			var width = Mathf.Ceil( glyph.vert.x + glyph.vert.width );
 
 			if( text[ i ] == ' ' )
@@ -298,183 +297,55 @@ public class dfDynamicFont : dfFontBase
 	/// <summary>
 	/// Ensures that the requested characters are available in the Unity Font's
 	/// texture atlas at the given size and style. 
-	/// <para><b>IMPORTANT:</b>See notes in source code comments for 
-	/// important warnings about the use of this function.</para>
 	/// </summary>
 	/// <param name="text">The set of characters that will be rendered</param>
 	/// <param name="size">The maximum height, in pixels, of the text to be rendered</param>
 	/// <param name="style">The style of text that will be rendered</param>
-	public UnityEngine.CharacterInfo[] RequestCharacters( string text, int size, FontStyle style )
+	public void RequestCharacters( string text, int size, FontStyle style )
 	{
 
 		if( this.baseFont == null )
 			throw new NullReferenceException( "Base Font not assigned: " + this.name );
 
-		// NOTES: This function always returns a reference to a pre-existing 
-		// static buffer of character data, to reduce memory thrashing and 
-		// minimize memory allocations and GC.Collect() occurances. It is 
-		// extremely important that calling code only make use of the characters
-		// it requested using the text length as the upper array index, rather 
-		// than the length of the returned array. This is already done in code
-		// that is included with this library; this warning is for third-party
-		// developers who wish to use this class.
-
-		ensureGlyphBufferCapacity( size );
-
-		// It's well known that Unity doesn't call the Start() method of a prefab when
-		// the game starts, and that prefabs used in the Editor don't have their local
-		// instance variable reset when the game starts, but Unity does reset the 
-		// static variables of a prefab. This fact can be (ab)used to detect when the 
-		// game is started and perform startup initialization. In this case, we want
-		// to ensure that we only subscribe to the textureRebuildCallback event once.
-		// Note that this fact also works in reverse: Going from play mode back to 
-		// edit mode also resets the static variables
-		if( !loadedFonts.Contains( this ) )
-		{
-			this.baseFont.textureRebuildCallback += onFontAtlasRebuilt;
-			loadedFonts.Add( this );
-		}
+		// Ensure that the font manager knows that there is a possibility that this 
+		// font's atlas has been changed
+		dfFontManager.Invalidate( this );
 
 		// Request the characters and retrieve the glyph data
 		this.baseFont.RequestCharactersInTexture( text, size, style );
 
-		// Copy the glyph data into our static buffer to keep memory 
-		// allocations to a minimum
-		getGlyphData( glyphBuffer, text, size, style );
+	}
 
-		return glyphBuffer;
+	/// <summary>
+	/// Request characters to be added to the font texture in the indicated size and font style
+	/// </summary>
+	public virtual void AddCharacterRequest( string characters, int fontSize, FontStyle style )
+	{
+
+		dfFontManager.FlagPendingRequests( this );
+
+		var request = FontCharacterRequest.Obtain();
+		request.Characters = characters;
+		request.FontSize = fontSize;
+		request.FontStyle = style;
+
+		requests.Add( request );
 
 	}
 
-	#endregion
-
-	#region Private utility methods
-
-	private void onFontAtlasRebuilt()
-	{
-		wasFontAtlasRebuilt = true;
-		OnFontChanged();
-	}
-
-	private void OnFontChanged()
+	/// <summary>
+	/// Issues all pending character requests (added by AddCharacterRequest)
+	/// </summary>
+	public virtual void FlushCharacterRequests()
 	{
 
-		//@Profiler.BeginSample( "Dynamic font rebuilding..." );
-		try
+		for( int i = 0; i < requests.Count; i++ )
 		{
-
-			if( invalidatingDependentControls )
-				return;
-
-			dfGUIManager.RenderCallback callback = null;
-
-			callback = ( manager ) =>
-			{
-
-				dfGUIManager.AfterRender -= callback;
-				invalidatingDependentControls = true;
-
-				try
-				{
-
-					//@Profiler.BeginSample( "Invalidating dynamic font consumers" );
-
-					if( wasFontAtlasRebuilt )
-					{
-						// TODO: Is there a *real* way to invalidate character info?
-						//this.baseFont.characterInfo = null;
-					}
-
-					// All controls that render dynamic font text will use the 
-					// IDFMultiRender interface. Find all IDFMultiRender controls
-					// and invalidate them to ensure that they get rendered on 
-					// the next pass with the new dynamic font atlas
-					var dependantControls = FindObjectsOfType( typeof( dfControl ) )
-						.Where( x => x is IDFMultiRender )
-						.Cast<dfControl>()
-						.OrderBy( x => x.RenderOrder )
-						.ToList();
-
-					for( int i = 0; i < dependantControls.Count; i++ )
-					{
-						dependantControls[ i ].Invalidate();
-					}
-
-					if( wasFontAtlasRebuilt )
-					{
-						manager.Render();
-					}
-
-				}
-				finally
-				{
-					wasFontAtlasRebuilt = false;
-					invalidatingDependentControls = false;
-					//@Profiler.EndSample();
-				}
-
-			};
-
-			dfGUIManager.AfterRender += callback;
-
-		}
-		finally
-		{
-			//@Profiler.EndSample();
+			var request = requests[ i ];
+			this.baseFont.RequestCharactersInTexture( request.Characters, request.FontSize, request.FontStyle );
 		}
 
-	}
-
-	private void ensureGlyphBufferCapacity( int size )
-	{
-
-		var bufferLen = glyphBuffer.Length;
-
-		if( size < bufferLen )
-			return;
-
-		while( bufferLen < size )
-		{
-			bufferLen += 1024;
-		}
-
-		glyphBuffer = new UnityEngine.CharacterInfo[ bufferLen ];
-
-	}
-
-	private void getGlyphData( UnityEngine.CharacterInfo[] result, string text, int size, FontStyle style )
-	{
-
-		// Ensure that there is enough space for the text
-		if( text.Length > glyphBuffer.Length )
-		{
-			glyphBuffer = new UnityEngine.CharacterInfo[ text.Length + 512 ];
-		}
-
-		int i = 0;
-		for( ; i < text.Length; i++ )
-		{
-			// Get the character info and copy it into the static buffer
-			if( !baseFont.GetCharacterInfo( text[ i ], out result[ i ], size, style ) )
-			{
-				// If the character info was not found, create a dummy
-				// record in its place
-				result[ i ] = new UnityEngine.CharacterInfo()
-				{
-					flipped = false,
-					index = -1,
-					size = size,
-					style = style,
-					width = size * 0.25f
-				};
-			}
-		}
-
-		// Clear the glyph immediately after the requested data
-		if( i < result.Length )
-		{
-			result[ i ] = new UnityEngine.CharacterInfo();
-		}
+		requests.ReleaseItems();
 
 	}
 
@@ -482,7 +353,57 @@ public class dfDynamicFont : dfFontBase
 
 	#region Nested classes
 
-	public class DynamicFontRenderer : dfFontRendererBase
+
+	/// <summary>
+	/// Represents a request for characters in a font
+	/// </summary>
+	protected class FontCharacterRequest : IPoolable
+	{
+
+		#region Object pooling
+
+		private static dfList<FontCharacterRequest> pool = new dfList<FontCharacterRequest>();
+
+		public static FontCharacterRequest Obtain()
+		{
+			return ( pool.Count > 0 ) ? pool.Pop() : new FontCharacterRequest();
+		}
+
+		public void Release()
+		{
+
+			Characters = null;
+			FontSize = 0;
+			FontStyle = UnityEngine.FontStyle.Normal;
+
+			pool.Add( this );
+
+		}
+
+		#endregion
+
+		#region Public fields
+
+		/// <summary>
+		/// The characters to request
+		/// </summary>
+		public string Characters;
+
+		/// <summary>
+		/// The font size requested
+		/// </summary>
+		public int FontSize;
+
+		/// <summary>
+		/// The font style requested
+		/// </summary>
+		public FontStyle FontStyle;
+
+		#endregion
+
+	}
+
+	public class DynamicFontRenderer : dfFontRendererBase, IPoolable
 	{
 
 		#region Object pooling
@@ -531,7 +452,9 @@ public class dfDynamicFont : dfFontBase
 		#region Private instance fields
 
 		private dfList<LineRenderInfo> lines = null;
-		private List<dfMarkupToken> tokens = null;
+		private dfList<dfMarkupToken> tokens = null;
+
+		private bool inUse = false;
 
 		#endregion
 
@@ -551,6 +474,7 @@ public class dfDynamicFont : dfFontBase
 			var renderer = objectPool.Count > 0 ? objectPool.Dequeue() : new DynamicFontRenderer();
 			renderer.Reset();
 			renderer.Font = font;
+			renderer.inUse = true;
 
 			return renderer;
 
@@ -559,17 +483,25 @@ public class dfDynamicFont : dfFontBase
 		public override void Release()
 		{
 
+			if( !inUse )
+				return;
+
+			inUse = false;
+
 			this.Reset();
 
-			this.tokens = null;
+			if( this.tokens != null )
+			{
+				this.tokens.Release();
+				this.tokens = null;
+			}
 
 			if( lines != null )
 			{
+				lines.ReleaseItems();
 				lines.Release();
 				lines = null;
 			}
-
-			LineRenderInfo.ResetPool();
 
 			this.BottomColor = (Color32?)null;
 
@@ -606,17 +538,20 @@ public class dfDynamicFont : dfFontBase
 
 			var font = (dfDynamicFont)Font;
 			var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
-			var glyphs = font.RequestCharacters( text, fontSize, FontStyle.Normal );
 
 			var output = new float[ text.Length ];
 
 			var last = 0f;
 			var maxWidth = 0f;
 
+			font.RequestCharacters( text, fontSize, FontStyle.Normal );
+			UnityEngine.CharacterInfo glyph = new UnityEngine.CharacterInfo();
+
 			for( int i = startIndex; i <= endIndex; i++, last = maxWidth )
 			{
 
-				var glyph = glyphs[ i ];
+				if( !font.BaseFont.GetCharacterInfo( text[ i ], out glyph, fontSize, FontStyle.Normal ) )
+					continue;
 
 				if( text[ i ] == '\t' )
 				{
@@ -648,6 +583,12 @@ public class dfDynamicFont : dfFontBase
 		public override Vector2 MeasureString( string text )
 		{
 
+			// Ensure that the required characters can be found in the dynamic font's
+			// character data.
+			var font = (dfDynamicFont)Font;
+			var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
+			font.RequestCharacters( text, fontSize, FontStyle.Normal );
+
 			tokenize( text );
 			var lines = calculateLinebreaks();
 
@@ -659,6 +600,9 @@ public class dfDynamicFont : dfFontBase
 				totalWidth = Mathf.Max( lines[ i ].lineWidth, totalWidth );
 				totalHeight += lines[ i ].lineHeight;
 			}
+
+			this.tokens.Release();
+			this.tokens = null;
 
 			var result = new Vector2( totalWidth, totalHeight );
 
@@ -679,6 +623,12 @@ public class dfDynamicFont : dfFontBase
 
 			textColors.Clear();
 			textColors.Push( Color.white );
+
+			// Ensure that the required characters can be found in the dynamic font's
+			// character data.
+			var font = (dfDynamicFont)Font;
+			var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
+			font.RequestCharacters( text, fontSize, FontStyle.Normal );
 
 			tokenize( text );
 			var lines = calculateLinebreaks();
@@ -720,6 +670,9 @@ public class dfDynamicFont : dfFontBase
 				Mathf.Min( MaxSize.y, maxHeight )
 			) * TextScale;
 
+			this.tokens.Release();
+			this.tokens = null;
+
 			//@Profiler.EndSample();
 
 		}
@@ -728,7 +681,7 @@ public class dfDynamicFont : dfFontBase
 
 		#region Private utility methods
 
-		private int getAnticipatedVertCount( List<dfMarkupToken> tokens )
+		private int getAnticipatedVertCount( dfList<dfMarkupToken> tokens )
 		{
 
 			var textSize = 4 + ( Shadow ? 4 : 0 ) + ( Outline ? 4 : 0 );
@@ -808,6 +761,7 @@ public class dfDynamicFont : dfFontBase
 				var font = (dfDynamicFont)Font;
 				var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
 				var fontStyle = FontStyle.Normal;
+				var glyph = new UnityEngine.CharacterInfo();
 				var descent = font.Descent;
 
 				var verts = renderData.Vertices;
@@ -815,13 +769,8 @@ public class dfDynamicFont : dfFontBase
 				var uvs = renderData.UV;
 				var colors = renderData.Colors;
 
-				var text = token.Value;
 				var x = position.x;
 				var y = position.y;
-
-				// Ensure that the baseFont's texture contains all characters before 
-				// rendering any text.
-				UnityEngine.CharacterInfo[] glyphs = font.RequestCharacters( text, fontSize, fontStyle );
 
 				// Set the render material in the output buffer *after* requesting
 				// glyph data, which may result in CharacterInfo in the dfDynamicFont's 
@@ -836,13 +785,14 @@ public class dfDynamicFont : dfFontBase
 					bottomColor = applyOpacity( multiplyColors( color, BottomColor.Value ) );
 				}
 
-				for( int i = 0; i < text.Length; i++ )
+				for( int i = 0; i < token.Length; i++ )
 				{
 
 					if( i > 0 )
 						x += CharacterSpacing * TextScale;
 
-					var glyph = glyphs[ i ];
+					if( !font.baseFont.GetCharacterInfo( token[ i ], out glyph, fontSize, fontStyle ) )
+						continue;
 
 					var yadjust = ( font.FontSize + glyph.vert.y ) - fontSize + descent;
 					var quadLeft = ( x + glyph.vert.x );
@@ -1184,22 +1134,13 @@ public class dfDynamicFont : dfFontBase
 		/// Splits the source text into tokens and preprocesses the
 		/// tokens to determine render size required, etc.
 		/// </summary>
-		private List<dfMarkupToken> tokenize( string text )
+		private void tokenize( string text )
 		{
 
 			try
 			{
 
 				//@Profiler.BeginSample( "Tokenize text" );
-
-				if( this.tokens != null && this.tokens.Count > 0 )
-				{
-					// Sanity check. You shouldn't be re-using this class
-					// on multiple strings without resetting in-between,
-					// though.
-					if( tokens[ 0 ].Source == text )
-						return this.tokens;
-				}
 
 				if( this.ProcessMarkup )
 					this.tokens = dfMarkupTokenizer.Tokenize( text );
@@ -1210,8 +1151,6 @@ public class dfDynamicFont : dfFontBase
 				{
 					calculateTokenRenderSize( tokens[ i ] );
 				}
-
-				return tokens;
 
 			}
 			finally
@@ -1238,18 +1177,19 @@ public class dfDynamicFont : dfFontBase
 				var ch = '\0';
 
 				var font = (dfDynamicFont)Font;
+				var glyph = new UnityEngine.CharacterInfo();
 
 				if( token.TokenType == dfMarkupTokenType.Text )
 				{
 
 					var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
-					var glyphs = font.RequestCharacters( token.Value, fontSize, FontStyle.Normal );
 
 					for( int i = 0; i < token.Length; i++ )
 					{
 
-						// Dereference the original character
+						// Dereference the original character and obtain character information
 						ch = token[ i ];
+						font.baseFont.GetCharacterInfo( ch, out glyph, fontSize, FontStyle.Normal );
 
 						// TODO: Implement 'tab stops' calculation
 						if( ch == '\t' )
@@ -1257,10 +1197,6 @@ public class dfDynamicFont : dfFontBase
 							totalWidth += this.TabSize;
 							continue;
 						}
-
-						// Attempt to obtain a reference to the glyph data that
-						// represents the character
-						var glyph = glyphs[ i ];
 
 						// Add the character width to the total
 						totalWidth += ( ch != ' ' )
@@ -1282,7 +1218,6 @@ public class dfDynamicFont : dfFontBase
 				{
 
 					var fontSize = Mathf.CeilToInt( font.FontSize * TextScale );
-					var glyphs = font.RequestCharacters( token.Value, fontSize, FontStyle.Normal );
 					var spacing = CharacterSpacing * TextScale;
 
 					for( int i = 0; i < token.Length; i++ )
@@ -1298,7 +1233,8 @@ public class dfDynamicFont : dfFontBase
 						}
 						else if( ch == ' ' )
 						{
-							totalWidth += glyphs[ i ].width + spacing;
+							font.baseFont.GetCharacterInfo( ch, out glyph, fontSize, FontStyle.Normal );
+							totalWidth += glyph.width + spacing;
 						}
 
 					}
@@ -1490,7 +1426,7 @@ public class dfDynamicFont : dfFontBase
 
 	}
 
-	private class LineRenderInfo
+	private class LineRenderInfo : IPoolable
 	{
 
 		#region Public fields and properties
@@ -1507,32 +1443,31 @@ public class dfDynamicFont : dfFontBase
 		#region Object Pooling
 
 		private static dfList<LineRenderInfo> pool = new dfList<LineRenderInfo>();
-		private static int poolIndex = 0;
 
 		private LineRenderInfo()
 		{
 		}
 
-		public static void ResetPool()
-		{
-			poolIndex = 0;
-		}
-
 		public static LineRenderInfo Obtain( int start, int end )
 		{
 
-			if( poolIndex >= pool.Count - 1 )
-			{
-				pool.Add( new LineRenderInfo() );
-			}
-
-			var result = pool[ poolIndex++ ];
+			var result = ( pool.Count > 0 ) ? pool.Pop() : new LineRenderInfo();
 
 			result.startOffset = start;
 			result.endOffset = end;
 			result.lineHeight = 0;
 
 			return result;
+
+		}
+
+		public void Release()
+		{
+
+			startOffset = endOffset = 0;
+			lineWidth = lineHeight = 0;
+
+			pool.Add( this );
 
 		}
 

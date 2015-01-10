@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -17,10 +17,10 @@ using System.Collections.Generic;
 [Serializable]
 [ExecuteInEditMode]
 [AddComponentMenu( "Daikon Forge/User Interface/Textbox" )]
-public class dfTextbox : dfInteractiveBase, IDFMultiRender
+public class dfTextbox : dfInteractiveBase, IDFMultiRender, IRendersText
 {
 
-	#region Public events 
+	#region Public events
 
 	/// <summary>
 	/// Raised whenever the value of the <see cref="ReadOnly"/> property has changed
@@ -135,7 +135,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Private unserialized fields 
+	#region Private unserialized fields
 
 	private Vector2 startSize = Vector2.zero;
 
@@ -150,6 +150,8 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 	private float whenGotFocus = 0f;
 	private string undoText = "";
 	private float tripleClickTimer = 0f;
+
+	private bool isFontCallbackAssigned = false;
 
 #if UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8 || UNITY_EDITOR
 	private static TouchScreenKeyboard mobileKeyboard;
@@ -181,7 +183,9 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 		{
 			if( value != this.font )
 			{
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
 				Invalidate();
 			}
 		}
@@ -260,7 +264,8 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( padding == null ) padding = new RectOffset();
+			if( padding == null )
+				padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -454,6 +459,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 			value = Mathf.Max( 0.1f, value );
 			if( !Mathf.Approximately( textScale, value ) )
 			{
+				dfFontManager.Invalidate( this.Font );
 				this.textScale = value;
 				Invalidate();
 			}
@@ -838,6 +844,14 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 		#endregion
 
+		bindTextureRebuildCallback();
+
+	}
+
+	public override void OnDisable()
+	{
+		base.OnDisable();
+		unbindTextureRebuildCallback();
 	}
 
 	public override void Awake()
@@ -847,75 +861,75 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 	}
 
 #if ( UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8 ) && !UNITY_EDITOR
-	public override void Update()
+public override void Update()
+{
+
+	base.Update();
+
+	// This functionality cannot be used in the Editor, so just exit
+	if( Application.isEditor )
+		return;
+
+	// Since this function is only concerned with the mobile keyboard, 
+	// if this control does not have input focus, no further action is
+	// necessary.
+	if( this.HasFocus && mobileKeyboard != null )
 	{
-
-		base.Update();
-
-		// This functionality cannot be used in the Editor, so just exit
-		if( Application.isEditor )
-			return;
-
-		// Since this function is only concerned with the mobile keyboard, 
-		// if this control does not have input focus, no further action is
-		// necessary.
-		if( this.HasFocus && mobileKeyboard != null )
-		{
-			if( mobileKeyboard.done )
-			{
-
-				ClearSelection();
-
-				this.Text = mobileKeyboard.text;
-				mobileKeyboard = null;
-
-				OnSubmit();
-				
-			}
-			else if( mobileKeyboard.wasCanceled )
-			{
-				mobileKeyboard = null;
-				OnCancel();
-			}
-			else if( mobileHideInputField )
-			{
-				this.Text = mobileKeyboard.text;
-				MoveCursorToEnd();
-			}
-
-		}
-
-	}
-
-	protected internal override void OnClick( dfMouseEventArgs args )
-	{
-		
-		base.OnClick( args );
-
-		// http://www.daikonforge.com/dfgui/forums/topic/variable-bug-with-mobile-keyboard/
-		this.Focus();
-
-		if( useMobileKeyboard && this.mobileKeyboardTrigger == dfMobileKeyboardTrigger.ShowOnClick )
+		if( mobileKeyboard.done )
 		{
 
 			ClearSelection();
-			SelectToEnd();
 
-			TouchScreenKeyboard.hideInput = mobileHideInputField;
+			this.Text = mobileKeyboard.text;
+			mobileKeyboard = null;
 
-			mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
-
-#if UNITY_ANDROID
-			// HACK: This is a hacky workaround for a bug in Unity's mobile keyboard on Android
-			if( mobileHideInputField )
-			{
-				mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
-			}
-#endif
-
+			OnSubmit();
+				
+		}
+		else if( mobileKeyboard.wasCanceled )
+		{
+			mobileKeyboard = null;
+			OnCancel();
+		}
+		else if( mobileHideInputField )
+		{
+			this.Text = mobileKeyboard.text;
+			MoveCursorToEnd();
 		}
 
 	}
+
+}
+
+protected internal override void OnClick( dfMouseEventArgs args )
+{
+		
+	base.OnClick( args );
+
+	// http://www.daikonforge.com/dfgui/forums/topic/variable-bug-with-mobile-keyboard/
+	this.Focus();
+
+	if( useMobileKeyboard && this.mobileKeyboardTrigger == dfMobileKeyboardTrigger.ShowOnClick )
+	{
+
+		ClearSelection();
+		SelectToEnd();
+
+		TouchScreenKeyboard.hideInput = mobileHideInputField;
+
+		mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
+
+#if UNITY_ANDROID
+		// HACK: This is a hacky workaround for a bug in Unity's mobile keyboard on Android
+		if( mobileHideInputField )
+		{
+			mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
+		}
+#endif
+
+	}
+
+}
 #endif
 
 	protected internal override void OnEnterFocus( dfFocusEventArgs args )
@@ -943,13 +957,13 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 			}
 
 #if ( UNITY_IPHONE || UNITY_ANDROID || UNITY_BLACKBERRY || UNITY_WP8 ) && !UNITY_EDITOR
-			if( useMobileKeyboard && mobileKeyboard == null && this.mobileKeyboardTrigger == dfMobileKeyboardTrigger.ShowOnFocus )
-			{
-				ClearSelection();
-				SelectToEnd();
-				TouchScreenKeyboard.hideInput = mobileHideInputField;
-				mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
-			}
+		if( useMobileKeyboard && mobileKeyboard == null && this.mobileKeyboardTrigger == dfMobileKeyboardTrigger.ShowOnFocus )
+		{
+			ClearSelection();
+			SelectToEnd();
+			TouchScreenKeyboard.hideInput = mobileHideInputField;
+			mobileKeyboard = TouchScreenKeyboard.Open( this.text, (TouchScreenKeyboardType)mobileKeyboardType, mobileAutoCorrect, false, IsPasswordField );
+		}
 #endif
 
 		}
@@ -1016,7 +1030,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 			!ReadOnly &&
 			args.Buttons.IsSet( dfMouseButtons.Left ) &&
 			(
-				(!HasFocus && !SelectOnFocus) ||
+				( !HasFocus && !SelectOnFocus ) ||
 				( Time.realtimeSinceStartup - whenGotFocus ) > 0.25f
 			);
 
@@ -1084,7 +1098,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 	protected internal virtual void OnTextChanged()
 	{
 
-		SignalHierarchy( "OnTextChanged", this.text );
+		SignalHierarchy( "OnTextChanged", this, this.text );
 
 		if( TextChanged != null )
 		{
@@ -1145,7 +1159,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	/// <summary>
 	/// Clears the text selection range
@@ -1159,7 +1173,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Cursor and selection management 
+	#region Cursor and selection management
 
 	public void SelectAll()
 	{
@@ -1689,7 +1703,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 			textRenderer.ShadowColor = this.ShadowColor;
 			textRenderer.ShadowOffset = this.ShadowOffset;
 
-			#region Manage the scroll position - Keep cursor in view at all times 
+			#region Manage the scroll position - Keep cursor in view at all times
 
 			cursorIndex = Mathf.Min( cursorIndex, displayText.Length );
 			scrollIndex = Mathf.Min( Mathf.Min( scrollIndex, cursorIndex ), displayText.Length );
@@ -1795,7 +1809,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 		var lastVisibleIndex = scrollIndex;
 		var renderWidth = 0f;
-		
+
 		for( int i = scrollIndex; i < text.Length; i++ )
 		{
 
@@ -1829,7 +1843,7 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 			{
 				startX = renderWidth;
 			}
-			
+
 			if( i == endIndex )
 			{
 				endX = renderWidth;
@@ -2007,6 +2021,8 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 		}
 
+		var matrix = this.transform.localToWorldMatrix;
+
 		// If control is not dirty, update the transforms on the 
 		// render buffers (in case control moved) and return 
 		// pre-rendered data
@@ -2014,23 +2030,23 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 		{
 			for( int i = 0; i < buffers.Count; i++ )
 			{
-				buffers[ i ].Transform = transform.localToWorldMatrix;
+				buffers[ i ].Transform = matrix;
 			}
 			return buffers;
 		}
 
-		#region Prepare render buffers 
+		#region Prepare render buffers
 
 		buffers.Clear();
 
 		renderData.Clear();
 		renderData.Material = Atlas.Material;
-		renderData.Transform = this.transform.localToWorldMatrix;
+		renderData.Transform = matrix;
 		buffers.Add( renderData );
 
 		textRenderData.Clear();
 		textRenderData.Material = Atlas.Material;
-		textRenderData.Transform = this.transform.localToWorldMatrix;
+		textRenderData.Transform = matrix;
 		buffers.Add( textRenderData );
 
 		#endregion
@@ -2045,6 +2061,76 @@ public class dfTextbox : dfInteractiveBase, IDFMultiRender
 
 		return buffers;
 
+	}
+
+	#endregion
+
+	#region Dynamic font management
+
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( font.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+			isFontCallbackAssigned = true;
+
+		}
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( font.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+		}
+
+		isFontCallbackAssigned = false;
+
+	}
+
+	private void requestCharacterInfo()
+	{
+
+		var dynamicFont = this.Font as dfDynamicFont;
+		if( dynamicFont == null )
+			return;
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+		if( string.IsNullOrEmpty( this.text ) )
+			return;
+
+		var effectiveTextScale = TextScale * getTextScaleMultiplier();
+		var effectiveFontSize = Mathf.CeilToInt( this.font.FontSize * effectiveTextScale );
+
+		dynamicFont.AddCharacterRequest( this.text, effectiveFontSize, FontStyle.Normal );
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		requestCharacterInfo();
+		Invalidate();
+	}
+
+	public void UpdateFontInfo()
+	{
+		requestCharacterInfo();
 	}
 
 	#endregion

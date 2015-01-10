@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -45,6 +45,27 @@ public class dfPropertyBinding : MonoBehaviour, IDataBindingComponent
 	/// </summary>
 	public bool TwoWay = false;
 
+	/// <summary>
+	/// If set to TRUE (default), this component will attempt to bind the 
+	/// source and target properties when the component is Enabled.
+	/// </summary>
+	public bool AutoBind = true;
+
+	/// <summary>
+	/// If set to TRUE (default), this component will unbind the source
+	/// and target properties (if bound) when the component is Disabled.
+	/// </summary>
+	public bool AutoUnbind = true;
+
+	#endregion
+
+	#region Public properties
+
+	/// <summary>
+	/// Returns whether this component is currenly bound
+	/// </summary>
+	public bool IsBound { get { return this.isBound; } }
+
 	#endregion
 
 	#region Private fields 
@@ -62,7 +83,7 @@ public class dfPropertyBinding : MonoBehaviour, IDataBindingComponent
 	public virtual void OnEnable()
 	{
 		
-		if( DataSource == null || DataTarget == null )
+		if( !AutoBind || DataSource == null || DataTarget == null )
 			return;
 
 		if( !isBound && DataSource.IsValid && DataTarget.IsValid )
@@ -75,7 +96,7 @@ public class dfPropertyBinding : MonoBehaviour, IDataBindingComponent
 	public virtual void Start()
 	{
 
-		if( DataSource == null || DataTarget == null )
+		if( !AutoBind || DataSource == null || DataTarget == null )
 			return;
 
 		if( !isBound && DataSource.IsValid && DataTarget.IsValid )
@@ -86,6 +107,14 @@ public class dfPropertyBinding : MonoBehaviour, IDataBindingComponent
 	}
 
 	public virtual void OnDisable()
+	{
+		if( AutoUnbind )
+		{
+			Unbind();
+		}
+	}
+
+	public virtual void OnDestroy()
 	{
 		Unbind();
 	}
@@ -110,6 +139,60 @@ public class dfPropertyBinding : MonoBehaviour, IDataBindingComponent
 	}
 
 	#endregion
+
+	#region Static helper methods 
+
+	/// <summary>
+	/// Creates a dfPropertyBinding component that binds the source and target properties 
+	/// </summary>
+	/// <param name="sourceComponent">The component instance that will act as the data source</param>
+	/// <param name="sourceProperty">The name of the property on the source component that will be bound</param>
+	/// <param name="targetComponent">The component instance that will act as the data target</param>
+	/// <param name="targetProperty">The name of the property on the target component that will be bound</param>
+	/// <returns>An active and bound dfPropertyBinding instance</returns>
+	public static dfPropertyBinding Bind( Component sourceComponent, string sourceProperty, Component targetComponent, string targetProperty )
+	{
+		return Bind( sourceComponent.gameObject, sourceComponent, sourceProperty, targetComponent, targetProperty );
+	}
+
+	/// <summary>
+	/// Creates a dfPropertyBinding component that binds the source and target properties 
+	/// </summary>
+	/// <param name="hostObject">The GameObject instance to attach the dfPropertyBinding component to</param>
+	/// <param name="sourceComponent">The component instance that will act as the data source</param>
+	/// <param name="sourceProperty">The name of the property on the source component that will be bound</param>
+	/// <param name="targetComponent">The component instance that will act as the data target</param>
+	/// <param name="targetProperty">The name of the property on the target component that will be bound</param>
+	/// <returns>An active and bound dfPropertyBinding instance</returns>
+	public static dfPropertyBinding Bind( GameObject hostObject, Component sourceComponent, string sourceProperty, Component targetComponent, string targetProperty )
+	{
+
+		if( hostObject == null )
+			throw new ArgumentNullException( "hostObject" );
+
+		if( sourceComponent == null )
+			throw new ArgumentNullException( "sourceComponent" );
+
+		if( targetComponent == null )
+			throw new ArgumentNullException( "targetComponent" );
+
+		if( string.IsNullOrEmpty( sourceProperty ) )
+			throw new ArgumentNullException( "sourceProperty" );
+
+		if( string.IsNullOrEmpty( targetProperty ) )
+			throw new ArgumentNullException( "targetProperty" );
+
+		var binding = hostObject.AddComponent<dfPropertyBinding>();
+		binding.DataSource = new dfComponentMemberInfo() { Component = sourceComponent, MemberName = sourceProperty };
+		binding.DataTarget = new dfComponentMemberInfo() { Component = targetComponent, MemberName = targetProperty };
+		
+		binding.Bind();
+
+		return binding;
+
+	}
+
+	#endregion 
 
 	#region Public methods
 

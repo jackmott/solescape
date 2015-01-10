@@ -36,17 +36,12 @@ public enum dfMarkupTokenType
 	EndTag
 }
 
-/// <summary>
-/// Represents a discrete set of characters that is significant
-/// as a group.
-/// </summary>
-public class dfMarkupToken
+public class dfMarkupToken : IPoolable
 {
 
 	#region Object pooling
 
-	private static List<dfMarkupToken> pool = new List<dfMarkupToken>();
-	private static int poolIndex = 0;
+	private static dfList<dfMarkupToken> pool = new dfList<dfMarkupToken>();
 
 	protected dfMarkupToken()
 	{
@@ -55,35 +50,43 @@ public class dfMarkupToken
 		// of object pooling
 	}
 
-	public static void Reset()
-	{
-		poolIndex = 0;
-	}
-
 	public static dfMarkupToken Obtain( string source, dfMarkupTokenType type, int startIndex, int endIndex )
 	{
 
-		if( poolIndex >= pool.Count - 1 )
-		{
-			pool.Add( new dfMarkupToken() );
-		}
+		var instance = ( pool.Count > 0 ) ? pool.Pop() : new dfMarkupToken();
 
-		var instance = pool[ poolIndex++ ];
-
+		instance.inUse = true;
 		instance.Source = source;
 		instance.TokenType = type;
-		instance.value = null;
-
 		instance.StartOffset = startIndex;
-		instance.EndOffset = endIndex;
-
-		instance.AttributeCount = 0;
-		instance.startAttributeIndex = 0;
-
-		instance.Width = 0;
-		instance.Height = 0;
+		instance.EndOffset = Mathf.Min( source.Length - 1, endIndex );
 
 		return instance;
+
+	}
+
+	public void Release()
+	{
+
+		// HACK: For some reason, DFGUI 1.x seems to be adding some tokens back to the 
+		// pool multiple times, and due to scheduling pressure I can't take a week to 
+		// sort out why. This "bandaid" will let me issue an update in the meantime.
+		// TODO: Determine why markup tokens are being added back to the pool mutliple times.
+		if( !inUse )
+			return;
+
+		inUse = false;
+
+		this.value = null;
+		this.Source = null;
+
+		this.TokenType = dfMarkupTokenType.Invalid;
+		this.Width = this.Height = 0;
+		this.StartOffset = this.EndOffset = 0;
+
+		this.attributes.ReleaseItems();
+
+		pool.Add( this );
 
 	}
 
@@ -91,8 +94,17 @@ public class dfMarkupToken
 
 	#region Private fields
 
+	private bool inUse = false;
+
+	/// <summary>
+	/// Used to cache the string representation of the token
+	/// </summary>
 	private string value = null;
-	private int startAttributeIndex = 0;
+
+	/// <summary>
+	/// Used to hold the attributes, if any, associated with the token
+	/// </summary>
+	private dfList<dfMarkupTokenAttribute> attributes = new dfList<dfMarkupTokenAttribute>();
 
 	#endregion
 
@@ -103,7 +115,10 @@ public class dfMarkupToken
 	/// that were defined on this token (assumes that the token
 	/// is of type dfMarkupTokenType.StartTag)
 	/// </summary>
-	public int AttributeCount { get; private set; }
+	public int AttributeCount
+	{
+		get { return this.attributes.Count; }
+	}
 
 	/// <summary>
 	/// Indicates the type of token representedS
@@ -136,14 +151,22 @@ public class dfMarkupToken
 	public int Height { get; set; }
 
 	/// <summary>
-	/// Returns the length of the token
+	/// Returns the length of the token's text (if this token represents a start
+	/// tag or end tag, this property returns the length of the tag name, omitting
+	/// the enclosing braces and slash)
 	/// </summary>
-	public int Length { get { return EndOffset - StartOffset + 1; } }
+	public int Length
+	{
+		get
+		{
+			return EndOffset - StartOffset + 1;
+		}
+	}
 
 	/// <summary>
 	/// Returns the string value of the token. 
-	/// Use this property very sparingly, since
-	/// it will result in a memory allocation.
+	/// Do not use this property unless absolutely necessary, 
+	/// as it will result in a memory allocation.
 	/// </summary>
 	public string Value
 	{
@@ -153,7 +176,7 @@ public class dfMarkupToken
 			if( value == null )
 			{
 
-				var length = Math.Min( EndOffset - StartOffset + 1, Source.Length - StartOffset );
+				var length = Mathf.Min( EndOffset - StartOffset + 1, Source.Length - StartOffset );
 
 				value = Source.Substring( StartOffset, length );
 
@@ -164,17 +187,18 @@ public class dfMarkupToken
 		}
 	}
 
-	#endregion
-
-	#region Indexers 
-
+	/// <summary>
+	/// Returns the character at the specified index
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
 	public char this[ int index ]
 	{
 		get
 		{
-			
-			if( index < 0 || StartOffset + index > Source.Length - 1 )
-				return '\0';
+
+			if( index < 0 || index >= Length )
+				throw new System.IndexOutOfRangeException( string.Format( "Index {0} is out of range ({2}:{1})", index, Length, Value ) );
 
 			return Source[ StartOffset + index ];
 
@@ -185,16 +209,34 @@ public class dfMarkupToken
 
 	#region Public methods
 
-	public bool Matches( string text )
+	internal bool Matches( dfMarkupToken other )
 	{
-		
-		if( this.Length != text.Length )
+
+		var length = this.Length;
+
+		if( length != other.Length )
 			return false;
 
-		var length = text.Length;
 		for( int i = 0; i < length; i++ )
 		{
-			if( char.ToLowerInvariant( text[ i ] ) != char.ToLowerInvariant( this[ i ] ) )
+			if( char.ToLower( Source[ StartOffset + i ] ) != char.ToLower( other.Source[ other.StartOffset + i ] ) )
+				return false;
+		}
+
+		return true;
+
+	}
+
+	internal bool Matches( string value )
+	{
+
+		var length = this.Length;
+		if( length != value.Length )
+			return false;
+
+		for( int i = 0; i < length; i++ )
+		{
+			if( char.ToLower( Source[ StartOffset + i ] ) != char.ToLower( value[ i ] ) )
 				return false;
 		}
 
@@ -204,27 +246,16 @@ public class dfMarkupToken
 
 	internal void AddAttribute( dfMarkupToken key, dfMarkupToken value )
 	{
-
-		var attribute = dfMarkupTokenAttribute.Obtain( key, value );
-
-		if( AttributeCount == 0 )
-		{
-			this.startAttributeIndex = attribute.Index;
-		}
-
-		this.AttributeCount += 1;
-
+		attributes.Add( dfMarkupTokenAttribute.Obtain( key, value ) );
 	}
 
 	public dfMarkupTokenAttribute GetAttribute( int index )
 	{
 
-		if( index < AttributeCount )
-		{
-			return dfMarkupTokenAttribute.GetAttribute( startAttributeIndex + index );
-		}
+		if( index < 0 || index >= attributes.Count )
+			throw new System.IndexOutOfRangeException( "Invalid attribute index: " + index );
 
-		return null;
+		return attributes[ index ];
 
 	}
 
@@ -232,86 +263,68 @@ public class dfMarkupToken
 
 	#region System.Object overrides
 
-	public override string ToString()
-	{
-
-		// This method is for debugging purposes only, and 
-		// should never be relied on by runtime code.
-
-#if true || !UNITY_EDITOR
-		return base.ToString();
-#else
-
-		if( !Application.isEditor )
-			return base.ToString();
-
-		if( TokenType == dfMarkupTokenType.EndTag )
-			return "</" + this.Value + ">";
-
-		var result = TokenType == dfMarkupTokenType.StartTag ? "<" : "";
-
-		result += this.Value;
-
-		if( AttributeCount > 0 )
+#if false // For debugging use only!
+		public override string ToString()
 		{
 
-			result += " [";
+			// This method is for debugging purposes only, and should never be relied 
+			// on by runtime code, as it is slow and inefficient and performs several
+			// memory allocations
 
-			for( int i = 0; i < AttributeCount; i++ )
+			if( TokenType == MarkupTokenType.EndTag )
+				return "</" + this.Value + ">";
+
+			var result = TokenType == MarkupTokenType.StartTag ? "<" : "";
+
+			result += this.Value;
+
+			if( AttributeCount > 0 )
 			{
 
-				if( i > 0 )
-					result += ", ";
+				result += " [";
 
-				var attribute = GetAttribute( i );
-				result += attribute.Key.Value;
-				result += "='";
-				result += attribute.Value.Value;
-				result += "'";
+				for( int i = 0; i < AttributeCount; i++ )
+				{
+
+					if( i > 0 )
+						result += ", ";
+
+					var attribute = GetAttribute( i );
+					result += attribute.Key.Value;
+					result += "='";
+					result += attribute.Value.Value;
+					result += "'";
+
+				}
+
+				result += "]";
 
 			}
 
-			result += "]";
+			result += TokenType == MarkupTokenType.StartTag ? ">" : "";
+
+			return result;
 
 		}
-
-		result += TokenType == dfMarkupTokenType.StartTag ? ">" : "";
-
-		return result;
-
 #endif
-
-	}
 
 	#endregion
 
 }
 
-public class dfMarkupTokenAttribute
+public class dfMarkupTokenAttribute : IPoolable
 {
 
 	#region Public properties and fields
-
-	public int Index;
 
 	public dfMarkupToken Key;
 	public dfMarkupToken Value;
 
 	#endregion
 
-	#region Public methods
-
-	internal static dfMarkupTokenAttribute GetAttribute( int index )
-	{
-		return pool[ index ];
-	}
-
-	#endregion
-
 	#region Object pooling
 
-	private static List<dfMarkupTokenAttribute> pool = new List<dfMarkupTokenAttribute>();
-	private static int poolIndex = 0;
+	private static dfList<dfMarkupTokenAttribute> pool = new dfList<dfMarkupTokenAttribute>();
 
 	private dfMarkupTokenAttribute()
 	{
@@ -320,25 +333,12 @@ public class dfMarkupTokenAttribute
 		// object pooling
 	}
 
-	public static void Reset()
-	{
-		poolIndex = 0;
-	}
-
 	public static dfMarkupTokenAttribute Obtain( dfMarkupToken key, dfMarkupToken value )
 	{
 
-		if( poolIndex >= pool.Count - 1 )
-		{
-			pool.Add( new dfMarkupTokenAttribute() );
-		}
-
-		var instance = pool[ poolIndex ];
-		instance.Index = poolIndex;
+		var instance = ( pool.Count > 0 ) ? pool.Pop() : new dfMarkupTokenAttribute();
 		instance.Key = key;
 		instance.Value = value;
-
-		poolIndex += 1;
 
 		return instance;
 
@@ -346,396 +346,61 @@ public class dfMarkupTokenAttribute
 
 	#endregion
 
-}
+	#region IPoolable Members
 
-public class dfRichTextTokenizer
-{
-
-	#region Singleton
-
-	private static dfRichTextTokenizer singleton;
-
-	public static List<dfMarkupToken> Tokenize( string source )
+	public void Release()
 	{
 
-		if( singleton == null )
-			singleton = new dfRichTextTokenizer();
+		if( this.Key != null )
+		{
+			this.Key.Release();
+			this.Key = null;
+		}
 
-		return singleton.tokenize( source );
+		if( this.Value != null )
+		{
+			this.Value.Release();
+			this.Value = null;
+		}
+
+		if( !pool.Contains( this ) )
+		{
+			pool.Add( this );
+		}
 
 	}
 
 	#endregion
 
-	#region Private variables
+}
 
-	private List<dfMarkupToken> tokens = new List<dfMarkupToken>();
+public class dfMarkupTokenizer : IDisposable, IPoolable
+{
 
-	private string source;
-	private int index;
+	#region Object pooling
 
-	#endregion
+	private static dfList<dfMarkupTokenizer> pool = new dfList<dfMarkupTokenizer>();
 
-	#region Private utility methods
-
-	private List<dfMarkupToken> tokenize( string source )
+	public static dfList<dfMarkupToken> Tokenize( string source )
 	{
 
-		// Flush the object pools
-		dfMarkupToken.Reset();
-		dfMarkupTokenAttribute.Reset();
-		tokens.Clear();
+		using( var tokenizer = ( pool.Count > 0 ) ? pool.Pop() : new dfMarkupTokenizer() )
+		{
+			return tokenizer.tokenize( source );
+		}
 
-		this.source = source;
+	}
+
+	public void Release()
+	{
+
+		this.source = null;
 		this.index = 0;
 
-		while( index < source.Length )
+		if( !pool.Contains( this ) )
 		{
-
-			var next = Peek();
-
-			if( AtTagPosition() )
-			{
-
-				var tagToken = parseTag();
-				if( tagToken != null )
-				{
-					tokens.Add( tagToken );
-				}
-
-				continue;
-
-			}
-
-			dfMarkupToken token = null;
-
-			if( char.IsWhiteSpace( next ) )
-			{
-				// Skip carriage return, parse all other whitespace
-				if( next != '\r' )
-				{
-					token = parseWhitespace();
-				}
-			}
-			else
-			{
-				token = parseNonWhitespace();
-			}
-
-			if( token == null )
-			{
-				Advance();
-			}
-			else
-			{
-				tokens.Add( token );
-			}
-
+			pool.Add( this );
 		}
-
-		return this.tokens;
-
-	}
-
-	private bool AtTagPosition()
-	{
-
-		if( Peek() != '<' )
-			return false;
-
-		var next = Peek( 1 );
-		if( next == '/' )
-		{
-
-			if( char.IsLetter( Peek( 2 ) ) )
-				return true;
-
-			return false;
-
-		}
-
-		if( char.IsLetter( next ) )
-			return true;
-
-		return false;
-
-	}
-
-	private dfMarkupToken parseQuotedString()
-	{
-
-		var delim = Peek();
-		if( delim != '"' && delim != '\'' )
-		{
-			return null;
-		}
-
-		Advance();
-
-		var startOffset = index;
-		var endoffset = index;
-
-		while( index < source.Length && Advance() != delim )
-		{
-			endoffset += 1;
-		}
-
-		if( Peek() == delim )
-			Advance();
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.Text, startOffset, endoffset );
-		return token;
-
-	}
-
-	private dfMarkupToken parseNonWhitespace()
-	{
-
-		var startOffset = index;
-		var endOffset = index;
-
-		while( index < source.Length )
-		{
-
-			var next = Advance();
-			if( char.IsWhiteSpace( next ) || AtTagPosition() )
-			{
-				break;
-			}
-
-			endOffset += 1;
-
-		}
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.Text, startOffset, endOffset );
-		return token;
-
-	}
-
-	private dfMarkupToken parseWhitespace()
-	{
-
-		var startOffset = index;
-		var endOffset = index;
-
-		// Newlines are always treated as a single token, even
-		// when they are consecutive
-		if( Peek() == '\n' )
-		{
-
-			Advance();
-
-			return dfMarkupToken.Obtain(
-				source,
-				dfMarkupTokenType.Newline,
-				startOffset,
-				startOffset
-			);
-
-		}
-
-		while( index < source.Length )
-		{
-
-			var next = Advance();
-			if( next == '\n' || next == '\r' || !char.IsWhiteSpace( next ) )
-			{
-				break;
-			}
-
-			endOffset += 1;
-
-		}
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.Whitespace, startOffset, endOffset );
-		return token;
-
-	}
-
-	private dfMarkupToken parseWord()
-	{
-
-		if( !char.IsLetter( Peek() ) )
-			return null;
-
-		var startOffset = index;
-		var endOffset = index;
-
-		while( index < source.Length && char.IsLetter( Advance() ) )
-		{
-			endOffset += 1;
-		}
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.Text, startOffset, endOffset );
-		return token;
-
-	}
-
-	private dfMarkupToken parseTag()
-	{
-
-		if( Peek() != '<' )
-			return null;
-
-		var next = Peek( 1 );
-
-		if( next == '/' )
-		{
-			return parseEndTag();
-		}
-
-		Advance();
-
-		next = Peek();
-		if( !char.IsLetterOrDigit( next ) )
-		{
-			return null;
-		}
-
-		var startOffset = index;
-		var endOffset = index;
-		while( index < source.Length && char.IsLetterOrDigit( Advance() ) )
-		{
-			endOffset += 1;
-		}
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.StartTag, startOffset, endOffset );
-
-		while( index < source.Length && Peek() != '>' )
-		{
-
-			next = Peek();
-			if( char.IsWhiteSpace( next ) )
-			{
-				parseWhitespace();
-			}
-			else
-			{
-
-				var key = parseWord();
-				if( key == null )
-				{
-					Advance();
-					continue;
-				}
-
-				next = Peek();
-
-				if( next != '=' )
-				{
-					token.AddAttribute( key, key );
-					continue;
-				}
-
-				next = Advance();
-
-				dfMarkupToken value = null;
-
-				if( next == '"' || next == '\'' )
-					value = parseQuotedString();
-				else
-					value = parseAttributeValue();
-
-				token.AddAttribute( key, value ?? key );
-
-			}
-
-		}
-
-		if( Peek() == '>' )
-			Advance();
-
-		return token;
-
-	}
-
-	private dfMarkupToken parseAttributeValue()
-	{
-
-		var startOffset = index;
-		var endOffset = index;
-
-		while( index < source.Length )
-		{
-
-			var next = Advance();
-			if( next == '>' || char.IsWhiteSpace( next ) )
-			{
-				break;
-			}
-
-			endOffset += 1;
-
-		}
-
-		var token = dfMarkupToken.Obtain( source, dfMarkupTokenType.Text, startOffset, endOffset );
-		return token;
-
-	}
-
-	private dfMarkupToken parseEndTag()
-	{
-
-		// Advance past </
-		Advance( 2 );
-
-		var startOffset = index;
-		var endOffset = index;
-
-		while( index < source.Length && char.IsLetterOrDigit( Advance() ) )
-		{
-			endOffset += 1;
-		}
-
-		if( Peek() == '>' )
-			Advance();
-
-		var token = dfMarkupToken.Obtain(
-			source,
-			dfMarkupTokenType.EndTag,
-			startOffset,
-			endOffset
-		);
-
-		return token;
-
-	}
-
-	private char Peek( int offset = 0 )
-	{
-
-		if( index + offset > source.Length - 1 )
-		{
-			return '\0';
-		}
-
-		return source[ index + offset ];
-
-	}
-
-	private char Advance( int amount = 1 )
-	{
-		index += amount;
-		return Peek();
-	}
-
-	#endregion
-
-}
-
-public class dfMarkupTokenizer
-{
-
-	#region Singleton
-
-	private static dfMarkupTokenizer singleton;
-
-	public static List<dfMarkupToken> Tokenize( string source )
-	{
-
-		if( singleton == null ) singleton = new dfMarkupTokenizer();
-
-		return singleton.tokenize( source );
 
 	}
 
@@ -745,8 +410,6 @@ public class dfMarkupTokenizer
 
 	private static List<string> validTags = new List<string>() { "color", "sprite" };
 
-	private List<dfMarkupToken> tokens = new List<dfMarkupToken>();
-
 	private string source;
 	private int index;
 
@@ -754,10 +417,12 @@ public class dfMarkupTokenizer
 
 	#region Private utility methods
 
-	private List<dfMarkupToken> tokenize( string source )
+	private dfList<dfMarkupToken> tokenize( string source )
 	{
 
-		reset();
+		var tokens = dfList<dfMarkupToken>.Obtain();
+		tokens.EnsureCapacity( estimateTokenCount( source ) );
+		tokens.AutoReleaseItems = true;
 
 		this.source = source;
 		this.index = 0;
@@ -806,18 +471,42 @@ public class dfMarkupTokenizer
 
 		}
 
-		return this.tokens;
+		return tokens;
 
 	}
 
-	private void reset()
+	private int estimateTokenCount( string source )
 	{
 
-		// Flush the object pools
-		dfMarkupToken.Reset();
-		dfMarkupTokenAttribute.Reset();
+		if( string.IsNullOrEmpty( source ) )
+			return 0;
 
-		tokens.Clear();
+		int tokenCount = 1;
+
+		var isWhitespace = char.IsWhiteSpace( source[ 0 ] );
+
+		for( int i = 1; i < source.Length; i++ )
+		{
+
+			var ch = source[ i ];
+
+			if( char.IsControl( ch ) || ch == '<' )
+			{
+				tokenCount += 1;
+			}
+			else
+			{
+				var charIsWhitespace = char.IsWhiteSpace( ch );
+				if( charIsWhitespace != isWhitespace )
+				{
+					tokenCount += 1;
+					isWhitespace = charIsWhitespace;
+				}
+			}
+
+		}
+
+		return tokenCount;
 
 	}
 
@@ -1116,7 +805,12 @@ public class dfMarkupTokenizer
 
 	}
 
-	private char Peek( int offset = 0 )
+	private char Peek()
+	{
+		return Peek( 0 );
+	}
+
+	private char Peek( int offset )
 	{
 
 		if( index + offset > source.Length - 1 )
@@ -1128,10 +822,24 @@ public class dfMarkupTokenizer
 
 	}
 
-	private char Advance( int amount = 1 )
+	private char Advance()
+	{
+		return Advance( 1 );
+	}
+
+	private char Advance( int amount )
 	{
 		index += amount;
 		return Peek();
+	}
+
+	#endregion
+
+	#region IDisposable Members
+
+	public void Dispose()
+	{
+		Release();
 	}
 
 	#endregion
@@ -1145,7 +853,7 @@ public class dfPlainTextTokenizer
 
 	private static dfPlainTextTokenizer singleton;
 
-	public static List<dfMarkupToken> Tokenize( string source )
+	public static dfList<dfMarkupToken> Tokenize( string source )
 	{
 
 		if( singleton == null ) singleton = new dfPlainTextTokenizer();
@@ -1156,21 +864,14 @@ public class dfPlainTextTokenizer
 
 	#endregion
 
-	#region Private variables
-
-	private List<dfMarkupToken> tokens = new List<dfMarkupToken>();
-
-	#endregion
-
 	#region Private utility methods
 
-	private List<dfMarkupToken> tokenize( string source )
+	private dfList<dfMarkupToken> tokenize( string source )
 	{
 
-		// Flush the object pools
-		dfMarkupToken.Reset();
-		dfMarkupTokenAttribute.Reset();
-		tokens.Clear();
+		var tokens = dfList<dfMarkupToken>.Obtain();
+		tokens.EnsureCapacity( estimateTokenCount( source ) );
+		tokens.AutoReleaseItems = true;
 
 		var i = 0;
 		var x = 0;
@@ -1254,7 +955,42 @@ public class dfPlainTextTokenizer
 
 		}
 
-		return this.tokens;
+		return tokens;
+
+	}
+
+	private int estimateTokenCount( string source )
+	{
+
+		if( string.IsNullOrEmpty( source ) )
+			return 0;
+
+		int tokenCount = 1;
+
+		var isWhitespace = char.IsWhiteSpace( source[ 0 ] );
+
+		for( int i = 1; i < source.Length; i++ )
+		{
+
+			var ch = source[ i ];
+
+			if( char.IsControl( ch ) )
+			{
+				tokenCount += 1;
+			}
+			else
+			{
+				var charIsWhitespace = char.IsWhiteSpace( ch );
+				if( charIsWhitespace != isWhitespace )
+				{
+					tokenCount += 1;
+					isWhitespace = charIsWhitespace;
+				}
+			}
+
+		}
+
+		return tokenCount;
 
 	}
 

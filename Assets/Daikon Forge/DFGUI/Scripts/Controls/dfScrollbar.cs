@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 public class dfScrollbar : dfControl
 {
 
-	#region Public events 
+	#region Public events
 
 	/// <summary>
 	/// Raised when the value of the <see cref="Value"/> property has changed
@@ -28,7 +28,7 @@ public class dfScrollbar : dfControl
 
 	#endregion
 
-	#region Protected serialized members 
+	#region Protected serialized members
 
 	[SerializeField]
 	protected dfAtlas atlas;
@@ -72,9 +72,9 @@ public class dfScrollbar : dfControl
 	[SerializeField]
 	protected bool autoHide = false;
 
-	#endregion 
+	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by this control
@@ -230,6 +230,7 @@ public class dfScrollbar : dfControl
 				OnValueChanged();
 			}
 			updateThumb( rawValue );
+			doAutoHide();
 		}
 	}
 
@@ -311,7 +312,8 @@ public class dfScrollbar : dfControl
 	{
 		get
 		{
-			if( this.thumbPadding == null ) this.thumbPadding = new RectOffset();
+			if( this.thumbPadding == null )
+				this.thumbPadding = new RectOffset();
 			return this.thumbPadding;
 		}
 		set
@@ -354,7 +356,7 @@ public class dfScrollbar : dfControl
 
 	#endregion
 
-	#region Private runtime variables 
+	#region Private runtime variables
 
 	private Vector3 thumbMouseOffset = Vector3.zero;
 
@@ -395,7 +397,7 @@ public class dfScrollbar : dfControl
 		}
 
 		return Vector2.Max( accum, base.CalculateMinimumSize() );
-			
+
 	}
 
 	public override bool CanFocus
@@ -526,7 +528,7 @@ public class dfScrollbar : dfControl
 		this.Value += IncrementAmount * -args.WheelDelta;
 
 		args.Use();
-		Signal( "OnMouseWheel", args );
+		Signal( "OnMouseWheel", this, args );
 
 	}
 
@@ -550,7 +552,7 @@ public class dfScrollbar : dfControl
 		updateFromTrackClick( args );
 
 		args.Use();
-		Signal( "OnMouseHover", args );
+		Signal( "OnMouseHover", this, args );
 
 	}
 
@@ -572,7 +574,7 @@ public class dfScrollbar : dfControl
 		this.Value = Mathf.Max( minValue, getValueFromMouseEvent( args ) - scrollSize * 0.5f );
 
 		args.Use();
-		Signal( "OnMouseMove", args );
+		Signal( "OnMouseMove", this, args );
 
 	}
 
@@ -613,16 +615,17 @@ public class dfScrollbar : dfControl
 		}
 
 		args.Use();
-		Signal( "OnMouseDown", args );
+		Signal( "OnMouseDown", this, args );
 
 	}
 
 	protected internal virtual void OnValueChanged()
 	{
 
+		doAutoHide();
 		Invalidate();
 
-		SignalHierarchy( "OnValueChanged", this.Value );
+		SignalHierarchy( "OnValueChanged", this, this.Value );
 
 		if( ValueChanged != null )
 		{
@@ -651,7 +654,7 @@ public class dfScrollbar : dfControl
 		{
 			this.Hide();
 		}
-		else 
+		else
 		{
 			this.Show();
 		}
@@ -749,8 +752,8 @@ public class dfScrollbar : dfControl
 		if( thumb.Parent == this )
 		{
 
-			thumb.RelativePosition = 
-				track.RelativePosition + 
+			thumb.RelativePosition =
+				track.RelativePosition +
 				centerOffset +
 				thumbDirection * distance;
 
@@ -805,8 +808,10 @@ public class dfScrollbar : dfControl
 		// if not then return the endpoint
 		if( clamp )
 		{
-			if( t < 0 ) return start;
-			if( t > d ) return end;
+			if( t < 0 )
+				return start;
+			if( t > d )
+				return end;
 		}
 
 		// get the distance to move from point a

@@ -1,5 +1,5 @@
 ﻿// @cond DOXY_IGNORE
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -52,6 +52,8 @@ public class dfExpressionPropertyBinding : MonoBehaviour, IDataBindingComponent
 	#endregion
 
 	#region Public properties 
+
+	public bool IsBound { get { return this.isBound; } }
 
 	public string Expression
 	{

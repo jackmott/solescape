@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 /****************************************************************************
  * PLEASE NOTE: The code in this file is under extremely active development
@@ -6,8 +6,6 @@
  * the code in this file, as your changes are likely to be overwritten by
  * the next product update when it is published.
  * **************************************************************************/
-
-using UnityEngine;
 
 using System;
 using System.Linq;
@@ -18,6 +16,8 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 using UnityColor = UnityEngine.Color;
 using UnityMaterial = UnityEngine.Material;
 
@@ -27,7 +27,7 @@ using UnityMaterial = UnityEngine.Material;
 [Serializable]
 [ExecuteInEditMode]
 [AddComponentMenu( "Daikon Forge/User Interface/Rich Text Label" )]
-public class dfRichTextLabel : dfControl, IDFMultiRender
+public class dfRichTextLabel : dfControl, IDFMultiRender, IRendersText
 {
 
 	#region Public events
@@ -101,6 +101,9 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 	[SerializeField]
 	protected bool useScrollMomentum = false;
 
+	[SerializeField]
+	protected bool autoHeight = false;
+
 	#endregion
 
 	#region Private variables 
@@ -121,10 +124,29 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 	private Vector2 scrollMomentum = Vector2.zero;
 	private bool isMarkupInvalidated = true;
 	private Vector2 startSize = Vector2.zero;
+	private bool isFontCallbackAssigned = false;
 
 	#endregion
 
 	#region Public properties
+
+	/// <summary>
+	/// Gets or sets whether the label will be automatically
+	/// resized vertically to contain the rendered text.
+	/// </summary>
+	public bool AutoHeight
+	{
+		get { return this.autoHeight; }
+		set
+		{
+			if( this.autoHeight != value )
+			{
+				this.autoHeight = value;
+				scrollPosition = Vector2.zero;
+				Invalidate();
+			}
+		}
+	}
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by 
@@ -165,9 +187,16 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		{
 			if( value != this.font )
 			{
+
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
+
 				this.LineHeight = value.FontSize;
+
+				dfFontManager.Invalidate( this.Font );
 				Invalidate();
+
 			}
 		}
 	}
@@ -200,6 +229,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			value = this.getLocalizedValue( value );
 			if( !string.Equals( this.text, value ) )
 			{
+				dfFontManager.Invalidate( this.Font );
 				this.text = value;
 				scrollPosition = Vector2.zero;
 				Invalidate();
@@ -220,6 +250,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			value = Mathf.Max( 6, value );
 			if( value != this.fontSize )
 			{
+				dfFontManager.Invalidate( this.Font );
 				this.fontSize = value;
 				Invalidate();
 			}
@@ -327,8 +358,11 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		set
 		{
 
-			if( !allowScrolling )
+			if( !allowScrolling || autoHeight )
 				value = Vector2.zero;
+
+			if( isMarkupInvalidated )
+				processMarkup();
 
 			var maxPosition = ContentSize - Size;
 
@@ -416,6 +450,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 	public override void Invalidate()
 	{
 		base.Invalidate();
+		dfFontManager.Invalidate( this.Font );
 		isMarkupInvalidated = true;
 	}
 
@@ -429,7 +464,9 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 	{
 		
 		base.OnEnable();
-		
+
+		bindTextureRebuildCallback();
+
 		if( this.size.sqrMagnitude <= float.Epsilon )
 		{
 			this.Size = new Vector2( 320, 200 );
@@ -438,12 +475,18 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 
 	}
 
+	public override void OnDisable()
+	{
+		base.OnDisable();
+		unbindTextureRebuildCallback();
+	}
+
 	public override void Update()
 	{
 
 		base.Update();
 
-		if( useScrollMomentum && !isMouseDown && scrollMomentum.magnitude > 0.1f )
+		if( useScrollMomentum && !isMouseDown && scrollMomentum.magnitude > 0.5f )
 		{
 			ScrollPosition += scrollMomentum;
 			scrollMomentum *= ( 0.95f - Time.deltaTime );
@@ -470,7 +513,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 
 		Invalidate();
 
-		Signal( "OnTextChanged", this.text );
+		Signal( "OnTextChanged", this, this.text );
 
 		if( TextChanged != null )
 		{
@@ -487,7 +530,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		// scroll position
 		base.Invalidate();
 
-		SignalHierarchy( "OnScrollPositionChanged", this.ScrollPosition );
+		SignalHierarchy( "OnScrollPositionChanged", this, this.ScrollPosition );
 
 		if( ScrollPositionChanged != null )
 		{
@@ -508,25 +551,32 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		var horzAmount = FontSize; // horzScrollbar != null ? horzScrollbar.IncrementAmount : FontSize;
 		var vertAmount = FontSize; // vertScrollbar != null ? vertScrollbar.IncrementAmount : FontSize;
 
-		if( args.KeyCode == KeyCode.LeftArrow )
+		switch( args.KeyCode )
 		{
-			ScrollPosition += new Vector2( -horzAmount, 0 );
-			args.Use();
-		}
-		else if( args.KeyCode == KeyCode.RightArrow )
-		{
-			ScrollPosition += new Vector2( horzAmount, 0 );
-			args.Use();
-		}
-		else if( args.KeyCode == KeyCode.UpArrow )
-		{
-			ScrollPosition += new Vector2( 0, -vertAmount );
-			args.Use();
-		}
-		else if( args.KeyCode == KeyCode.DownArrow )
-		{
-			ScrollPosition += new Vector2( 0, vertAmount );
-			args.Use();
+			case KeyCode.LeftArrow:
+				ScrollPosition += new Vector2( -horzAmount, 0 );
+				args.Use();
+				break;
+			case KeyCode.RightArrow:
+				ScrollPosition += new Vector2( horzAmount, 0 );
+				args.Use();
+				break;
+			case KeyCode.UpArrow:
+				ScrollPosition += new Vector2( 0, -vertAmount );
+				args.Use();
+				break;
+			case KeyCode.DownArrow:
+				ScrollPosition += new Vector2( 0, vertAmount );
+				args.Use();
+				break;
+			case KeyCode.Home:
+				ScrollToTop();
+				args.Use();
+				break;
+			case KeyCode.End:
+				ScrollToBottom();
+				args.Use();
+				break;
 		}
 
 		base.OnKeyDown( args );
@@ -581,7 +631,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 				if( linkTag is dfMarkupTagAnchor )
 				{
 
-					Signal( "OnLinkClicked", linkTag );
+					Signal( "OnLinkClicked", this, linkTag );
 
 					if( this.LinkClicked != null )
 					{
@@ -604,7 +654,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 
 		base.OnMouseMove( args );
 
-		if( !allowScrolling )
+		if( !allowScrolling || autoHeight )
 			return;
 
 		var scrollWithDrag =
@@ -624,7 +674,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 				var screenSize = manager.GetScreenSize();
 
 				// Obtain a reference to the main camera
-				var mainCamera = Camera.main;
+				var mainCamera = Camera.main ?? GetCamera();
 
 				// Scale the movement amount by the difference between the "virtual" 
 				// screen size and the real screen size
@@ -647,7 +697,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		try
 		{
 
-			if( args.Used || !allowScrolling )
+			if( args.Used || !allowScrolling || autoHeight )
 				return;
 
 			var wheelAmount = this.UseScrollMomentum ? 1 : 3;
@@ -657,7 +707,7 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			scrollMomentum = new Vector2( 0, -amount * args.WheelDelta );
 
 			args.Use();
-			Signal( "OnMouseWheel", args );
+			Signal( "OnMouseWheel", this, args );
 
 		}
 		finally
@@ -713,25 +763,26 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		if( !this.isVisible || this.Font == null )
 			return null;
 
+		var matrix = this.transform.localToWorldMatrix;
+
 		if( !this.isControlInvalidated && viewportBox != null )
 		{
 
-			//@Profiler.BeginSample( "Re-use existing buffers" );
-
 			for( int i = 0; i < buffers.Count; i++ )
 			{
-				buffers[ i ].Transform = transform.localToWorldMatrix;
+				buffers[ i ].Transform = matrix;
 			}
-
-			Profiler.EndSample();
 
 			return this.buffers;
 
 		}
 
-		//@Profiler.BeginSample( "Render " + this.name );
 		try
 		{
+
+			// Clear the 'dirty' flag first, because some events (like font texture rebuild)
+			// should be able to set the control to 'dirty' again.
+			this.isControlInvalidated = false;
 
 			// Parse the markup and perform document layout
 			if( isMarkupInvalidated )
@@ -745,20 +796,25 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			// the viewport box will be used to update scrollbars and 
 			// determine max scroll position.
 			viewportBox.FitToContents();
+
+			// Perform auto-sizing if indicated
+			if( autoHeight )
+			{
+				this.Height = viewportBox.Height;
+			}
+
+			// Update scrollbars to match rendered height 
 			updateScrollbars();
 
 			//@Profiler.BeginSample( "Gather markup render buffers" );
 			buffers.Clear();
 			gatherRenderBuffers( viewportBox, this.buffers );
-			Profiler.EndSample();
 
 			return this.buffers;
 
 		}
 		finally
 		{
-			this.isControlInvalidated = false;
-			Profiler.EndSample();
 			updateCollider();
 		}
 
@@ -821,7 +877,6 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 			Size = this.Size
 		};
 
-		//@Profiler.BeginSample( "Perform layout on markup" );
 		for( int i = 0; i < elements.Count; i++ )
 		{
 			var child = elements[ i ];
@@ -830,7 +885,6 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 				child.PerformLayout( viewportBox, style );
 			}
 		}
-		Profiler.EndSample();
 
 	}
 
@@ -1010,8 +1064,6 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 	private void clipToViewport( dfRenderData renderData )
 	{
 
-		//@Profiler.BeginSample( "Clip markup box to viewport" );
-
 		var planes = getViewportClippingPlanes();
 
 		var material = renderData.Material;
@@ -1024,8 +1076,6 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		renderData.Merge( clipBuffer, false );
 		renderData.Material = material;
 		renderData.Transform = matrix;
-
-		Profiler.EndSample();
 
 	}
 
@@ -1046,6 +1096,82 @@ public class dfRichTextLabel : dfControl, IDFMultiRender
 		cachedClippingPlanes[ 3 ] = new Plane( Vector3.down, corners[ 0 ] );
 
 		return cachedClippingPlanes;
+
+	}
+
+	#endregion
+
+	#region IRendersText Members
+
+	public void UpdateFontInfo()
+	{
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+		if( string.IsNullOrEmpty( this.text ) )
+			return;
+
+		updateFontInfo( viewportBox );
+
+	}
+
+	private void updateFontInfo( dfMarkupBox box )
+	{
+
+		if( box == null )
+			return;
+
+		var intersectionType = ( box == viewportBox ) ? dfIntersectionType.Inside : getViewportIntersection( box );
+		if( intersectionType == dfIntersectionType.None )
+		{
+			return;
+		}
+
+		var textBox = box as dfMarkupBoxText;
+		if( textBox != null )
+		{
+			Profiler.BeginSample( "Adding character request" );
+			font.AddCharacterRequest( textBox.Text, textBox.Style.FontSize, textBox.Style.FontStyle );
+			Profiler.EndSample();
+		}
+
+		for( int i = 0; i < box.Children.Count; i++ )
+		{
+			updateFontInfo( box.Children[ i ] );
+		}
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		Invalidate();
+		updateFontInfo( viewportBox );
+	}
+
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		var baseFont = Font.BaseFont;
+		baseFont.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( baseFont.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+		isFontCallbackAssigned = true;
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null)
+			return;
+
+		var baseFont = Font.BaseFont;
+		baseFont.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( baseFont.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+		isFontCallbackAssigned = false;
 
 	}
 

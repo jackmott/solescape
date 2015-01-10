@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -17,7 +17,7 @@ using System.Collections.Generic;
 [Serializable]
 [ExecuteInEditMode]
 [AddComponentMenu( "Daikon Forge/User Interface/Listbox" )]
-public class dfListbox : dfInteractiveBase, IDFMultiRender
+public class dfListbox : dfInteractiveBase, IDFMultiRender, IRendersText
 {
 
 	#region Public events
@@ -92,6 +92,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	#region Private non-serialized variables
 
+	private bool isFontCallbackAssigned = false;
 	private bool eventsAttached = false;
 	private float scrollPosition = 0f;
 	private int hoverIndex = -1;
@@ -101,7 +102,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// Gets or sets the <see cref="dfFont"/> instance that will be used 
@@ -125,7 +126,9 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		{
 			if( value != this.font )
 			{
+				unbindTextureRebuildCallback();
 				this.font = value;
+				bindTextureRebuildCallback();
 				Invalidate();
 			}
 		}
@@ -263,7 +266,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( itemPadding == null ) itemPadding = new RectOffset();
+			if( itemPadding == null )
+				itemPadding = new RectOffset();
 			return this.itemPadding;
 		}
 		set
@@ -384,7 +388,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 	{
 		get
 		{
-			if( listPadding == null ) listPadding = new RectOffset();
+			if( listPadding == null )
+				listPadding = new RectOffset();
 			return this.listPadding;
 		}
 		set
@@ -469,7 +474,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Base class overrides 
+	#region Base class overrides
 
 	public override void Awake()
 	{
@@ -516,6 +521,12 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	}
 
+	public override void OnEnable()
+	{
+		base.OnEnable();
+		bindTextureRebuildCallback();
+	}
+
 	public override void OnDestroy()
 	{
 		base.OnDestroy();
@@ -525,6 +536,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 	public override void OnDisable()
 	{
 		base.OnDisable();
+		unbindTextureRebuildCallback();
 		detachScrollbarEvents();
 	}
 
@@ -555,7 +567,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 	protected internal virtual void OnSelectedIndexChanged()
 	{
 
-		SignalHierarchy( "OnSelectedIndexChanged", this.selectedIndex );
+		SignalHierarchy( "OnSelectedIndexChanged", this, this.selectedIndex );
 
 		if( SelectedIndexChanged != null )
 		{
@@ -567,7 +579,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 	protected internal virtual void OnItemClicked()
 	{
 
-		Signal( "OnItemClicked", this.selectedIndex );
+		Signal( "OnItemClicked", this, this.selectedIndex );
 
 		if( ItemClicked != null )
 		{
@@ -614,7 +626,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	protected internal override void OnMouseWheel( dfMouseEventArgs args )
 	{
-		
+
 		base.OnMouseWheel( args );
 
 		ScrollPosition = Mathf.Max( 0, ScrollPosition - (int)args.WheelDelta * ItemHeight );
@@ -687,7 +699,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	/// <summary>
 	/// Adds a new value to the collection of list items
@@ -702,6 +714,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		newList[ items.Length ] = item;
 
 		items = newList;
+
+		this.Invalidate();
 
 	}
 
@@ -734,7 +748,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		var top = pivotOffset.y + ( -itemHeight * ( selectedIndex - scrollPosition ) - listPadding.top );
 		var needed = ( selectedIndex - scrollPosition + 1 ) * itemHeight + listPadding.vertical;
 		var overlap = needed - size.y;
-		if( overlap > 0 ) top += overlap;
+		if( overlap > 0 )
+			top += overlap;
 
 		var mousepos = GetHitPosition( args ).y - listPadding.top;
 		if( mousepos < 0 || mousepos > size.y - listPadding.bottom )
@@ -1044,7 +1059,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		var top = pivotOffset.y + ( -itemHeight * ( selectedIndex - scrollPosition ) - listPadding.top );
 		var needed = ( selectedIndex - scrollPosition + 1 ) * itemHeight + listPadding.vertical;
 		var overlap = needed - size.y;
-		if( overlap > 0 ) top += overlap;
+		if( overlap > 0 )
+			top += overlap;
 
 		var mousePos = hoverPos.y - listPadding.top;
 
@@ -1156,6 +1172,8 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 		}
 
+		var matrix = this.transform.localToWorldMatrix;
+
 		// If control is not dirty, update the transforms on the 
 		// render buffers (in case control moved) and return 
 		// pre-rendered data
@@ -1163,7 +1181,7 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 		{
 			for( int i = 0; i < buffers.Count; i++ )
 			{
-				buffers[ i ].Transform = transform.localToWorldMatrix;
+				buffers[ i ].Transform = matrix;
 			}
 			return buffers;
 		}
@@ -1174,12 +1192,12 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 		renderData.Clear();
 		renderData.Material = Atlas.Material;
-		renderData.Transform = this.transform.localToWorldMatrix;
+		renderData.Transform = matrix;
 		buffers.Add( renderData );
 
 		textRenderData.Clear();
 		textRenderData.Material = Atlas.Material;
-		textRenderData.Transform = this.transform.localToWorldMatrix;
+		textRenderData.Transform = matrix;
 		buffers.Add( textRenderData );
 
 		#endregion
@@ -1216,5 +1234,77 @@ public class dfListbox : dfInteractiveBase, IDFMultiRender
 
 	#endregion
 
-}
+	#region Dynamic font management
 
+	private void bindTextureRebuildCallback()
+	{
+
+		if( isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Combine( font.textureRebuildCallback, (Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+
+			isFontCallbackAssigned = true;
+
+		}
+
+	}
+
+	private void unbindTextureRebuildCallback()
+	{
+
+		if( !isFontCallbackAssigned || Font == null )
+			return;
+
+		if( Font is dfDynamicFont )
+		{
+
+			Font font = ( Font as dfDynamicFont ).BaseFont;
+			font.textureRebuildCallback = (UnityEngine.Font.FontTextureRebuildCallback)Delegate.Remove( font.textureRebuildCallback, (UnityEngine.Font.FontTextureRebuildCallback)this.onFontTextureRebuilt );
+		}
+
+		isFontCallbackAssigned = false;
+
+	}
+
+	private void requestCharacterInfo()
+	{
+
+		var dynamicFont = this.Font as dfDynamicFont;
+		if( dynamicFont == null )
+			return;
+
+		if( !dfFontManager.IsDirty( this.Font ) )
+			return;
+
+		if( this.items == null || this.items.Length == 0 )
+			return;
+
+		var effectiveTextScale = getTextScaleMultiplier();
+		var effectiveFontSize = Mathf.CeilToInt( this.font.FontSize * effectiveTextScale );
+
+		for( int i = 0; i < items.Length; i++ )
+		{
+			dynamicFont.AddCharacterRequest( items[ i ], effectiveFontSize, FontStyle.Normal );
+		}
+
+	}
+
+	private void onFontTextureRebuilt()
+	{
+		requestCharacterInfo();
+		Invalidate();
+	}
+
+	public void UpdateFontInfo()
+	{
+		requestCharacterInfo();
+	}
+
+	#endregion
+
+}

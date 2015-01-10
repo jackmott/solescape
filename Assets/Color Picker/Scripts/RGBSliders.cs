@@ -8,8 +8,7 @@ public class RGBSliders : MonoBehaviour
 
 	#region Control references 
 
-	public ColorFieldSelector colorField;
-
+	public dfControl selectedColor;
 	public dfSlider redSlider;
 	public dfSlider greenSlider;
 	public dfSlider blueSlider;
@@ -60,7 +59,8 @@ public class RGBSliders : MonoBehaviour
 
 		if( !container.ContainsFocus )
 		{
-			this.SelectedColor = colorField.SelectedColor;
+			this.SelectedColor =  new Color( redSlider.Value, greenSlider.Value, blueSlider.Value );
+			selectedColor.Color = SelectedColor;
 		}
 
 	}
@@ -73,12 +73,11 @@ public class RGBSliders : MonoBehaviour
 	{
 
 		if( !container.ContainsFocus )
-		    return;
+			return;
 
 		this.color = new Color( redSlider.Value, greenSlider.Value, blueSlider.Value );
+		selectedColor.Color = SelectedColor;
 
-		colorField.Hue = this.hue = HSBColor.GetHue( color );
-		colorField.SelectedColor = color;
 
 	}
 

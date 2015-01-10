@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -22,6 +22,14 @@ using UnityMaterial = UnityEngine.Material;
 public class dfWebSprite : dfTextureSprite
 {
 
+	#region Public events
+
+	public PropertyChangedEventHandler<Texture> DownloadComplete;
+
+	public PropertyChangedEventHandler<string> DownloadError;
+
+	#endregion
+
 	#region Protected serialized fields
 
 	[SerializeField]
@@ -38,7 +46,7 @@ public class dfWebSprite : dfTextureSprite
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// Gets/Sets the URL that will be used to retrieve the Texture to display
@@ -92,26 +100,26 @@ public class dfWebSprite : dfTextureSprite
 
 	#region Unity events
 
-	public override void Start()
+	public override void OnEnable()
 	{
 
-		base.Start();
+		base.OnEnable();
 
 		if( Texture == null )
 		{
 			Texture = this.LoadingImage;
 		}
 
-		if( Application.isPlaying )
+		if( Texture == null && AutoDownload && Application.isPlaying )
 		{
 			LoadImage();
 		}
 
 	}
 
-	#endregion 
+	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	public void LoadImage()
 	{
@@ -119,7 +127,7 @@ public class dfWebSprite : dfTextureSprite
 		StartCoroutine( downloadTexture() );
 	}
 
-	#endregion 
+	#endregion
 
 	#region Private utility methods
 
@@ -138,12 +146,29 @@ public class dfWebSprite : dfTextureSprite
 
 			if( !string.IsNullOrEmpty( request.error ) )
 			{
-				Debug.Log( "Error downloading image: " + request.error );
+
 				this.Texture = this.errorImage ?? this.loadingImage;
+
+				if( DownloadError != null )
+				{
+					DownloadError( this, request.error );
+				}
+
+				Signal( "OnDownloadError", this, request.error );
+
 			}
 			else
 			{
+
 				this.Texture = request.texture;
+
+				if( DownloadComplete != null )
+				{
+					DownloadComplete( this, this.Texture );
+				}
+
+				Signal( "OnDownloadComplete", this, this.Texture );
+
 			}
 
 		}

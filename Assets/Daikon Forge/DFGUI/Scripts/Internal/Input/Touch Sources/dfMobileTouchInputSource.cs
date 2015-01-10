@@ -8,7 +8,30 @@ using UnityEngine;
 public class dfMobileTouchInputSource : IDFTouchInputSource
 {
 
-	#region Private variables 
+	#region Singleton implementation 
+
+	private static dfMobileTouchInputSource instance;
+
+	public static dfMobileTouchInputSource Instance
+	{
+
+		get
+		{
+
+			if( instance == null )
+			{
+				instance = new dfMobileTouchInputSource();
+			}
+
+			return instance;
+
+		}
+
+	}
+
+	#endregion 
+
+	#region Private variables
 
 	private List<dfTouchInfo> activeTouches = new List<dfTouchInfo>();
 

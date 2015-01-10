@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -22,19 +22,19 @@ using System.Collections.Generic;
 public class dfRadialSprite : dfSprite
 {
 
-	#region Static variables 
+	#region Static variables
 
 	private static Vector3[] baseVerts = new Vector3[]
-	{
-		new Vector3(  0.0f,  0.5f, 0.0f ),	// 0 Top center
-		new Vector3(  0.5f,  0.5f, 0.0f ),	// 1 Top right
-		new Vector3(  0.5f,  0.0f, 0.0f ),	// 2 Middle right
-		new Vector3(  0.5f, -0.5f, 0.0f ),	// 3 Bottom right
-		new Vector3(  0.0f, -0.5f, 0.0f ),	// 4 Bottom center
-		new Vector3( -0.5f, -0.5f, 0.0f ),	// 5 Bottom left
-		new Vector3( -0.5f,  0.0f, 0.0f ),	// 6 Middle left
-		new Vector3( -0.5f,  0.5f, 0.0f ),	// 7 Top left
-	};
+{
+	new Vector3(  0.0f,  0.5f, 0.0f ),	// 0 Top center
+	new Vector3(  0.5f,  0.5f, 0.0f ),	// 1 Top right
+	new Vector3(  0.5f,  0.0f, 0.0f ),	// 2 Middle right
+	new Vector3(  0.5f, -0.5f, 0.0f ),	// 3 Bottom right
+	new Vector3(  0.0f, -0.5f, 0.0f ),	// 4 Bottom center
+	new Vector3( -0.5f, -0.5f, 0.0f ),	// 5 Bottom left
+	new Vector3( -0.5f,  0.0f, 0.0f ),	// 6 Middle left
+	new Vector3( -0.5f,  0.5f, 0.0f ),	// 7 Top left
+};
 
 	#endregion
 
@@ -197,7 +197,7 @@ public class dfRadialSprite : dfSprite
 		// offset space) before adjusting them to world space
 		uv = buildUV( v );
 
-		#region Convert vertices to world space 
+		#region Convert vertices to world space
 
 		var p2u = PixelsToUnits();
 		var scale = p2u * this.size;

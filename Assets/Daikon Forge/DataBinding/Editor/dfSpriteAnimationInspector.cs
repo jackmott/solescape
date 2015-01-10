@@ -1,5 +1,5 @@
 // *******************************************************
-// Copyright 2013 Daikon Forge, all rights reserved under 
+// Copyright 2013-2014 Daikon Forge, all rights reserved under 
 // US Copyright Law and international treaties
 // *******************************************************
 using UnityEngine;
@@ -259,7 +259,7 @@ public class dfSpriteAnimationInspector : Editor
 
 			var clip = animation.Clip;
 			if( clip == null )
-				GUI.color = Color.red;
+				GUI.color = EditorGUIUtility.isProSkin ? Color.yellow : Color.red;
 
 			dfPrefabSelectionDialog.SelectionCallback selectionCallback = delegate( GameObject item )
 			{

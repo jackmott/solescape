@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 /****************************************************************************
  * PLEASE NOTE: The code in this file is under extremely active development

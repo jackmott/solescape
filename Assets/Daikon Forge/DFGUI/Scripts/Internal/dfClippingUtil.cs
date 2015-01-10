@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -10,7 +10,8 @@ using System.Collections.Generic;
 /// <summary>
 /// Provides triangle clipping functionality for the <see cref="dfGUIManager"/> class
 /// </summary>
-public class dfClippingUtil
+// @private
+internal class dfClippingUtil
 {
 
 	private static int[] inside = new int[ 3 ];
@@ -67,7 +68,8 @@ public class dfClippingUtil
 			for( int planeIndex = 0; planeIndex < planeCount; planeIndex++ )
 			{
 
-				count = clipToPlane( planes[ planeIndex ], clipSource, clipDest, count );
+				var clipPlane = planes[ planeIndex ];
+				count = clipToPlane( ref clipPlane, clipSource, clipDest, count );
 
 				var temp = clipSource;
 				clipSource = clipDest;
@@ -84,20 +86,20 @@ public class dfClippingUtil
 
 	}
 
-	private static int clipToPlane( Plane plane, ClipTriangle[] source, ClipTriangle[] dest, int count )
+	private static int clipToPlane( ref Plane plane, ClipTriangle[] source, ClipTriangle[] dest, int count )
 	{
 
 		var newCount = 0;
 		for( int i = 0; i < count; i++ )
 		{
-			newCount += clipToPlane( plane, ref source[ i ], dest, newCount );
+			newCount += clipToPlane( ref plane, ref source[ i ], dest, newCount );
 		}
 
 		return newCount;
 
 	}
 
-	private static int clipToPlane( Plane plane, ref ClipTriangle triangle, ClipTriangle[] dest, int destIndex )
+	private static int clipToPlane( ref Plane plane, ref ClipTriangle triangle, ClipTriangle[] dest, int destIndex )
 	{
 
 		var verts = triangle.corner;
@@ -118,8 +120,14 @@ public class dfClippingUtil
 		// Entire triangle is in front of the plane
 		if( numInside == 3 )
 		{
-			triangle.CopyTo( ref dest[ destIndex ] );
+
+			var target = dest[ destIndex ];
+			Array.Copy( triangle.corner, 0, target.corner, 0, 3 );
+			Array.Copy( triangle.uv, 0, target.uv, 0, 3 );
+			Array.Copy( triangle.color, 0, target.color, 0, 3 );
+
 			return 1;
+
 		}
 
 		// Entire triangle is behind the plane
@@ -158,7 +166,7 @@ public class dfClippingUtil
 
 			var v1 = ray.GetPoint( distance );
 			var uv1 = Vector2.Lerp( uva, uvb, lerpDist );
-			var c1 = Color.Lerp( ca, cb, lerpDist );
+			var c1 = Color32.Lerp( ca, cb, lerpDist );
 
 			dir = vc - va;
 			ray = new Ray( va, dir.normalized );
@@ -167,19 +175,21 @@ public class dfClippingUtil
 
 			var v2 = ray.GetPoint( distance );
 			var uv2 = Vector2.Lerp( uva, uvc, lerpDist );
-			var c2 = Color.Lerp( ca, cc, lerpDist );
+			var c2 = Color32.Lerp( ca, cc, lerpDist );
 
-			dest[ destIndex ].corner[ 0 ] = va;
-			dest[ destIndex ].corner[ 1 ] = v1;
-			dest[ destIndex ].corner[ 2 ] = v2;
+			var destTriangle = dest[ destIndex ];
 
-			dest[ destIndex ].uv[ 0 ] = uva;
-			dest[ destIndex ].uv[ 1 ] = uv1;
-			dest[ destIndex ].uv[ 2 ] = uv2;
+			destTriangle.corner[ 0 ] = va;
+			destTriangle.corner[ 1 ] = v1;
+			destTriangle.corner[ 2 ] = v2;
 
-			dest[ destIndex ].color[ 0 ] = ca;
-			dest[ destIndex ].color[ 1 ] = c1;
-			dest[ destIndex ].color[ 2 ] = c2;
+			destTriangle.uv[ 0 ] = uva;
+			destTriangle.uv[ 1 ] = uv1;
+			destTriangle.uv[ 2 ] = uv2;
+
+			destTriangle.color[ 0 ] = ca;
+			destTriangle.color[ 1 ] = c1;
+			destTriangle.color[ 2 ] = c2;
 
 			return 1;
 
@@ -211,7 +221,7 @@ public class dfClippingUtil
 
 			var v1 = ray.GetPoint( distance );
 			var uv1 = Vector2.Lerp( uva, uvb, lerpDist );
-			var c1 = Color.Lerp( ca, cb, lerpDist );
+			var c1 = Color32.Lerp( ca, cb, lerpDist );
 
 			dir = vc - va;
 			ray = new Ray( va, dir.normalized );
@@ -220,29 +230,30 @@ public class dfClippingUtil
 
 			var v2 = ray.GetPoint( distance );
 			var uv2 = Vector2.Lerp( uva, uvc, lerpDist );
-			var c2 = Color.Lerp( ca, cc, lerpDist );
+			var c2 = Color32.Lerp( ca, cc, lerpDist );
 
-			dest[ destIndex ].corner[ 0 ] = v1;
-			dest[ destIndex ].corner[ 1 ] = vb;
-			dest[ destIndex ].corner[ 2 ] = v2;
-			dest[ destIndex ].uv[ 0 ] = uv1;
-			dest[ destIndex ].uv[ 1 ] = uvb;
-			dest[ destIndex ].uv[ 2 ] = uv2;
-			dest[ destIndex ].color[ 0 ] = c1;
-			dest[ destIndex ].color[ 1 ] = cb;
-			dest[ destIndex ].color[ 2 ] = c2;
+			var destTriangle = dest[ destIndex ];
+			destTriangle.corner[ 0 ] = v1;
+			destTriangle.corner[ 1 ] = vb;
+			destTriangle.corner[ 2 ] = v2;
+			destTriangle.uv[ 0 ] = uv1;
+			destTriangle.uv[ 1 ] = uvb;
+			destTriangle.uv[ 2 ] = uv2;
+			destTriangle.color[ 0 ] = c1;
+			destTriangle.color[ 1 ] = cb;
+			destTriangle.color[ 2 ] = c2;
 
-			destIndex++;
+			destTriangle = dest[ ++destIndex ];
 
-			dest[ destIndex ].corner[ 0 ] = v2;
-			dest[ destIndex ].corner[ 1 ] = vb;
-			dest[ destIndex ].corner[ 2 ] = vc;
-			dest[ destIndex ].uv[ 0 ] = uv2;
-			dest[ destIndex ].uv[ 1 ] = uvb;
-			dest[ destIndex ].uv[ 2 ] = uvc;
-			dest[ destIndex ].color[ 0 ] = c2;
-			dest[ destIndex ].color[ 1 ] = cb;
-			dest[ destIndex ].color[ 2 ] = cc;
+			destTriangle.corner[ 0 ] = v2;
+			destTriangle.corner[ 1 ] = vb;
+			destTriangle.corner[ 2 ] = vc;
+			destTriangle.uv[ 0 ] = uv2;
+			destTriangle.uv[ 1 ] = uvb;
+			destTriangle.uv[ 2 ] = uvc;
+			destTriangle.color[ 0 ] = c2;
+			destTriangle.color[ 1 ] = cb;
+			destTriangle.color[ 2 ] = cc;
 
 			return 2;
 
@@ -259,15 +270,15 @@ public class dfClippingUtil
 		{
 			buffer[ i ].corner = new Vector3[ 3 ];
 			buffer[ i ].uv = new Vector2[ 3 ];
-			buffer[ i ].color = new Color[ 3 ];
+			buffer[ i ].color = new Color32[ 3 ];
 		}
 
 		return buffer;
 
 	}
 
-	#region Nested classes 
-		
+	#region Nested classes
+
 	protected struct ClipTriangle
 	{
 
@@ -275,17 +286,17 @@ public class dfClippingUtil
 
 		public Vector3[] corner;
 		public Vector2[] uv;
-		public Color[] color;
+		public Color32[] color;
 
 		#endregion
 
-		#region Public methods 
+		#region Public methods
 
 		public void CopyTo( ref ClipTriangle target )
 		{
-			Array.Copy( this.corner, target.corner, 3 );
-			Array.Copy( this.uv, target.uv, 3 );
-			Array.Copy( this.color, target.color, 3 );
+			Array.Copy( this.corner, 0, target.corner, 0, 3 );
+			Array.Copy( this.uv, 0, target.uv, 0, 3 );
+			Array.Copy( this.color, 0, target.color, 0, 3 );
 		}
 
 		public void CopyTo( dfRenderData buffer )
@@ -295,19 +306,250 @@ public class dfClippingUtil
 
 			buffer.Vertices.AddRange( corner );
 			buffer.UV.AddRange( uv );
+			buffer.Colors.AddRange( color );
+			buffer.Triangles.Add( baseIndex + 0, baseIndex + 1, baseIndex + 2 );
 
-			buffer.Colors.Add( (Color32)color[ 0 ] );
-			buffer.Colors.Add( (Color32)color[ 1 ] );
-			buffer.Colors.Add( (Color32)color[ 2 ] );
-
-			buffer.Triangles.Add( baseIndex + 0 );
-			buffer.Triangles.Add( baseIndex + 1 );
-			buffer.Triangles.Add( baseIndex + 2 );
-			
 		}
 
 		#endregion
 
+	}
+
+	#endregion
+
+}
+
+/// <summary>
+/// Encapsulates the information about a dfControl's clipping region,
+/// and provides methods to clip a dfRenderData buffer against that
+/// clipping region
+/// </summary>
+// @private
+internal class dfTriangleClippingRegion : IDisposable
+{
+
+	#region Private static fields
+
+	private static Queue<dfTriangleClippingRegion> pool = new Queue<dfTriangleClippingRegion>();
+	private static dfList<Plane> intersectedPlanes = new dfList<Plane>( 32 );
+
+	#endregion
+
+	#region Private instance fields
+
+	private dfList<Plane> planes;
+
+	#endregion
+
+	#region Constructors and object pooling
+
+	public static dfTriangleClippingRegion Obtain()
+	{
+		return ( pool.Count > 0 ) ? pool.Dequeue() : new dfTriangleClippingRegion();
+	}
+
+	public static dfTriangleClippingRegion Obtain( dfTriangleClippingRegion parent, dfControl control )
+	{
+
+		var clip = ( pool.Count > 0 ) ? pool.Dequeue() : new dfTriangleClippingRegion();
+
+		clip.planes.AddRange( control.GetClippingPlanes() );
+
+		if( parent != null )
+		{
+			clip.planes.AddRange( parent.planes );
+		}
+
+		return clip;
+
+	}
+
+	public void Release()
+	{
+
+		planes.Clear();
+
+		if( !pool.Contains( this ) )
+		{
+			pool.Enqueue( this );
+		}
+
+	}
+
+	private dfTriangleClippingRegion()
+	{
+		planes = new dfList<Plane>();
+	}
+
+	#endregion
+
+	#region Public methods
+
+	/// <summary>
+	/// Perform triangle clipping on the dfControl's RenderData and append the results
+	/// to the destination RenderData
+	/// </summary>
+	/// <param name="dest">The buffer which will receive the final results</param>
+	/// <param name="control">A <see cref="Bounds"/> instance fully enclosing the control</param>
+	/// <param name="controlData">The <see cref="RenderData"/> structure generated by the dfControl</param>
+	/// <returns>Returns TRUE if the dfControl was rendered, FALSE if it was not (lies entirely outside the clipping region)</returns>
+	public bool PerformClipping( dfRenderData dest, ref Bounds bounds, uint checksum, dfRenderData controlData )
+	{
+
+		// If there are no clipping planes defined, then simply merge the control's
+		// rendering information with the master buffer.
+		if( planes == null || planes.Count == 0 )
+		{
+			dest.Merge( controlData );
+			return true;
+		}
+
+		// If the RenderData's Checksum matches the dfControl's current checksum 
+		// then in the case of a dfControl which was previously determined to be 
+		// either entirely inside of all clipping planes or entirely outside
+		// of any clipping plane we can skip clipping and intersection testing
+		if( controlData.Checksum == checksum )
+		{
+
+			if( controlData.Intersection == dfIntersectionType.Inside )
+			{
+				// Merge the control's rendering information without any clipping
+				//@Profiler.BeginSample( "Merge cached buffer - Fully inside" );
+				dest.Merge( controlData );
+				//@Profiler.EndSample();
+				return true;
+			}
+			else if( controlData.Intersection == dfIntersectionType.None )
+			{
+				// Control lies entirely outside of the clipping region,
+				// no need to include any of its rendering information
+				//@Profiler.BeginSample( "Discard cached buffer - No intersection" );
+				//@Profiler.EndSample();
+				return false;
+			}
+
+		}
+
+		var wasRendered = false;
+
+		//@Profiler.BeginSample( "Clipping buffer data" );
+
+		dfIntersectionType intersectionTest;
+		var clipPlanes = TestIntersection( bounds, out intersectionTest );
+
+		if( intersectionTest == dfIntersectionType.Inside )
+		{
+			//@Profiler.BeginSample( "Merging buffer - Fully inside" );
+			dest.Merge( controlData );
+			//@Profiler.EndSample();
+			wasRendered = true;
+		}
+		else if( intersectionTest == dfIntersectionType.Intersecting )
+		{
+			//@Profiler.BeginSample( "Clipping intersecting buffer" );
+			clipToPlanes( clipPlanes, controlData, dest, checksum );
+			//@Profiler.EndSample();
+			wasRendered = true;
+		}
+
+		controlData.Checksum = checksum;
+		controlData.Intersection = intersectionTest;
+
+		//@Profiler.EndSample();
+		return wasRendered;
+
+	}
+
+	public dfList<Plane> TestIntersection( Bounds bounds, out dfIntersectionType type )
+	{
+
+		if( planes == null || planes.Count == 0 )
+		{
+			type = dfIntersectionType.Inside;
+			return null;
+		}
+
+		intersectedPlanes.Clear();
+
+		var center = bounds.center;
+		var extents = bounds.extents;
+
+		var intersecting = false;
+
+		var planeCount = planes.Count;
+		var rawPlanes = planes.Items;
+		for( int i = 0; i < planeCount; i++ )
+		{
+
+			var plane = rawPlanes[ i ];
+			var planeNormal = plane.normal;
+			var planeDist = plane.distance;
+
+			// Compute the projection interval radius of b onto L(t) = b.c + t * p.n
+			float r =
+				extents.x * Mathf.Abs( planeNormal.x ) +
+				extents.y * Mathf.Abs( planeNormal.y ) +
+				extents.z * Mathf.Abs( planeNormal.z );
+
+			// Compute distance of box center from plane
+			float distance = Vector3.Dot( planeNormal, center ) + planeDist;
+
+			// Intersection occurs when distance falls within [-r,+r] interval
+			if( Mathf.Abs( distance ) <= r )
+			{
+				intersecting = true;
+				intersectedPlanes.Add( plane );
+			}
+			else
+			{
+
+				// If the control lies behind *any* of the planes, there
+				// is no point in continuing with the rest of the test
+				if( distance < -r )
+				{
+					type = dfIntersectionType.None;
+					return null;
+				}
+
+			}
+
+		}
+
+		if( intersecting )
+		{
+			type = dfIntersectionType.Intersecting;
+			return intersectedPlanes;
+		}
+
+		type = dfIntersectionType.Inside;
+
+		return null;
+
+	}
+
+	public void clipToPlanes( dfList<Plane> planes, dfRenderData data, dfRenderData dest, uint controlChecksum )
+	{
+
+		if( data == null || data.Vertices.Count == 0 )
+			return;
+
+		if( planes == null || planes.Count == 0 )
+		{
+			dest.Merge( data );
+			return;
+		}
+
+		dfClippingUtil.Clip( planes, data, dest );
+
+	}
+
+	#endregion
+
+	#region IDisposable Members
+
+	public void Dispose()
+	{
+		Release();
 	}
 
 	#endregion

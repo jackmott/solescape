@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -44,6 +44,14 @@ public class TweenGroupInspector : Editor
 			{
 				dfEditorUtil.MarkUndo( group, "Change AutoStart" );
 				group.AutoStart = autoStart;
+			}
+
+			EditorGUI.BeginChangeCheck();
+			var delay = EditorGUILayout.FloatField( "Delay", group.StartDelay );
+			if( EditorGUI.EndChangeCheck() )
+			{
+				dfEditorUtil.MarkUndo( target, "Modify Tween Delay" );
+				group.StartDelay = Mathf.Max( delay, 0 );
 			}
 
 		}

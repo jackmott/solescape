@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -17,7 +17,7 @@ using System.Collections.Generic;
 public class dfResizeHandle : dfControl
 {
 
-	#region Public enums 
+	#region Public enums
 
 	/// <summary>
 	/// Defines which edges of the parent control are moved
@@ -77,7 +77,7 @@ public class dfResizeHandle : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by this control
@@ -207,7 +207,7 @@ public class dfResizeHandle : dfControl
 		startSize = parent.Size;
 		startPosition = parent.RelativePosition;
 
-		#region Calculate the min and max edge positions 
+		#region Calculate the min and max edge positions
 
 		minEdgePos = startPosition;
 		maxEdgePos = (Vector2)startPosition + startSize;
@@ -243,6 +243,8 @@ public class dfResizeHandle : dfControl
 		}
 
 		#endregion
+
+		base.OnMouseDown( args );
 
 	}
 

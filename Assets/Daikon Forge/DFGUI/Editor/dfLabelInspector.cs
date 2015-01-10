@@ -2,7 +2,7 @@
 // Uncomment the preceeding line if you wish to revert to the old 
 // bitmapped font renderer
 
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 

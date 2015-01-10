@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -79,7 +79,7 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 		set
 		{
 			this.startValue = value;
-			if( isRunning )
+			if( state != dfTweenState.Stopped )
 			{
 				Stop();
 				Play();
@@ -96,12 +96,20 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 		set
 		{
 			this.endValue = value;
-			if( isRunning )
+			if( state != dfTweenState.Stopped )
 			{
 				Stop();
 				Play();
 			}
 		}
+	}
+
+	/// <summary>
+	/// Gets a value indicating which state the Tween is currently in
+	/// </summary>
+	public dfTweenState State
+	{
+		get { return this.state; }
 	}
 
 	#endregion
@@ -111,7 +119,59 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 	private T actualStartValue;
 	private T actualEndValue;
 
+	private float startTime;
+	private float pingPongDirection;
+
 	#endregion
+
+	#region Static helper functions 
+
+	/// <summary>
+	/// Creates a new Tween and returns a reference to the Tween component. The Tween will not auto-play, and 
+	/// must be started manually (this allows additional configuration before starting the Tween).
+	/// </summary>
+	/// <param name="target">The component whose property will be animated</param>
+	/// <param name="propertyName">The name of the property to be animated</param>
+	/// <param name="startValue">The start value</param>
+	/// <param name="endValue">The end value</param>
+	/// <param name="length">The length of the animation</param>
+	public static dfTweenComponent<T> Create( Component target, string propertyName, T startValue, T endValue, float length )
+	{
+		return Create( target, propertyName, startValue, endValue, length, dfEasingType.Linear );
+	}
+
+	/// <summary>
+	/// Creates a new Tween and returns a reference to the Tween component. The Tween will not auto-play, and 
+	/// must be started manually (this allows additional configuration before starting the Tween).
+	/// </summary>
+	/// <param name="target">The component whose property will be animated</param>
+	/// <param name="propertyName">The name of the property to be animated</param>
+	/// <param name="startValue">The start value</param>
+	/// <param name="endValue">The end value</param>
+	/// <param name="length">The length of the animation</param>
+	/// <param name="func">The easing function that will be used to modify the animation</param>
+	public static dfTweenComponent<T> Create( Component target, string propertyName, T startValue, T endValue, float length, dfEasingType func )
+	{
+
+		if( target == null || target.gameObject == null )
+			throw new ArgumentNullException( "target" );
+
+		if( string.IsNullOrEmpty( propertyName ) )
+			throw new ArgumentNullException( "propertyName" );
+
+		var tween = (dfTweenComponent<T>)target.gameObject.AddComponent( typeof( T ) );
+		tween.autoRun = false;
+		tween.target = new dfComponentMemberInfo() { Component = target, MemberName = propertyName };
+		tween.startValue = startValue;
+		tween.endValue = endValue;
+		tween.length = length;
+		tween.easingType = func;
+
+		return tween;
+
+	}
+
+	#endregion 
 
 	#region Public functions
 
@@ -121,7 +181,7 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 	public override void Play()
 	{
 
-		if( isRunning )
+		if( state != dfTweenState.Stopped )
 			Stop();
 
 		if( !enabled || !gameObject.activeSelf || !gameObject.activeInHierarchy )
@@ -133,7 +193,36 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 		if( !target.IsValid )
 			throw new InvalidOperationException( "Invalid property binding configuration on " + getPath( gameObject.transform ) + " - " + target );
 
-		StartCoroutine( Execute( boundProperty = target.GetProperty() ) );
+		boundProperty = target.GetProperty();
+
+		this.easingFunction = dfEasingFunctions.GetFunction( this.easingType );
+
+		onStarted();
+
+		this.actualStartValue = this.startValue;
+		this.actualEndValue = this.endValue;
+
+		if( syncStartWhenRun )
+		{
+			actualStartValue = (T)boundProperty.Value;
+		}
+		else if( startValueIsOffset )
+		{
+			actualStartValue = offset( this.startValue, (T)boundProperty.Value );
+		}
+
+		if( syncEndWhenRun )
+		{
+			actualEndValue = (T)boundProperty.Value;
+		}
+		else if( endValueIsOffset )
+		{
+			actualEndValue = offset( this.endValue, (T)boundProperty.Value );
+		}
+
+		this.boundProperty.Value = actualStartValue;
+		this.startTime = Time.realtimeSinceStartup;
+		this.state = dfTweenState.Started;
 
 	}
 
@@ -143,7 +232,7 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 	public override void Stop()
 	{
 
-		if( !isRunning )
+		if( state == dfTweenState.Stopped )
 			return;
 
 		if( skipToEndOnStop )
@@ -151,9 +240,7 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 			boundProperty.Value = this.actualEndValue;
 		}
 
-		StopAllCoroutines();
-		isRunning = false;
-
+		state = dfTweenState.Stopped;
 		onStopped();
 
 		easingFunction = null;
@@ -167,14 +254,12 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 	public override void Reset()
 	{
 
-		if( !isRunning )
-			return;
+		if( boundProperty != null )
+		{
+			boundProperty.Value = this.actualStartValue;
+		}
 
-		boundProperty.Value = this.actualStartValue;
-
-		StopAllCoroutines();
-		isRunning = false;
-
+		state = dfTweenState.Stopped;
 		onReset();
 
 		easingFunction = null;
@@ -200,111 +285,70 @@ public abstract class dfTweenComponent<T> : dfTweenComponentBase where T : struc
 
 	#endregion
 
-	#region Coroutines
+	#region Monobehaviour events 
 
-	protected internal IEnumerator<T> Execute( dfObservableProperty property )
+	public void Update()
 	{
 
-		isRunning = true;
+		if( state == dfTweenState.Stopped || state == dfTweenState.Paused )
+			return;
 
-		this.easingFunction = dfEasingFunctions.GetFunction( this.easingType );
-		this.boundProperty = property;
-
-		onStarted();
-
-		this.actualStartValue = this.startValue;
-		this.actualEndValue = this.endValue;
-
-		if( syncStartWhenRun )
+		if( state == dfTweenState.Started )
 		{
-			actualStartValue = (T)property.Value;
-		}
-		else if( startValueIsOffset )
-		{
-			actualStartValue = offset( this.startValue, (T)property.Value );
-		}
 
-		if( syncEndWhenRun )
-		{
-			actualEndValue = (T)property.Value;
-		}
-		else if( endValueIsOffset )
-		{
-			actualEndValue = offset( this.endValue, (T)property.Value );
+			// If the StartDelay has not already run out, just exit
+			if( startTime + StartDelay >= Time.realtimeSinceStartup )
+				return;
+
+			// Now the tween is actually playing
+			state = dfTweenState.Playing;
+
+			// Reassign start time to know how long the tween has been executing
+			startTime = Time.realtimeSinceStartup;
+
+			// Reset the play direction
+			pingPongDirection = 0;
+
 		}
 
-		var currentValue = actualStartValue;
-
-		if( delayBeforeStarting > 0f )
+		var elapsed = Mathf.Min( Time.realtimeSinceStartup - startTime, length );
+		if( elapsed >= length )
 		{
-			property.Value = currentValue;
-			var timeout = Time.realtimeSinceStartup + delayBeforeStarting;
-			while( Time.realtimeSinceStartup < timeout )
+
+			if( loopType == dfTweenLoopType.Once )
 			{
-				yield return default( T );
+				boundProperty.Value = this.actualEndValue;
+				Stop();
+				onCompleted();
 			}
-		}
-
-		var startTime = Time.realtimeSinceStartup;
-		var elapsed = 0f;
-
-		var pingPongDirection = 0f;
-
-		while( true )
-		{
-
-			if( isPaused )
+			else if( loopType == dfTweenLoopType.Loop )
 			{
-				yield return currentValue;
-				continue;
+				startTime = Time.realtimeSinceStartup;
 			}
-
-			elapsed = Mathf.Min( Time.realtimeSinceStartup - startTime, length );
-
-			var time = easingFunction( 0f, 1f, Mathf.Abs( pingPongDirection - elapsed / length ) );
-			if( animCurve != null )
+			else if( loopType == dfTweenLoopType.PingPong )
 			{
-				time = animCurve.Evaluate( time );
-			}
-
-			currentValue = evaluate( actualStartValue, actualEndValue, time ); ;
-			property.Value = currentValue;
-
-			if( elapsed >= length )
-			{
-
-				if( loopType == dfTweenLoopType.Once )
-				{
-					break;
-				}
-				else if( loopType == dfTweenLoopType.Loop )
-				{
-					startTime = Time.realtimeSinceStartup;
-				}
-				else if( loopType == dfTweenLoopType.PingPong )
-				{
-					startTime = Time.realtimeSinceStartup;
-					if( pingPongDirection == 0f )
-						pingPongDirection = 1f;
-					else
-						pingPongDirection = 0f;
-				}
+				startTime = Time.realtimeSinceStartup;
+				if( pingPongDirection == 0f )
+					pingPongDirection = 1f;
 				else
-				{
-					throw new NotImplementedException();
-				}
-
+					pingPongDirection = 0f;
+			}
+			else
+			{
+				throw new NotImplementedException();
 			}
 
-			yield return currentValue;
+			return;
 
 		}
 
-		boundProperty.Value = actualEndValue;
+		var time = easingFunction( 0f, 1f, Mathf.Abs( pingPongDirection - elapsed / length ) );
+		if( animCurve != null )
+		{
+			time = animCurve.Evaluate( time );
+		}
 
-		isRunning = false;
-
-		onCompleted();
+		boundProperty.Value = evaluate( actualStartValue, actualEndValue, time );
 
 	}
 

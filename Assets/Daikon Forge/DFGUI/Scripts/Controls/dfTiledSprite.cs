@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -19,7 +19,7 @@ using System.Collections.Generic;
 public class dfTiledSprite : dfSprite
 {
 
-	#region Static variables 
+	#region Static variables
 
 	private static int[] quadTriangles = new int[] { 0, 1, 3, 3, 1, 2 };
 	private static Vector2[] quadUV = new Vector2[ 4 ];
@@ -36,7 +36,7 @@ public class dfTiledSprite : dfSprite
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// Gets or sets the scale multiplier that will be applied to the
@@ -67,7 +67,7 @@ public class dfTiledSprite : dfSprite
 		set
 		{
 			if( Vector2.Distance( value, tileScroll ) > float.Epsilon )
-			 {
+			{
 				tileScroll = value; // new Vector2( Mathf.Max( 0, value.x ), Mathf.Max( 0, value.y ) );
 				Invalidate();
 			}
@@ -290,14 +290,22 @@ public class dfTiledSprite : dfSprite
 
 		if( flip.IsSet( dfSpriteFlip.FlipHorizontal ) )
 		{
-			temp = quadUV[ 1 ]; quadUV[ 1 ] = quadUV[ 0 ]; quadUV[ 0 ] = temp;
-			temp = quadUV[ 3 ]; quadUV[ 3 ] = quadUV[ 2 ]; quadUV[ 2 ] = temp;
+			temp = quadUV[ 1 ];
+			quadUV[ 1 ] = quadUV[ 0 ];
+			quadUV[ 0 ] = temp;
+			temp = quadUV[ 3 ];
+			quadUV[ 3 ] = quadUV[ 2 ];
+			quadUV[ 2 ] = temp;
 		}
 
 		if( flip.IsSet( dfSpriteFlip.FlipVertical ) )
 		{
-			temp = quadUV[ 0 ]; quadUV[ 0 ] = quadUV[ 3 ]; quadUV[ 3 ] = temp;
-			temp = quadUV[ 1 ]; quadUV[ 1 ] = quadUV[ 2 ]; quadUV[ 2 ] = temp;
+			temp = quadUV[ 0 ];
+			quadUV[ 0 ] = quadUV[ 3 ];
+			quadUV[ 3 ] = temp;
+			temp = quadUV[ 1 ];
+			quadUV[ 1 ] = quadUV[ 2 ];
+			quadUV[ 2 ] = temp;
 		}
 
 		return quadUV;

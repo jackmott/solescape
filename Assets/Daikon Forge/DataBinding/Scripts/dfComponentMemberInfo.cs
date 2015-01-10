@@ -1,9 +1,7 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 
 using UnityEngine;

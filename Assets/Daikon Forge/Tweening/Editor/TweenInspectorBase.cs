@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -246,12 +246,11 @@ public class TweenInspectorBase : Editor
 
 		}
 
-		// Show "Play" button when application is playing
-		showDebugPlayButton( tween );
+		showDebugButtons( tween );
 
 	}
 
-	private static void showDebugPlayButton( dfTweenPlayableBase tween )
+	private static void showDebugButtons( dfTweenPlayableBase tween )
 	{
 		
 		if( !Application.isPlaying )
@@ -264,6 +263,14 @@ public class TweenInspectorBase : Editor
 			if( GUILayout.Button( "Play", "minibutton" ) )
 			{
 				tween.Play();
+			}
+			if( tween.IsPlaying && tween is dfTweenComponentBase )
+			{
+				var target = tween as dfTweenComponentBase;
+				if( GUILayout.Button( target.IsPaused ? "Resume" : "Pause", "minibutton" ) )
+				{
+					target.IsPaused = !target.IsPaused;
+				}
 			}
 			if( GUILayout.Button( "Stop", "minibutton" ) )
 			{

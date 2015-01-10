@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -56,7 +56,7 @@ public class dfTabstrip : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// Gets or sets the associated <see cref="dfTabContainer"/> control, 
@@ -80,7 +80,7 @@ public class dfTabstrip : dfControl
 						value.AddTabPage();
 					}
 				}
-			
+
 				pageContainer.SelectedIndex = this.SelectedIndex;
 				Invalidate();
 
@@ -155,7 +155,8 @@ public class dfTabstrip : dfControl
 	{
 		get
 		{
-			if( this.layoutPadding == null ) this.layoutPadding = new RectOffset();
+			if( this.layoutPadding == null )
+				this.layoutPadding = new RectOffset();
 			return this.layoutPadding;
 		}
 		set
@@ -181,7 +182,7 @@ public class dfTabstrip : dfControl
 
 	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	/// <summary>
 	/// Enable the tab at the specified index
@@ -192,7 +193,7 @@ public class dfTabstrip : dfControl
 		if( this.selectedIndex >= 0 && this.selectedIndex <= this.controls.Count - 1 )
 		{
 			this.controls[ index ].Enable();
-		}		
+		}
 	}
 
 	/// <summary>
@@ -215,8 +216,11 @@ public class dfTabstrip : dfControl
 	/// </summary>
 	/// <param name="Text">The text to be displayed in the tab</param>
 	/// <returns>Returns a reference to the newly-created tab control</returns>
-	public dfControl AddTab( string Text = "" )
+	public dfControl AddTab( string Text )
 	{
+
+		if( Text == null )
+			Text = string.Empty;
 
 		var template = controls.Where( i => i is dfButton ).FirstOrDefault() as dfButton;
 
@@ -232,13 +236,13 @@ public class dfTabstrip : dfControl
 
 		if( template != null )
 		{
-			
+
 			tab.Atlas = template.Atlas;
 			tab.Font = template.Font;
 
 			tab.AutoSize = template.AutoSize;
 			tab.Size = template.Size;
-			
+
 			tab.BackgroundSprite = template.BackgroundSprite;
 			tab.DisabledSprite = template.DisabledSprite;
 			tab.FocusSprite = template.FocusSprite;
@@ -271,7 +275,7 @@ public class dfTabstrip : dfControl
 
 	#endregion
 
-	#region Event handlers 
+	#region Event handlers
 
 	protected internal override void OnGotFocus( dfFocusEventArgs args )
 	{
@@ -391,7 +395,7 @@ public class dfTabstrip : dfControl
 	protected internal virtual void OnSelectedIndexChanged()
 	{
 
-		SignalHierarchy( "OnSelectedIndexChanged", this.SelectedIndex );
+		SignalHierarchy( "OnSelectedIndexChanged", this, this.SelectedIndex );
 
 		if( SelectedIndexChanged != null )
 		{
@@ -402,7 +406,7 @@ public class dfTabstrip : dfControl
 
 	#endregion
 
-	#region Rendering 
+	#region Rendering
 
 	protected override void OnRebuildRenderData()
 	{
@@ -479,8 +483,8 @@ public class dfTabstrip : dfControl
 			else
 			{
 				tab.State = dfButton.ButtonState.Default;
-			}	
-				
+			}
+
 		}
 
 		Invalidate();

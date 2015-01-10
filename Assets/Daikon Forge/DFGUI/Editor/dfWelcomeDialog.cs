@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using System;
 using System.IO;
 using System.Text;
@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
-
-using UnityObject = UnityEngine.Object;
 
 public class dfWelcomeDialog : EditorWindow
 {

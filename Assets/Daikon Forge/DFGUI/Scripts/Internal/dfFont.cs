@@ -2,7 +2,7 @@
 // Uncomment the preceeding line if you wish to revert to the old 
 // bitmapped font renderer
 
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 
 using UnityEngine;
 
@@ -27,7 +27,7 @@ using Object = UnityEngine.Object;
 public class dfFont : dfFontBase
 {
 
-	#region Public nested classes
+	#region Nested classes
 
 	private class GlyphKerningList
 	{
@@ -418,7 +418,7 @@ public class dfFont : dfFontBase
 
 #if USE_NEW_BMFONT_RENDERER
 
-	public class BitmappedFontRenderer : dfFontRendererBase
+	public class BitmappedFontRenderer : dfFontRendererBase, IPoolable
 	{
 
 		#region Object pooling
@@ -452,7 +452,7 @@ public class dfFont : dfFontBase
 		#region Private instance fields
 
 		private dfList<LineRenderInfo> lines = null;
-		private List<dfMarkupToken> tokens = null;
+		private dfList<dfMarkupToken> tokens = null;
 
 		#endregion
 
@@ -482,6 +482,11 @@ public class dfFont : dfFontBase
 
 			this.Reset();
 
+			if( this.tokens != null )
+			{
+				this.tokens.ReleaseItems();
+				this.tokens.Release();
+			}
 			this.tokens = null;
 
 			if( lines != null )
@@ -643,7 +648,7 @@ public class dfFont : dfFontBase
 
 		#region Private utility methods
 
-		private int getAnticipatedVertCount( List<dfMarkupToken> tokens )
+		private int getAnticipatedVertCount( dfList<dfMarkupToken> tokens )
 		{
 
 			var textSize = 4 + ( Shadow ? 4 : 0 ) + ( Outline ? 4 : 0 );
@@ -1115,7 +1120,7 @@ public class dfFont : dfFontBase
 		/// Splits the source text into tokens and preprocesses the
 		/// tokens to determine render size required, etc.
 		/// </summary>
-		private List<dfMarkupToken> tokenize( string text )
+		private dfList<dfMarkupToken> tokenize( string text )
 		{
 
 			try
@@ -1123,13 +1128,19 @@ public class dfFont : dfFontBase
 
 				//@Profiler.BeginSample( "Tokenize text" );
 
-				if( this.tokens != null && this.tokens.Count > 0 )
+				if( this.tokens != null )
 				{
+
 					// Sanity check. You shouldn't be re-using this class
 					// on multiple strings without resetting in-between,
 					// though.
-					if( tokens[ 0 ].Source == text )
+					if( object.ReferenceEquals( tokens[ 0 ].Source, text ) )
 						return this.tokens;
+
+					// Release current text tokens before proceeding 
+					this.tokens.ReleaseItems();
+					this.tokens.Release();
+
 				}
 
 				if( this.ProcessMarkup )

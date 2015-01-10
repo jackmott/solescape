@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -28,7 +28,7 @@ public class dfCheckbox : dfControl
 
 	#endregion
 
-	#region Protected serialized members 
+	#region Protected serialized members
 
 	[SerializeField]
 	protected bool isChecked = false;
@@ -47,7 +47,7 @@ public class dfCheckbox : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// Gets or sets whether a Click event will be generated when this control
@@ -69,8 +69,15 @@ public class dfCheckbox : dfControl
 		{
 			if( value != this.isChecked )
 			{
+
 				this.isChecked = value;
 				OnCheckChanged();
+
+				if( value && group != null )
+				{
+					handleGroupedCheckboxChecked();
+				}
+
 			}
 		}
 	}
@@ -133,7 +140,8 @@ public class dfCheckbox : dfControl
 	{
 		get
 		{
-			if( label != null ) return label.Text;
+			if( label != null )
+				return label.Text;
 			return "[LABEL NOT SET]";
 		}
 		set
@@ -155,7 +163,7 @@ public class dfCheckbox : dfControl
 
 	#endregion
 
-	#region Event handlers 
+	#region Event handlers
 
 	public override void Start()
 	{
@@ -186,37 +194,28 @@ public class dfCheckbox : dfControl
 	protected internal override void OnClick( dfMouseEventArgs args )
 	{
 
+		base.OnClick( args );
+
+		if( !IsInteractive )
+			return;
+
 		if( group == null )
 		{
 			this.IsChecked = !this.IsChecked;
 		}
 		else
 		{
-
-			var list = transform.parent.GetComponentsInChildren<dfCheckbox>() as dfCheckbox[];
-			for( int i = 0; i < list.Length; i++ )
-			{
-				var control = list[ i ];
-				if( control != this && control.GroupContainer == this.GroupContainer && control.IsChecked )
-				{
-					control.IsChecked = false;
-				}
-			}
-
-			this.IsChecked = true;
-
+			handleGroupedCheckboxChecked();
 		}
 
 		args.Use();
-
-		base.OnClick( args );
 
 	}
 
 	protected internal void OnCheckChanged()
 	{
 
-		SignalHierarchy( "OnCheckChanged", this.isChecked );
+		SignalHierarchy( "OnCheckChanged", this, this.isChecked );
 
 		if( CheckChanged != null )
 		{
@@ -238,5 +237,29 @@ public class dfCheckbox : dfControl
 	}
 
 	#endregion
+
+	#region Private utility methods 
+
+	private void handleGroupedCheckboxChecked()
+	{
+
+		if( group == null )
+			return;
+
+		var list = group.transform.GetComponentsInChildren<dfCheckbox>() as dfCheckbox[];
+		for( int i = 0; i < list.Length; i++ )
+		{
+			var control = list[ i ];
+			if( control != this && control.GroupContainer == this.GroupContainer && control.IsChecked )
+			{
+				control.IsChecked = false;
+			}
+		}
+
+		this.IsChecked = true;
+
+	}
+
+	#endregion 
 
 }

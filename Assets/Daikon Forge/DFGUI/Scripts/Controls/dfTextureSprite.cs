@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -22,7 +22,7 @@ using UnityMaterial = UnityEngine.Material;
 public class dfTextureSprite : dfControl
 {
 
-	#region Static variables 
+	#region Static variables
 
 	private static int[] TRIANGLE_INDICES = new int[] { 0, 1, 3, 3, 1, 2 };
 
@@ -57,9 +57,15 @@ public class dfTextureSprite : dfControl
 	[SerializeField]
 	protected bool invertFill = false;
 
+	[SerializeField]
+	protected Rect cropRect = new Rect( 0, 0, 1, 1 );
+
+	[SerializeField]
+	protected bool cropImage = false;
+
 	#endregion
 
-	#region Private instance variables 
+	#region Private instance variables
 
 	private bool createdRuntimeMaterial = false;
 	private Material renderMaterial = null;
@@ -67,6 +73,41 @@ public class dfTextureSprite : dfControl
 	#endregion
 
 	#region Public properties
+
+	/// <summary>
+	/// If set to TRUE, the sprite will be rendered using the custom UV values defined
+	/// in the CustomUV property
+	/// </summary>
+	public bool CropTexture
+	{
+		get { return this.cropImage; }
+		set
+		{
+			if( value != this.cropImage )
+			{
+				this.cropImage = value;
+				Invalidate();
+			}
+		}
+	}
+
+	/// <summary>
+	/// If the UseCustomUV property is set to TRUE, the sprite will be rendered using
+	/// the values defined in this property.
+	/// </summary>
+	public Rect CropRect
+	{
+		get { return this.cropRect; }
+		set
+		{
+			value = validateCropRect( value );
+			if( value != this.cropRect )
+			{
+				this.cropRect = value;
+				Invalidate();
+			}
+		}
+	}
 
 	/// <summary>
 	/// Gets/Sets the <see cref="Texture2D"/> that will be rendered
@@ -191,7 +232,7 @@ public class dfTextureSprite : dfControl
 
 	#endregion
 
-	#region Unity events 
+	#region Unity events
 
 	public override void OnEnable()
 	{
@@ -235,7 +276,7 @@ public class dfTextureSprite : dfControl
 
 	protected override void OnRebuildRenderData()
 	{
-		
+
 		base.OnRebuildRenderData();
 
 		if( this.texture == null )
@@ -251,10 +292,10 @@ public class dfTextureSprite : dfControl
 		// using a different Material.mainTexture value.
 		if( renderMaterial == null )
 		{
-			renderMaterial = new UnityMaterial( material ) 
-			{ 
-				hideFlags = HideFlags.DontSave, 
-				name = material.name + " (copy)" 
+			renderMaterial = new UnityMaterial( material )
+			{
+				hideFlags = HideFlags.DontSave,
+				name = material.name + " (copy)"
 			};
 		}
 
@@ -292,9 +333,9 @@ public class dfTextureSprite : dfControl
 
 	#endregion
 
-	#region Private utility methods 
+	#region Private utility methods
 
-	private void disposeCreatedMaterial()
+	protected virtual void disposeCreatedMaterial()
 	{
 
 		if( createdRuntimeMaterial )
@@ -306,33 +347,61 @@ public class dfTextureSprite : dfControl
 
 	}
 
-	private void rebuildUV( dfRenderData renderData )
+	protected virtual void rebuildUV( dfRenderData renderBuffer )
 	{
 
-		var result = renderData.UV;
+		var result = renderBuffer.UV;
 
-		result.Add( new Vector2( 0, 1 ) );
-		result.Add( new Vector2( 1, 1 ) );
-		result.Add( new Vector2( 1, 0 ) );
-		result.Add( new Vector2( 0, 0 ) );
+		if( cropImage )
+		{
+
+			var w = texture.width;
+			var h = texture.height;
+
+			var left = Mathf.Max( 0, Mathf.Min( cropRect.x, w ) );
+			var right = Mathf.Max( 0, Mathf.Min( cropRect.xMax, w ) );
+			var bottom = Mathf.Max( 0, Mathf.Min( cropRect.y, h ) );
+			var top = Mathf.Max( 0, Mathf.Min( cropRect.yMax, h ) );
+
+			result.Add( new Vector2( left / w, top / h ) );
+			result.Add( new Vector2( right / w, top / h ) );
+			result.Add( new Vector2( right / w, bottom / h ) );
+			result.Add( new Vector2( left / w, bottom / h ) );
+
+		}
+		else
+		{
+			result.Add( new Vector2( 0, 1 ) );
+			result.Add( new Vector2( 1, 1 ) );
+			result.Add( new Vector2( 1, 0 ) );
+			result.Add( new Vector2( 0, 0 ) );
+		}
 
 		var temp = Vector2.zero;
 
 		if( flip.IsSet( dfSpriteFlip.FlipHorizontal ) )
 		{
-			temp = result[ 1 ]; result[ 1 ] = result[ 0 ]; result[ 0 ] = temp;
-			temp = result[ 3 ]; result[ 3 ] = result[ 2 ]; result[ 2 ] = temp;
+			temp = result[ 1 ];
+			result[ 1 ] = result[ 0 ];
+			result[ 0 ] = temp;
+			temp = result[ 3 ];
+			result[ 3 ] = result[ 2 ];
+			result[ 2 ] = temp;
 		}
 
 		if( flip.IsSet( dfSpriteFlip.FlipVertical ) )
 		{
-			temp = result[ 0 ]; result[ 0 ] = result[ 3 ]; result[ 3 ] = temp;
-			temp = result[ 1 ]; result[ 1 ] = result[ 2 ]; result[ 2 ] = temp;
+			temp = result[ 0 ];
+			result[ 0 ] = result[ 3 ];
+			result[ 3 ] = temp;
+			temp = result[ 1 ];
+			result[ 1 ] = result[ 2 ];
+			result[ 2 ] = temp;
 		}
 
 	}
 
-	private void doFill( dfRenderData renderData )
+	protected virtual void doFill( dfRenderData renderData )
 	{
 
 		var verts = renderData.Vertices;
@@ -347,13 +416,17 @@ public class dfTextureSprite : dfControl
 		{
 			if( fillDirection == dfFillDirection.Horizontal )
 			{
-				ul = 1; ur = 0;
-				bl = 2; br = 3;
+				ul = 1;
+				ur = 0;
+				bl = 2;
+				br = 3;
 			}
 			else
 			{
-				ul = 3; ur = 2;
-				bl = 0; br = 1;
+				ul = 3;
+				ur = 2;
+				bl = 0;
+				br = 1;
 			}
 		}
 
@@ -374,10 +447,35 @@ public class dfTextureSprite : dfControl
 
 	}
 
+	private Rect validateCropRect( Rect rect )
+	{
+
+		if( texture == null )
+			return new Rect();
+
+		var w = texture.width;
+		var h = texture.height;
+
+		var left = Mathf.Max( 0, Mathf.Min( rect.x, w ) );
+		var top = Mathf.Max( 0, Mathf.Min( rect.y, h ) );
+		var width = Mathf.Max( 0, Mathf.Min( rect.width, w ) );
+		var height = Mathf.Max( 0, Mathf.Min( rect.height, h ) );
+
+		var result = new Rect(
+			left,
+			top,
+			width,
+			height
+		);
+
+		return result;
+
+	}
+
 	protected internal virtual void OnTextureChanged( Texture value )
 	{
 
-		SignalHierarchy( "OnTextureChanged", value );
+		SignalHierarchy( "OnTextureChanged", this, value );
 
 		if( TextureChanged != null )
 		{
@@ -402,8 +500,8 @@ public class dfTextureSprite : dfControl
 			return;
 		}
 
-		material = new UnityMaterial( shader ) 
-		{ 
+		material = new UnityMaterial( shader )
+		{
 			name = "Default Texture Shader",
 			hideFlags = HideFlags.DontSave,
 			mainTexture = this.texture

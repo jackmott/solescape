@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -175,6 +175,57 @@ public class PropertyBindingEditor : Editor
 					dfEditorUtil.MarkUndo( binder, "Change TwoWay property" );
 					binder.TwoWay = twoWay;
 				}
+
+			}
+
+		}
+
+		using( dfEditorUtil.BeginGroup( "Automatic Binding" ) )
+		{
+
+			var autoBind = EditorGUILayout.Toggle( "Auto Bind", binder.AutoBind );
+			if( autoBind != binder.AutoBind )
+			{
+				dfEditorUtil.MarkUndo( binder, "Toggle AutoBind property" );
+				binder.AutoBind = autoBind;
+			}
+
+			var autoUnbind = EditorGUILayout.Toggle( "Auto Unbind", binder.AutoUnbind );
+			if( autoUnbind != binder.AutoUnbind )
+			{
+				dfEditorUtil.MarkUndo( binder, "Toggle AutoUnbind property" );
+				binder.AutoUnbind = autoUnbind;
+			}
+
+		}
+
+		if( Application.isPlaying )
+		{
+
+			using( dfEditorUtil.BeginGroup( "Debugging" ) )
+			{
+
+				EditorGUILayout.BeginHorizontal();
+				{
+
+					GUI.enabled = !binder.IsBound;
+					if( GUILayout.Button( "Bind" ) )
+					{
+						binder.Bind();
+					}
+
+					GUILayout.Space( 10 );
+
+					GUI.enabled = binder.IsBound;
+					if( GUILayout.Button( "Unbind" ) )
+					{
+						binder.Unbind();
+					}
+
+					GUI.enabled = true;
+
+				}
+				EditorGUILayout.EndHorizontal();
 
 			}
 

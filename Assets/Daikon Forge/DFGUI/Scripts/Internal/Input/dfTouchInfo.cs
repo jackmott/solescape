@@ -104,6 +104,8 @@ public struct dfTouchInfo
 
 	}
 
+#if FALSE
+
 	public static implicit operator UnityEngine.Touch( dfTouchInfo info )
 	{
 
@@ -140,6 +142,8 @@ public struct dfTouchInfo
 		return uT;
 
 	}
+
+#endif
 
 	#endregion
 

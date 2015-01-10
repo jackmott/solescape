@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -30,7 +30,7 @@ public class dfProgressBar : dfControl
 
 	#endregion
 
-	#region Protected serialized fields 
+	#region Protected serialized fields
 
 	[SerializeField]
 	protected dfAtlas atlas;
@@ -64,7 +64,7 @@ public class dfProgressBar : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by this control
@@ -155,7 +155,8 @@ public class dfProgressBar : dfControl
 			if( value != this.minValue )
 			{
 				this.minValue = value;
-				if( rawValue < value ) Value = value;
+				if( rawValue < value )
+					Value = value;
 				Invalidate();
 			}
 		}
@@ -172,7 +173,8 @@ public class dfProgressBar : dfControl
 			if( value != this.maxValue )
 			{
 				this.maxValue = value;
-				if( rawValue > value ) Value = value;
+				if( rawValue > value )
+					Value = value;
 				Invalidate();
 			}
 		}
@@ -220,7 +222,8 @@ public class dfProgressBar : dfControl
 	{
 		get
 		{
-			if( padding == null ) padding = new RectOffset();
+			if( padding == null )
+				padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -362,7 +365,7 @@ public class dfProgressBar : dfControl
 
 		Invalidate();
 
-		SignalHierarchy( "OnValueChanged", this.Value );
+		SignalHierarchy( "OnValueChanged", this, this.Value );
 
 		if( ValueChanged != null )
 		{
@@ -373,7 +376,7 @@ public class dfProgressBar : dfControl
 
 	#endregion
 
-	#region Rendering 
+	#region Rendering
 
 	protected override void OnRebuildRenderData()
 	{
@@ -512,8 +515,12 @@ public class dfProgressBar : dfControl
 		return rawValue;
 
 	}
+	private Vector3[] getEndPoints()
+	{
+		return getEndPoints( false );
+	}
 
-	private Vector3[] getEndPoints( bool convertToWorld = false )
+	private Vector3[] getEndPoints( bool convertToWorld )
 	{
 
 		var offset = pivot.TransformToUpperLeft( Size );
@@ -547,8 +554,10 @@ public class dfProgressBar : dfControl
 		// if not then return the endpoint
 		if( clamp )
 		{
-			if( t < 0 ) return start;
-			if( t > d ) return end;
+			if( t < 0 )
+				return start;
+			if( t > d )
+				return end;
 		}
 
 		// get the distance to move from point a

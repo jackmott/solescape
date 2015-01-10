@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 
 /* 
  * @file dfEnumerations.cs 
@@ -12,6 +12,21 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+
+/// <summary>
+/// Indicates how clipping should be performed
+/// </summary>
+public enum dfClippingMethod
+{
+	/// <summary>
+	/// Clipping will be performed on the CPU
+	/// </summary>
+	Software,
+	/// <summary>
+	/// Clipping will be performed on the GPU
+	/// </summary>
+	Shader
+}
 
 /// <summary>
 /// Indicates the direction that the animation should play in 

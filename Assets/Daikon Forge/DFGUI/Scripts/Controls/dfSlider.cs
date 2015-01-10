@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -75,7 +75,7 @@ public class dfSlider : dfControl
 
 	#endregion
 
-	#region Public properties 
+	#region Public properties
 
 	/// <summary>
 	/// The <see cref="dfAtlas">Texture Atlas</see> containing the images used by this control
@@ -124,15 +124,16 @@ public class dfSlider : dfControl
 	/// <summary>
 	/// Gets/Sets the lower limit of the range of values this Slider can return
 	/// </summary>
-	public float MinValue 
-	{ 
+	public float MinValue
+	{
 		get { return this.minValue; }
 		set
 		{
 			if( value != this.minValue )
 			{
 				this.minValue = value;
-				if( rawValue < value ) Value = value;
+				if( rawValue < value )
+					Value = value;
 				updateValueIndicators( rawValue );
 				Invalidate();
 			}
@@ -150,7 +151,8 @@ public class dfSlider : dfControl
 			if( value != this.maxValue )
 			{
 				this.maxValue = value;
-				if( rawValue > value ) Value = value;
+				if( rawValue > value )
+					Value = value;
 				updateValueIndicators( rawValue );
 				Invalidate();
 			}
@@ -294,7 +296,8 @@ public class dfSlider : dfControl
 	{
 		get
 		{
-			if( fillPadding == null ) fillPadding = new RectOffset();
+			if( fillPadding == null )
+				fillPadding = new RectOffset();
 			return this.fillPadding;
 		}
 		set
@@ -347,22 +350,27 @@ public class dfSlider : dfControl
 
 	#endregion
 
-	#region Event-handling and notification 
+	#region Event-handling and notification
 
 	protected internal override void OnKeyDown( dfKeyEventArgs args )
 	{
+
+		if( args.Used )
+		{
+			return;
+		}
 
 		if( Orientation == dfControlOrientation.Horizontal )
 		{
 			if( args.KeyCode == KeyCode.LeftArrow )
 			{
-				this.Value -= ScrollSize;
+				this.Value -= ( this.rightToLeft ) ? -scrollSize : scrollSize;
 				args.Use();
 				return;
 			}
 			else if( args.KeyCode == KeyCode.RightArrow )
 			{
-				this.Value += ScrollSize;
+				this.Value += ( this.rightToLeft ) ? -scrollSize : scrollSize;
 				args.Use();
 				return;
 			}
@@ -371,13 +379,13 @@ public class dfSlider : dfControl
 		{
 			if( args.KeyCode == KeyCode.UpArrow )
 			{
-				this.Value -= ScrollSize;
+				this.Value += ScrollSize;
 				args.Use();
 				return;
 			}
 			else if( args.KeyCode == KeyCode.DownArrow )
 			{
-				this.Value += ScrollSize;
+				this.Value -= ScrollSize;
 				args.Use();
 				return;
 			}
@@ -416,7 +424,7 @@ public class dfSlider : dfControl
 		args.Use();
 
 		Signal( "OnMouseWheel", args );
-		RaiseEvent( "MouseWheel", this, args );
+		raiseMouseWheelEvent( args );
 
 	}
 
@@ -432,8 +440,8 @@ public class dfSlider : dfControl
 		this.Value = getValueFromMouseEvent( args );
 		args.Use();
 
-		Signal( "OnMouseMove", args );
-		RaiseEvent( "MouseMove", this, args );
+		Signal( "OnMouseMove", this, args );
+		raiseMouseMoveEvent( args );
 
 	}
 
@@ -451,8 +459,8 @@ public class dfSlider : dfControl
 		this.Value = getValueFromMouseEvent( args );
 		args.Use();
 
-		Signal( "OnMouseDown", args );
-		RaiseEvent( "MouseDown", this, args );
+		Signal( "OnMouseDown", this, args );
+		raiseMouseDownEvent( args );
 
 	}
 
@@ -468,7 +476,7 @@ public class dfSlider : dfControl
 		Invalidate();
 		updateValueIndicators( rawValue );
 
-		SignalHierarchy( "OnValueChanged", this.Value );
+		SignalHierarchy( "OnValueChanged", this, this.Value );
 
 		if( ValueChanged != null )
 		{
@@ -479,7 +487,7 @@ public class dfSlider : dfControl
 
 	#endregion
 
-	#region Overrides 
+	#region Overrides
 
 	public override bool CanFocus
 	{
@@ -542,6 +550,37 @@ public class dfSlider : dfControl
 	private void updateValueIndicators( float rawValue )
 	{
 
+		if( Mathf.Approximately( this.MinValue, this.MaxValue ) )
+		{
+
+			// Having the same Min and Max values is not a valid condition, and will result in 
+			// float.NaN values
+
+			if( Application.isEditor )
+			{
+				Debug.LogWarning( "Slider Min and Max values cannot be the same", this );
+			}
+
+			if( thumb != null )
+				thumb.IsVisible = false;
+
+			if( fillIndicator != null )
+				fillIndicator.IsVisible = false;
+
+			return;
+
+		}
+		else
+		{
+
+			if( thumb != null )
+				thumb.IsVisible = true;
+
+			if( fillIndicator != null )
+				fillIndicator.IsVisible = true;
+
+		}
+
 		if( thumb != null )
 		{
 
@@ -599,7 +638,7 @@ public class dfSlider : dfControl
 		fillIndicator.RelativePosition = indicatorPosition;
 
 	}
-		 
+
 	private float getValueFromMouseEvent( dfMouseEventArgs args )
 	{
 
@@ -612,7 +651,7 @@ public class dfSlider : dfControl
 			start = endPoints[ 1 ];
 			end = endPoints[ 0 ];
 		}
-		
+
 		var plane = new Plane( transform.TransformDirection( Vector3.back ), start );
 
 		var ray = args.Ray;
@@ -633,7 +672,12 @@ public class dfSlider : dfControl
 
 	}
 
-	private Vector3[] getEndPoints( bool convertToWorld = false )
+	private Vector3[] getEndPoints()
+	{
+		return getEndPoints( false );
+	}
+
+	private Vector3[] getEndPoints( bool convertToWorld )
 	{
 
 		var offset = pivot.TransformToUpperLeft( Size );
@@ -673,8 +717,10 @@ public class dfSlider : dfControl
 		// if not then return the endpoint
 		if( clamp )
 		{
-			if( t < 0 ) return start;
-			if( t > d ) return end;
+			if( t < 0 )
+				return start;
+			if( t > d )
+				return end;
 		}
 
 		// get the distance to move from point a

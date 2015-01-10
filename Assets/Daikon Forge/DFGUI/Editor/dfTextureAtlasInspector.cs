@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -29,6 +29,70 @@ public class dfTextureAtlasInspector : Editor
 	#endregion
 
 	#region Atlas creation
+	
+	//
+	// NOTE: If you want to be able to copy sprite border information between atlases, uncomment the following
+	// function, will will expose a "Copy Sprite Borders" option when right-clicking the atlas in the project view.
+	//
+	//[MenuItem( "Assets/Daikon Forge/Texture Atlas/Copy Sprite Borders", false, 1 )]
+	//public static void CopySpriteBorders()
+	//{
+
+	//	var selection = Selection
+	//		.GetFiltered( typeof( dfAtlas ), SelectionMode.Assets )
+	//		.Cast<dfAtlas>()
+	//		.ToArray();
+
+	//	if( selection == null || selection.Length == 0 )
+	//	{
+	//		EditorUtility.DisplayDialog( "Copy Sprite Borders", "You must select the source Atlas first", "OK" );
+	//		return;
+	//	}
+
+	//	selectTextureAtlas( "Select Target Atlas", ( targetAtlas ) =>
+	//	{
+
+	//		var sourceAtlas = selection[ 0 ];
+
+	//		for( int i = 0; i < sourceAtlas.Items.Count; i++ )
+	//		{
+
+	//			var sourceSprite = sourceAtlas.Items[ i ];
+	//			var targetSprite = targetAtlas[ sourceSprite.name ];
+
+	//			if( targetSprite != null )
+	//			{
+	//				Debug.Log( "Copying border: " + sourceSprite.name + ", " + sourceSprite.border );
+	//				targetSprite.border = sourceSprite.border;
+	//			}
+
+	//		}
+
+	//		dfEditorUtil.MarkUndo( targetAtlas, "Copy sprite borders" );
+
+	//		#region Delay execution of object selection to work around a Unity issue
+
+	//		// Declared with null value to eliminate "uninitialized variable" 
+	//		// compiler error in lambda below.
+	//		EditorApplication.CallbackFunction callback = null;
+
+	//		callback = () =>
+	//		{
+	//			EditorUtility.FocusProjectWindow();
+	//			var go = targetAtlas.gameObject;
+	//			Selection.objects = new Object[] { go };
+	//			EditorGUIUtility.PingObject( go );
+	//			EditorApplication.delayCall -= callback;
+	//		};
+
+	//		EditorApplication.delayCall += callback;
+
+	//		#endregion
+
+
+	//	} );
+
+	//}
 
 	// Slowly migrating menu option locations, will remove older ones as 
 	// users become used to the new locations
@@ -201,6 +265,7 @@ public class dfTextureAtlasInspector : Editor
 			atlas.Items.Sort();
 			atlas.RebuildIndexes();
 
+			EditorUtility.SetDirty( atlas.gameObject );
 			EditorUtility.SetDirty( atlas );
 			EditorUtility.SetDirty( atlas.Material );
 
@@ -327,11 +392,13 @@ public class dfTextureAtlasInspector : Editor
 			Debug.LogError( "Failed to obtain import settings for texture: " + path );
 		}
 
+		importer.ClearPlatformTextureSettings( "iPhone" );
+
 		var settings = new TextureImporterSettings();
 
 		importer.ReadTextureSettings( settings );
 		settings.mipmapEnabled = false;
-		settings.readable = false;
+		settings.readable = true;
 		settings.maxTextureSize = 4096;
 		settings.textureFormat = TextureImporterFormat.AutomaticTruecolor;
 		settings.wrapMode = TextureWrapMode.Clamp;
@@ -351,6 +418,38 @@ public class dfTextureAtlasInspector : Editor
 	}
 
 	#endregion
+
+	private static void selectTextureAtlas( string title, Action<dfAtlas> callback )
+	{
+
+		var savedColor = GUI.color;
+
+		try
+		{
+
+			dfPrefabSelectionDialog.SelectionCallback selectionCallback = delegate( GameObject item )
+			{
+				var newAtlas = ( item == null ) ? null : item.GetComponent<dfAtlas>();
+				if( newAtlas != null )
+				{
+					callback( newAtlas );
+				}
+			};
+
+			dfEditorUtil.DelayedInvoke( (System.Action)( () =>
+			{
+				var dialog = dfPrefabSelectionDialog.Show( title, typeof( dfAtlas ), selectionCallback, dfTextureAtlasInspector.DrawAtlasPreview, null );
+				dialog.previewSize = 200;
+			} ) );
+
+		}
+		finally
+		{
+			GUI.enabled = true;
+			GUI.color = savedColor;
+		}
+
+	}
 
 	public static int MaxAtlasSize
 	{
@@ -428,7 +527,7 @@ public class dfTextureAtlasInspector : Editor
 			EditorGUILayout.BeginHorizontal();
 			{
 
-				if( GUILayout.Button( "Cancel" ) )
+				if( GUILayout.Button( "Back to Atlas" ) )
 				{
 					SelectedSprite = null;
 				}
@@ -807,6 +906,12 @@ public class dfTextureAtlasInspector : Editor
 		dfEditorUtil.DrawSeparator();
 
 		var atlasPath = AssetDatabase.GetAssetPath( atlas.Texture );
+		if( string.IsNullOrEmpty( atlasPath ) || !File.Exists( atlasPath ) )
+		{
+			EditorGUILayout.HelpBox( "Could not find the path associated with the Atlas texture", MessageType.Error );
+			return;
+		}
+
 		var atlasModified = File.GetLastWriteTime( atlasPath );
 
 		var modifiedSprites = new List<dfAtlas.ItemInfo>();
@@ -909,7 +1014,12 @@ public class dfTextureAtlasInspector : Editor
 
 	}
 
-	protected Vector2 EditInt2( string groupLabel, string label1, string label2, Vector2 value, int labelWidth = 95, bool enabled = true )
+	protected Vector2 EditInt2( string groupLabel, string label1, string label2, Vector2 value )
+	{
+		return EditInt2( groupLabel, label1, label2, value, 95, true );
+	}
+
+	protected Vector2 EditInt2( string groupLabel, string label1, string label2, Vector2 value, int labelWidth, bool enabled )
 	{
 
 		try
@@ -955,7 +1065,12 @@ public class dfTextureAtlasInspector : Editor
 
 	}
 
-	protected RectOffset EditRectOffset( string groupLabel, string leftLabel, string topLabel, string rightLabel, string bottomLabel, RectOffset value, int labelWidth = 95 )
+	protected RectOffset EditRectOffset( string groupLabel, string leftLabel, string topLabel, string rightLabel, string bottomLabel, RectOffset value )
+	{
+		return EditRectOffset( groupLabel, leftLabel, topLabel, rightLabel, bottomLabel, value, 95 );
+	}
+
+	protected RectOffset EditRectOffset( string groupLabel, string leftLabel, string topLabel, string rightLabel, string bottomLabel, RectOffset value, int labelWidth )
 	{
 
 		EditorGUI.BeginChangeCheck();
@@ -994,7 +1109,12 @@ public class dfTextureAtlasInspector : Editor
 
 	}
 
-	protected internal void EditSprite( string label, int labelWidth = 90 )
+	protected internal void EditSprite( string label )
+	{
+		EditSprite( label, 90 );
+	}
+
+	protected internal void EditSprite( string label, int labelWidth )
 	{
 
 		var atlas = target as dfAtlas;

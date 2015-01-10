@@ -1,11 +1,5 @@
 ﻿// @cond DOXY_IGNORE
-/* Copyright 2013 Daikon Forge */
-
-using UnityEngine;
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
+/* Copyright 2013-2014 Daikon Forge */
 
 /// <summary>
 /// This is a marker interface used by the Editor components to 
@@ -13,8 +7,12 @@ using System.Collections.Generic;
 /// </summary>
 public interface IDataBindingComponent
 {
+
+	bool IsBound { get; }
+
 	void Bind();
 	void Unbind();
+
 }
 
 // @endcond DOXY_IGNORE

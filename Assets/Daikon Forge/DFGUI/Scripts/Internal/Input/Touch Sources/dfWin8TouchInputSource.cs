@@ -149,11 +149,11 @@ public class dfWin8TouchInputSource : IDFTouchInputSource
 
 	private void postProcessTouches()
 	{
-		 
+
 		var index = 0;
 		while( index < tracking.Count )
 		{
-				
+
 			if( tracking[ index ].Phase == TouchPhase.Ended )
 			{
 				tracking.RemoveAt( index );
@@ -169,7 +169,7 @@ public class dfWin8TouchInputSource : IDFTouchInputSource
 	}
 
 	#endregion
-	
+
 	#region Private utility functions
 
 	private int wndProc( IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam )
@@ -242,7 +242,7 @@ public class dfWin8TouchInputSource : IDFTouchInputSource
 
 	private dfTouchTrackingInfo findTouch( int existingID )
 	{
-		
+
 		for( int i = 0; i < tracking.Count; i++ )
 		{
 			if( tracking[ i ].FingerID == existingID )

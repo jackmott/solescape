@@ -43,12 +43,12 @@ public class dfResizeGesture : dfGestureBase
 
 	#region Input notifications
 
-	protected void OnMultiTouchEnd()
+	public void OnMultiTouchEnd()
 	{
 		endGesture();
 	}
 
-	protected void OnMultiTouch( dfControl sender, dfTouchEventArgs args )
+	public void OnMultiTouch( dfControl sender, dfTouchEventArgs args )
 	{
 
 		var touches = args.Touches;
@@ -99,7 +99,7 @@ public class dfResizeGesture : dfGestureBase
 
 	#region Private utility methods 
 
-	private Vector2 getCenter( List<Touch> list )
+	private Vector2 getCenter( List<dfTouchInfo> list )
 	{
 
 		var accum = Vector2.zero;
@@ -113,7 +113,7 @@ public class dfResizeGesture : dfGestureBase
 
 	}
 
-	private bool isResizeMovement( List<Touch> list )
+	private bool isResizeMovement( List<dfTouchInfo> list )
 	{
 
 		if( list.Count < 2 )

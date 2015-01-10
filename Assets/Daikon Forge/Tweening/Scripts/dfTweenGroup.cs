@@ -71,9 +71,21 @@ public class dfTweenGroup : dfTweenPlayableBase
 	[SerializeField]
 	protected bool autoStart = false;
 
+	[SerializeField]
+	protected float delayBeforeStarting = 0f;
+
 	#endregion
 
 	#region Public properties 
+
+	/// <summary>
+	/// The amount of time in seconds after Play() is called before the tween will start animating
+	/// </summary>
+	public float StartDelay
+	{
+		get { return this.delayBeforeStarting; }
+		set { this.delayBeforeStarting = value; }
+	}
 
 	/// <summary>
 	/// The collection of tween components
@@ -245,6 +257,15 @@ public class dfTweenGroup : dfTweenPlayableBase
 	private IEnumerator runSequence()
 	{
 
+		if( delayBeforeStarting > 0f )
+		{
+			var timeout = Time.realtimeSinceStartup + delayBeforeStarting;
+			while( Time.realtimeSinceStartup < timeout )
+			{
+				yield return null;
+			}
+		}
+
 		for( var i = 0; i < Tweens.Count; i += 1 )
 		{
 
@@ -265,6 +286,15 @@ public class dfTweenGroup : dfTweenPlayableBase
 	[HideInInspector]
 	private IEnumerator runConcurrent()
 	{
+
+		if( delayBeforeStarting > 0f )
+		{
+			var timeout = Time.realtimeSinceStartup + delayBeforeStarting;
+			while( Time.realtimeSinceStartup < timeout )
+			{
+				yield return null;
+			}
+		}
 
 		for( int i = 0; i < Tweens.Count; i++ )
 		{

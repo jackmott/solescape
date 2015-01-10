@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -19,44 +19,44 @@ using System.Collections.Generic;
 public class dfSlicedSprite : dfSprite
 {
 
-	#region Static constants 
+	#region Static constants
 
 	private static int[] triangleIndices = new int[]
-	{
-		0, 1, 2, 2, 3, 0,			// Top left quad
-		4, 5, 6, 6, 7, 4,			// Top right quad
-		8, 9, 10, 10, 11, 8,		// Bottom left quad
-		12, 13, 14, 14, 15, 12,		// Bottom right quad
-		1, 4, 7, 7, 2, 1,			// Top middle quad
-		9, 12, 15, 15, 10, 9,		// Bottom middle quad
-		3, 2, 9, 9, 8, 3,			// Left middle quad
-		7, 6, 13, 13, 12, 7,		// Right middle quad
-		2, 7, 12, 12, 9, 2			// Center quad
-	};
+{
+	0, 1, 2, 2, 3, 0,			// Top left quad
+	4, 5, 6, 6, 7, 4,			// Top right quad
+	8, 9, 10, 10, 11, 8,		// Bottom left quad
+	12, 13, 14, 14, 15, 12,		// Bottom right quad
+	1, 4, 7, 7, 2, 1,			// Top middle quad
+	9, 12, 15, 15, 10, 9,		// Bottom middle quad
+	3, 2, 9, 9, 8, 3,			// Left middle quad
+	7, 6, 13, 13, 12, 7,		// Right middle quad
+	2, 7, 12, 12, 9, 2			// Center quad
+};
 
 	private static int[][] horzFill = new int[][]
-	{
-		new int[] { 0, 1, 4, 5 },
-		new int[] { 3, 2, 7, 6 },
-		new int[] { 8, 9, 12, 13 },
-		new int[] { 11, 10, 15, 14 }
-	};
+{
+	new int[] { 0, 1, 4, 5 },
+	new int[] { 3, 2, 7, 6 },
+	new int[] { 8, 9, 12, 13 },
+	new int[] { 11, 10, 15, 14 }
+};
 
 	private static int[][] vertFill = new int[][]
-	{
-		new int[] { 11, 8, 3, 0 },
-		new int[] { 10, 9, 2, 1 },
-		new int[] { 15, 12, 7, 4 },
-		new int[] { 14, 13, 6,  5 }
-	};
+{
+	new int[] { 11, 8, 3, 0 },
+	new int[] { 10, 9, 2, 1 },
+	new int[] { 15, 12, 7, 4 },
+	new int[] { 14, 13, 6,  5 }
+};
 
 	private static int[][] fillIndices = new int[][]
-	{
-		new int[] { 0, 0, 0, 0 },
-		new int[] { 0, 0, 0, 0 },
-		new int[] { 0, 0, 0, 0 },
-		new int[] { 0, 0, 0, 0 }
-	};
+{
+	new int[] { 0, 0, 0, 0 },
+	new int[] { 0, 0, 0, 0 },
+	new int[] { 0, 0, 0, 0 },
+	new int[] { 0, 0, 0, 0 }
+};
 
 	private static Vector3[] verts = new Vector3[ 16 ];
 	private static Vector2[] uv = new Vector2[ 16 ];
@@ -105,8 +105,11 @@ public class dfSlicedSprite : dfSprite
 	internal new static void renderSprite( dfRenderData renderData, RenderOptions options )
 	{
 
+		if( options.fillAmount <= float.Epsilon )
+			return;
+
 #if UNITY_EDITOR
-		
+
 		var atlas = options.atlas;
 		if( atlas == null )
 			throw new NullReferenceException( "The Texture Atlas cannot be null" );
@@ -126,7 +129,7 @@ public class dfSlicedSprite : dfSprite
 		rebuildUV( renderData, options );
 		rebuildColors( renderData, options );
 
-		if( options.fillAmount < 1f )
+		if( options.fillAmount < 1f - float.Epsilon )
 		{
 			doFill( renderData, options );
 		}
@@ -278,7 +281,7 @@ public class dfSlicedSprite : dfSprite
 		float meshRight = Mathf.Ceil( options.size.x );
 		float meshBottom = Mathf.Ceil( -options.size.y );
 
-		#region Borders 
+		#region Borders
 
 		var spriteInfo = options.spriteInfo;
 		float borderLeft = spriteInfo.border.left;
@@ -383,14 +386,22 @@ public class dfSlicedSprite : dfSprite
 
 				if( options.flip.IsSet( dfSpriteFlip.FlipHorizontal ) )
 				{
-					temp = uv[ i + 0 ]; uv[ i + 0 ] = uv[ i + 1 ]; uv[ i + 1 ] = temp;
-					temp = uv[ i + 2 ]; uv[ i + 2 ] = uv[ i + 3 ]; uv[ i + 3 ] = temp;
+					temp = uv[ i + 0 ];
+					uv[ i + 0 ] = uv[ i + 1 ];
+					uv[ i + 1 ] = temp;
+					temp = uv[ i + 2 ];
+					uv[ i + 2 ] = uv[ i + 3 ];
+					uv[ i + 3 ] = temp;
 				}
 
 				if( options.flip.IsSet( dfSpriteFlip.FlipVertical ) )
 				{
-					temp = uv[ i + 0 ]; uv[ i + 0 ] = uv[ i + 3 ]; uv[ i + 3 ] = temp;
-					temp = uv[ i + 1 ]; uv[ i + 1 ] = uv[ i + 2 ]; uv[ i + 2 ] = temp;
+					temp = uv[ i + 0 ];
+					uv[ i + 0 ] = uv[ i + 3 ];
+					uv[ i + 3 ] = temp;
+					temp = uv[ i + 1 ];
+					uv[ i + 1 ] = uv[ i + 2 ];
+					uv[ i + 2 ] = temp;
 				}
 
 			}

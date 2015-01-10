@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 /// Generic callback handler with reference to the control that raised the event
 /// </summary>
 /// <param name="control"></param>
-[dfEventCategory( "General")]
+[dfEventCategory( "General" )]
 public delegate void ControlCallbackHandler( dfControl control );
 
 /// <summary>
@@ -107,7 +107,7 @@ public class dfControlEventArgs
 
 	/// <summary> The dfControl instance that this event was 
 	/// originally generated for </summary>
-	public dfControl Source { get; private set; }
+	public dfControl Source { get; internal set; }
 
 	/// <summary> Indicates whether this event has already been 
 	/// processed by an event subscriber </summary>
@@ -370,13 +370,13 @@ public class dfTouchEventArgs : dfMouseEventArgs
 	/// <summary>
 	/// The Touch event data
 	/// </summary>
-	public Touch Touch { get; private set; }
+	public dfTouchInfo Touch { get; private set; }
 
 	/// <summary>
 	/// If the event is a multi-touch event, contains a Touch record for each 
 	/// touch currently acting on the control
 	/// </summary>
-	public List<Touch> Touches { get; private set; }
+	public List<dfTouchInfo> Touches { get; private set; }
 
 	/// <summary>
 	/// Indicates whether the current event is a multi-touch event
@@ -391,16 +391,21 @@ public class dfTouchEventArgs : dfMouseEventArgs
 	/// <param name="Source">The <see cref="dfControl"/> that originally received this event notification</param>
 	/// <param name="touch">A <see cref="Touch" /> record encapsulating the data describing the touch event. </param>
 	/// <param name="ray">The <see cref="Ray"/> from the screen mouse location through the <paramref name="Source"/> control</param>
-	public dfTouchEventArgs( dfControl Source, Touch touch, Ray ray )
+	public dfTouchEventArgs( dfControl Source, dfTouchInfo touch, Ray ray )
 		: base( Source, dfMouseButtons.Left, touch.tapCount, ray, touch.position, 0f )
 	{
 
 		this.Touch = touch;
-		this.Touches = new List<Touch>() { touch };
+		this.Touches = new List<dfTouchInfo>() { touch };
 
-		if( touch.deltaTime > float.Epsilon )
+		var deltaTime = Time.deltaTime;
+		if( touch.deltaTime > float.Epsilon && deltaTime > float.Epsilon )
 		{
-			this.MoveDelta = touch.deltaPosition * ( Time.deltaTime / touch.deltaTime );
+			this.MoveDelta = touch.deltaPosition * ( deltaTime / touch.deltaTime );
+		}
+		else
+		{
+			this.MoveDelta = touch.deltaPosition;
 		}
 
 	}
@@ -409,7 +414,7 @@ public class dfTouchEventArgs : dfMouseEventArgs
 	/// <param name="source">The <see cref="dfControl"/> that originally received this event notification</param>
 	/// <param name="touches">A List of Touch events active for the Source control. </param>
 	/// <param name="ray">The <see cref="Ray"/> from the first touch location through the <paramref name="Source"/> control</param>
-	public dfTouchEventArgs( dfControl source, List<Touch> touches, Ray ray )
+	public dfTouchEventArgs( dfControl source, List<dfTouchInfo> touches, Ray ray )
 		: this( source, touches.First(), ray )
 	{
 		this.Touches = touches;

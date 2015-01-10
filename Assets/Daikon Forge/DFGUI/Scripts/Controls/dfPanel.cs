@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 
 using System;
@@ -105,7 +105,8 @@ public class dfPanel : dfControl
 	{
 		get
 		{
-			if( this.padding == null ) this.padding = new RectOffset();
+			if( this.padding == null )
+				this.padding = new RectOffset();
 			return this.padding;
 		}
 		set
@@ -129,6 +130,16 @@ public class dfPanel : dfControl
 		this.BackgroundSprite = getLocalizedValue( this.backgroundSprite );
 	}
 
+	/// <summary>
+	/// Returns the padding used when clipping is enabled and 
+	/// the renderer is using shader-based clipping
+	/// </summary>
+	/// <returns></returns>
+	protected internal override RectOffset GetClipPadding()
+	{
+		return this.padding ?? dfRectOffsetExtensions.Empty;
+	}
+
 	protected internal override Plane[] GetClippingPlanes()
 	{
 
@@ -149,12 +160,12 @@ public class dfPanel : dfControl
 		corners[ 2 ] += right * padding.left * p2u + up * padding.bottom * p2u;
 
 		return new Plane[]
-			{
-				new Plane( right, corners[ 0 ] ),
-				new Plane( left, corners[ 1 ] ),
-				new Plane( up, corners[ 2 ] ),
-				new Plane( down, corners[ 0 ] )
-			};
+		{
+			new Plane( right, corners[ 0 ] ),
+			new Plane( left, corners[ 1 ] ),
+			new Plane( up, corners[ 2 ] ),
+			new Plane( down, corners[ 0 ] )
+		};
 
 	}
 
@@ -209,7 +220,7 @@ public class dfPanel : dfControl
 
 	#endregion
 
-	#region Public methods 
+	#region Public methods
 
 	/// <summary>
 	/// Resizes the panel to ensure that it encompasses all child controls
@@ -273,4 +284,3 @@ public class dfPanel : dfControl
 	#endregion
 
 }
-

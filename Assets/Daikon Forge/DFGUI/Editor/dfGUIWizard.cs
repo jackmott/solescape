@@ -1,4 +1,4 @@
-/* Copyright 2013 Daikon Forge */
+/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
@@ -156,6 +156,7 @@ public class dfGUIWizard : EditorWindow
 		dfGUIManager guiManager = go.AddComponent<dfGUIManager>();
 		guiManager.RenderCamera = cam;
 		guiManager.PixelPerfectMode = pixelPerfect;
+		guiManager.UIScaleLegacyMode = false;
 
 		dfInputManager inputManager = go.GetComponent<dfInputManager>();
 		inputManager.RenderCamera = cam;
@@ -163,6 +164,8 @@ public class dfGUIWizard : EditorWindow
 		inputManager.JoystickClickButton = joystickClickButton;
 		inputManager.HorizontalAxis = horizontalAxis;
 		inputManager.VerticalAxis = verticalAxis;
+		inputManager.HoverStartDelay = 0f;
+		inputManager.HoverNotificationFrequency = 0f;
 
 #if WEB_PLAYER
 		guiManager.FixedHeight = PlayerSettings.defaultWebScreenHeight;

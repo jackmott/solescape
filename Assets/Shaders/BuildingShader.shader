@@ -1,7 +1,7 @@
 // Shader created with Shader Forge Beta 0.23 
 // Shader Forge (c) Joachim Holmer - http://www.acegikmo.com/shaderforge/
 // Note: Manually altering this data may prevent you from opening it in Shader Forge
-/*SF_DATA;ver:0.23;sub:START;pass:START;ps:lgpr:1,nrmq:1,limd:1,blpr:1,bsrc:3,bdst:7,culm:0,dpts:2,wrdp:True,uamb:True,mssp:False,ufog:False,aust:False,igpj:True,qofs:0,lico:1,qpre:3,flbk:Transparent/Diffuse,rntp:2,lmpd:False,lprd:False,enco:False,frtr:True,vitr:True,dbil:False,rmgx:True,hqsc:True,hqlp:False,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.5,fgcg:0.5,fgcb:0.5,fgca:1,fgde:0.01,fgrn:0,fgrf:300,ofsf:0,ofsu:0;n:type:ShaderForge.SFN_Final,id:1,x:32719,y:32712|diff-75-OUT,spec-148-OUT,normal-15-RGB,emission-164-OUT,alpha-39-OUT;n:type:ShaderForge.SFN_Tex2d,id:3,x:33507,y:32539,ptlb:MainTex,tex:157fae5bbddbdff47b5ab6aadcf967cc,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:9,x:33371,y:33207,ptlb:Illumin (A),tex:42832027376e5684d85b8bcf751ada7a,ntxv:2,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:15,x:33399,y:32906,ptlb:BumpMap,tex:ba877fc6b2d9f20439134af449b664a2,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Color,id:21,x:33621,y:32693,ptlb:Specular Color,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Slider,id:27,x:33569,y:32862,ptlb:Shininess,min:0,cur:24.01224,max:100;n:type:ShaderForge.SFN_Multiply,id:39,x:33073,y:32639|A-3-A,B-74-A;n:type:ShaderForge.SFN_Color,id:74,x:33357,y:32389,ptlb:Color,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Multiply,id:75,x:33049,y:32461|A-74-RGB,B-3-RGB;n:type:ShaderForge.SFN_Multiply,id:102,x:33224,y:33103|A-127-RGB,B-9-RGB;n:type:ShaderForge.SFN_Color,id:127,x:33569,y:33071,ptlb:IllumColor,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Add,id:148,x:33240,y:32745|A-21-RGB,B-27-OUT;n:type:ShaderForge.SFN_Multiply,id:164,x:32988,y:33103|A-102-OUT,B-3-RGB;proporder:74-21-27-127-3-9-15;pass:END;sub:END;*/
+/*SF_DATA;ver:0.23;sub:START;pass:START;ps:lgpr:1,nrmq:1,limd:1,blpr:1,bsrc:3,bdst:7,culm:0,dpts:2,wrdp:True,uamb:True,mssp:False,ufog:False,aust:False,igpj:True,qofs:0,lico:1,qpre:3,flbk:Transparent/Diffuse,rntp:2,lmpd:False,lprd:False,enco:False,frtr:True,vitr:True,dbil:False,rmgx:True,hqsc:True,hqlp:False,fgom:False,fgoc:False,fgod:False,fgor:False,fgmd:0,fgcr:0.5,fgcg:0.5,fgcb:0.5,fgca:1,fgde:0.01,fgrn:0,fgrf:300,ofsf:0,ofsu:0;n:type:ShaderForge.SFN_Final,id:1,x:32719,y:32712|diff-75-OUT,spec-148-OUT,normal-15-RGB,emission-164-OUT,alpha-39-OUT;n:type:ShaderForge.SFN_Tex2d,id:3,x:33507,y:32539,ptlb:MainTex,tex:157fae5bbddbdff47b5ab6aadcf967cc,ntxv:0,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:9,x:33371,y:33207,ptlb:Illumin (A),tex:42832027376e5684d85b8bcf751ada7a,ntxv:2,isnm:False;n:type:ShaderForge.SFN_Tex2d,id:15,x:33399,y:32906,ptlb:BumpMap,tex:ba877fc6b2d9f20439134af449b664a2,ntxv:3,isnm:True;n:type:ShaderForge.SFN_Color,id:21,x:33647,y:32658,ptlb:Specular Color,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Slider,id:27,x:33569,y:32862,ptlb:Shininess,min:0,cur:0,max:100;n:type:ShaderForge.SFN_Multiply,id:39,x:33073,y:32639|A-3-A,B-74-A;n:type:ShaderForge.SFN_Color,id:74,x:33357,y:32389,ptlb:Color,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Multiply,id:75,x:33049,y:32461|A-74-RGB,B-3-RGB;n:type:ShaderForge.SFN_Multiply,id:102,x:33224,y:33103|A-127-RGB,B-9-RGB;n:type:ShaderForge.SFN_Color,id:127,x:33569,y:33071,ptlb:IllumColor,c1:1,c2:1,c3:1,c4:1;n:type:ShaderForge.SFN_Add,id:148,x:33211,y:32770|A-21-RGB,B-27-OUT;n:type:ShaderForge.SFN_Multiply,id:164,x:32988,y:33103|A-102-OUT,B-3-RGB;proporder:74-21-27-127-3-9-15;pass:END;sub:END;*/
 
 Shader "Shader Forge/BuildingShader" {
     Properties {
@@ -74,8 +74,8 @@ Shader "Shader Forge/BuildingShader" {
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.binormalDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 /////// Normals:
-                float2 node_172 = i.uv0;
-                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_172.rg, _BumpMap))).rgb;
+                float2 node_181 = i.uv0;
+                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_181.rg, _BumpMap))).rgb;
                 float3 normalDirection =  mul( normalLocal, tangentTransform ); // Perturbed normals
                 float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
                 float3 halfDirection = normalize(viewDirection+lightDirection);
@@ -86,8 +86,8 @@ Shader "Shader Forge/BuildingShader" {
                 float NdotL = dot( normalDirection, lightDirection );
                 float3 diffuse = max( 0.0, NdotL) * attenColor + UNITY_LIGHTMODEL_AMBIENT.xyz;
 ////// Emissive:
-                float4 node_3 = tex2D(_MainTex,TRANSFORM_TEX(node_172.rg, _MainTex));
-                float3 emissive = ((_IllumColor.rgb*tex2D(_IlluminA,TRANSFORM_TEX(node_172.rg, _IlluminA)).rgb)*node_3.rgb);
+                float4 node_3 = tex2D(_MainTex,TRANSFORM_TEX(node_181.rg, _MainTex));
+                float3 emissive = ((_IllumColor.rgb*tex2D(_IlluminA,TRANSFORM_TEX(node_181.rg, _IlluminA)).rgb)*node_3.rgb);
 ///////// Gloss:
                 float gloss = exp2(0.5*10.0+1.0);
 ////// Specular:
@@ -162,8 +162,8 @@ Shader "Shader Forge/BuildingShader" {
                 float3x3 tangentTransform = float3x3( i.tangentDir, i.binormalDir, i.normalDir);
                 float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
 /////// Normals:
-                float2 node_173 = i.uv0;
-                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_173.rg, _BumpMap))).rgb;
+                float2 node_182 = i.uv0;
+                float3 normalLocal = UnpackNormal(tex2D(_BumpMap,TRANSFORM_TEX(node_182.rg, _BumpMap))).rgb;
                 float3 normalDirection =  mul( normalLocal, tangentTransform ); // Perturbed normals
                 float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));
                 float3 halfDirection = normalize(viewDirection+lightDirection);
@@ -182,7 +182,7 @@ Shader "Shader Forge/BuildingShader" {
                 float3 finalColor = 0;
                 float3 diffuseLight = diffuse;
                 float4 node_74 = _Color;
-                float4 node_3 = tex2D(_MainTex,TRANSFORM_TEX(node_173.rg, _MainTex));
+                float4 node_3 = tex2D(_MainTex,TRANSFORM_TEX(node_182.rg, _MainTex));
                 finalColor += diffuseLight * (node_74.rgb*node_3.rgb);
                 finalColor += specular;
 /// Final Color:

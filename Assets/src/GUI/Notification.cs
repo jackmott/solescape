@@ -20,7 +20,7 @@ public class Notification : MonoBehaviour
     {
         instance = this;
         notifications = new Stack<string>();
-
+		print("notification awake");
 
     }
 
@@ -47,9 +47,11 @@ public class Notification : MonoBehaviour
 
     public void SetNotification(string text)
     {
+		print("set notification");
         if (notifications.Count == 0)
         {
             notifications.Push(text);
+			print("notification pushed");
         }
         else if (notifications.Peek() != text && notifications.Count <= 2)
         {
@@ -62,10 +64,13 @@ public class Notification : MonoBehaviour
     {
         if (notifications.Count > 0 && !showing)
         {
+			print("notification more than 1");
             notification.Text = notifications.Pop();
+			print("notification popped");
             timeStamp = Time.time;
             showing = true;
             notification.Show();
+			print("show");
         } else if (showing)
         {
             if (Time.time - timeStamp > 2)

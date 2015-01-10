@@ -50,12 +50,12 @@ public class dfRotateGesture : dfGestureBase
 
 	#region Input notifications
 
-	protected void OnMultiTouchEnd()
+	public void OnMultiTouchEnd()
 	{
 		endGesture();
 	}
 
-	protected void OnMultiTouch( dfControl sender, dfTouchEventArgs args )
+	public void OnMultiTouch( dfControl sender, dfTouchEventArgs args )
 	{
 
 		var touches = args.Touches;
@@ -108,7 +108,7 @@ public class dfRotateGesture : dfGestureBase
 
 	#region Private utility methods
 
-	private float getAngleDelta( List<Touch> touches )
+	private float getAngleDelta( List<dfTouchInfo> touches )
 	{
 
 		if( touches.Count < 2 )
@@ -143,7 +143,7 @@ public class dfRotateGesture : dfGestureBase
 		return Mathf.Rad2Deg * Mathf.Atan2( cross, Vector2.Dot( start, end ) );
 	}
 
-	private Vector2 getCenter( List<Touch> list )
+	private Vector2 getCenter( List<dfTouchInfo> list )
 	{
 
 		var accum = Vector2.zero;
@@ -157,7 +157,7 @@ public class dfRotateGesture : dfGestureBase
 
 	}
 
-	private bool isRotateMovement( List<Touch> list )
+	private bool isRotateMovement( List<dfTouchInfo> list )
 	{
 		return Mathf.Abs( getAngleDelta( list ) ) >= 0.1f;
 	}

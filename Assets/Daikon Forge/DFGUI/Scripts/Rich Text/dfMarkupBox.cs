@@ -318,7 +318,12 @@ public class dfMarkupBox
 
 	#region Private utility methods
 
-	public void FitToContents( bool recursive = false )
+	public void FitToContents()
+	{
+		FitToContents( false );
+	}
+
+	public void FitToContents( bool recursive )
 	{
 
 		if( this.children.Count == 0 )
@@ -490,7 +495,12 @@ public class dfMarkupBox
 
 	}
 
-	private void endCurrentLine( bool removeEmpty = false )
+	private void endCurrentLine()
+	{
+		endCurrentLine( false );
+	}
+
+	private void endCurrentLine( bool removeEmpty )
 	{
 
 		if( currentLine == null )
@@ -1041,15 +1051,19 @@ public class dfMarkupBoxText : dfMarkupBox
 		isWhitespace = whitespacePattern.IsMatch( this.Text );
 		var effectiveText = Style.PreserveWhitespace || !isWhitespace ? this.Text : " ";
 
-		var glyphs = Style.Font.RequestCharacters( effectiveText, Style.FontSize, Style.FontStyle );
 		var currentFontSize = Style.FontSize;
-
 		var size = new Vector2( 0, Style.LineHeight );
+
+		Style.Font.RequestCharacters( effectiveText, Style.FontSize, Style.FontStyle );
+
+		var glyph = new UnityEngine.CharacterInfo();
 
 		for( int i = 0; i < effectiveText.Length; i++ )
 		{
 
-			var glyph = glyphs[ i ];
+			if( !Style.Font.BaseFont.GetCharacterInfo( effectiveText[ i ], out glyph, currentFontSize, Style.FontStyle ) )
+				continue;
+
 			var width = glyph.vert.x + glyph.vert.width;
 
 			if( effectiveText[ i ] == ' ' )
@@ -1183,6 +1197,7 @@ public class dfMarkupBoxText : dfMarkupBox
 		var font = Style.Font;
 		var fontSize = Style.FontSize;
 		var fontStyle = Style.FontStyle;
+		var glyph = new UnityEngine.CharacterInfo();
 
 		var verts = renderData.Vertices;
 		var triangles = renderData.Triangles;
@@ -1196,7 +1211,7 @@ public class dfMarkupBoxText : dfMarkupBox
 
 		// Ensure that the baseFont's texture contains all characters before 
 		// rendering any text.
-		UnityEngine.CharacterInfo[] glyphs = font.RequestCharacters( text, fontSize, fontStyle );
+		font.RequestCharacters( text, fontSize, fontStyle );
 
 		// Set the render material in the output buffer *after* requesting
 		// glyph data, which may result in CharacterInfo in the dfDynamicFont's 
@@ -1206,7 +1221,8 @@ public class dfMarkupBoxText : dfMarkupBox
 		for( int i = 0; i < text.Length; i++ )
 		{
 
-			var glyph = glyphs[ i ];
+			if( !font.BaseFont.GetCharacterInfo( text[ i ], out glyph, fontSize, fontStyle ) )
+				continue;
 
 			addTriangleIndices( verts, triangles );
 

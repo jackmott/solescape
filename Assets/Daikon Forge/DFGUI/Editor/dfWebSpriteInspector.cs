@@ -1,4 +1,4 @@
-﻿/* Copyright 2013 Daikon Forge */
+﻿/* Copyright 2013-2014 Daikon Forge */
 using UnityEngine;
 using UnityEditor;
 
@@ -57,6 +57,13 @@ public class dfWebSpriteInspector : dfControlInspector
 
 		using( dfEditorUtil.BeginGroup( "Web" ) )
 		{
+
+			var autoLoad = EditorGUILayout.Toggle( "Auto Load", control.AutoDownload );
+			if( autoLoad != control.AutoDownload )
+			{
+				dfEditorUtil.MarkUndo( control, "Toggle Auto Download property" );
+				control.AutoDownload = autoLoad;
+			}
 
 			var url = EditorGUILayout.TextField( "URL", control.URL );
 			if( url != control.URL )
